@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="acl_user_site_role">
+	<typeAlias alias="aclUserSiteRole" type="com.alibaba.china.cmshollywood.acl.domain.ACLUserSiteRole" />
+	<resultMap id="aclUserSiteRoleResult" class="aclUserSiteRole">
+	    <result property="id"          column="ID" />
+	    <result property="userId"      column="USER_ID" />
+	    <result property="siteId"      column="SITE_ID" />
+	    <result property="roleId"      column="ROLE_ID" />
+	    <result property="status"      column="STATUS" />
+        <result property="expiredDate" column="EXPIRED_DATE" />
+        <result property="gmtGreate"   column="GMT_GREATE" />
+        <result property="gmtModified" column="GMT_MODIFIED" />
+        <result property="createUser"  column="CREATE_USER" />
+        <result property="modifyUser"  column="MODIFY_USER" />
+        <result property="message"     column="MESSAGE" />
+	</resultMap>
+	
+	<select id="findRolesBySiteCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    <![CDATA[
+			select count(*) from acl_user_site_role usr 
+             inner join (select r.id from acl_role r where r.is_delete = #isDelete# and r.lev >= #lev#
+        ]]>                 
+        <dynamic>
+            <isNotEmpty prepend="union all" property="roleIDs">
+                select r.id from acl_role r where r.is_delete = #isDelete# and r.id in
+                <iterate open="(" close=")" conjunction="," property="roleIDs">
+                      #roleIDs[]#
+                </iterate> 
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[
+                        ) r
+                on usr.role_id = r.id
+		]]>
+		<dynamic prepend="where">
+		    <isNotEmpty prepend="and" property="status">
+                usr.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="statusList">
+                usr.status in
+                <iterate property="statusList" open="(" close=")" conjunction=",">
+			          #statusList[]#
+		        </iterate>
+            </isNotEmpty>
+		    <isNotEmpty prepend="and" property="startDate">
+                usr.gmt_create <![CDATA[>]]> #startDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDate">
+                usr.gmt_create <![CDATA[<]]> #endDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteID">
+                usr.site_id = #siteID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                usr.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findRolesBySite" parameterClass="java.util.Map" resultClass="aclUserSiteRole">
+	    <![CDATA[
+	        select * from (select a.*, rownum num from (
+			select usr.id, usr.user_id userId, usr.role_id roleId, usr.status, usr.site_id siteId,
+			       usr.gmt_create gmtGreate, usr.gmt_modified gmtModified, usr.expired_date expiredDate,
+			       usr.message, r.name roleName
+              from acl_user_site_role usr 
+             inner join (select r.id, r.name from acl_role r where r.is_delete = #isDelete# and r.lev >= #lev#
+        ]]>
+        <dynamic>
+            <isNotEmpty prepend="union all" property="roleIDs">
+                select r.id, r.name from acl_role r where r.is_delete = #isDelete# and r.id in
+                <iterate open="(" close=")" conjunction="," property="roleIDs">
+                      #roleIDs[]#
+                </iterate> 
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[                
+                        ) r
+                on usr.role_id = r.id
+		]]>
+		<dynamic prepend="where">
+		    <isNotEmpty prepend="and" property="status">
+                usr.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="statusList">
+                usr.status in
+                <iterate property="statusList" open="(" close=")" conjunction=",">
+			          #statusList[]#
+		        </iterate>
+            </isNotEmpty>
+		    <isNotEmpty prepend="and" property="startDate">
+                usr.gmt_create <![CDATA[>]]> #startDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="endDate">
+                usr.gmt_create <![CDATA[<]]> #endDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteID">
+                usr.site_id = #siteID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                usr.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		        order by usr.gmt_modified desc
+		    ) a where rownum <= #end# ) where num >= #start#
+        ]]>
+	</select>
+	
+	<select id="findRolesBySiteAndUser" parameterClass="java.util.Map" resultClass="aclUserSiteRole">
+	    <![CDATA[
+			select t.id, t.role_id roleId, t.expired_date expiredDate, t.status, r.lev
+			  from acl_user_site_role t
+			 inner join (select r.id, r.lev from acl_role r where r.is_delete = #isDelete# and r.is_outsite = #isOutSite#) r
+			   on t.role_id = r.id
+		]]>
+		<dynamic prepend="where">
+		    <isNotEmpty prepend="and" property="status">
+                t.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteIDs">
+                t.site_id in
+                <iterate property="siteIDs" open="(" close=")" conjunction=",">
+			          #siteIDs[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                t.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertACLUserSiteRole" parameterClass="aclUserSiteRole">
+	    insert into acl_user_site_role
+	    <dynamic prepend="(">
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="userId">
+                user_id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="siteId">
+                site_id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                role_id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="status">
+                status
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="expiredDate">
+                expired_date
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtGreate">
+                gmt_create
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                gmt_modified
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                create_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                modify_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="message">
+                message
+            </isNotEmpty>
+	    </dynamic>
+	    <dynamic prepend=") values (">
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="userId">
+                #userId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="siteId">
+                #siteId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="status">
+                #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="expiredDate">
+                #expiredDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtGreate">
+                #gmtGreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="message">
+                #message#
+            </isNotEmpty>
+	    </dynamic>)
+	</insert>
+	
+	<update id="updateACLUserSiteRole" parameterClass="aclUserSiteRole">
+		update acl_user_site_role t
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="userId">
+                t.user_id = #userId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="siteId">
+                t.site_id = #siteId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                t.role_id = #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="status">
+                t.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="expiredDate">
+                t.expired_date = #expiredDate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="message">
+                t.message = #message#
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[
+		   where t.id = #id#
+		]]>  
+	</update>
+	
+	<select id="findUserIDandSiteIDByIDs" parameterClass="java.util.Map" resultClass="aclUserSiteRole">
+	    <![CDATA[
+	        select t.user_id userId, t.site_id siteId 
+	          from acl_user_site_role t 
+             where t.id in
+        ]]>     
+        <iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+		</iterate>
+		<![CDATA[        
+             group by t.site_id, t.user_id
+	    ]]>
+	</select>
+	
+	<select id="findByIDs" parameterClass="java.util.Map" resultClass="aclUserSiteRole">
+	    <![CDATA[
+	        select t.id, t.user_id userId, t.site_id siteId, t.role_id roleId, r.name roleName, r.lev
+              from acl_user_site_role t
+             inner join (select r.id, r.name, r.lev from acl_role r where r.is_delete = #isDelete#) r
+                on t.role_id = r.id
+             where t.id in
+        ]]>     
+        <iterate property="ids" open="(" close=")" conjunction=",">
+			#ids[]#
+		</iterate>
+	</select>
+	
+	<select id="existRolesCount" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    <![CDATA[
+	        select count(t.id) count from acl_user_site_role t 
+        ]]>     
+        <dynamic prepend="where">
+		    <isNotEmpty prepend="and" property="status">
+                t.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                t.role_id = #roleID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleIDs">
+                t.role_id in
+                <iterate property="roleIDs" open="(" close=")" conjunction=",">
+			          #roleIDs[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteID">
+                t.site_id = #siteID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteIDs">
+                t.site_id in
+                <iterate property="siteIDs" open="(" close=")" conjunction=",">
+			          #siteIDs[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                t.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

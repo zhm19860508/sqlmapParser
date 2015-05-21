@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsDomainPath">        
+        
+    <resultMap class="CmsDomainPath" id="CmsDomainPath-result" >
+	    <result property="gmtCreate"	javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"	javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />
+        <result property="id"			javaType="java.lang.Long"		column="ID" />
+        <result property="domainId"		javaType="java.lang.Long"		column="DOMAIN_ID" />
+        <result property="contextPath"	javaType="java.lang.String"		column="CONTEXT_PATH" />
+        <result property="diskPath"		javaType="java.lang.String"		column="DISK_PATH" />
+    </resultMap>
+    
+	<resultMap id="CmsDomainPath-withDomain-result" class="CmsDomainPath" extends="CmsDomainPath-result" >
+	    <result property="domain"		javaType="java.lang.String"		column="DOMAIN" />
+	</resultMap>
+	
+    <resultMap class="hashMap" id="CmsDomainPath-id-map" >
+        <result property="id"		        javaType="java.lang.Long"	    column="ID" />
+        <result property="domainId"	        javaType="java.lang.Long"		column="DOMAIN_ID" />
+    </resultMap>	
+
+    <select id="MS_SELECT_BY_PRIMARYKEY"  parameterClass="java.lang.Long"  resultMap="CmsDomainPath-result" >
+        <![CDATA[
+            SELECT * FROM CMS_DOMAIN_PATH where ID = #value#
+        ]]>
+    </select>
+    
+    <select id="MS_SELECT_BY_PRIMARYKEY_WITHDOMAIN"  parameterClass="java.lang.Long"  resultMap="CmsDomainPath-withDomain-result" >
+        <![CDATA[
+            select CMS_DOMAIN_PATH.*,CMS_DOMAIN.DOMAIN FROM CMS_DOMAIN_PATH,CMS_DOMAIN 
+            where CMS_DOMAIN.ID = CMS_DOMAIN_PATH.DOMAIN_ID and CMS_DOMAIN_PATH.ID = #value#
+        ]]>
+    </select>    
+
+    <update id="MS_UPDATE_BY_PRIMARYKEY_SELECTIVE"  parameterClass="CmsDomainPath" >
+            update
+                    CMS_DOMAIN_PATH
+            set
+                    GMT_MODIFIED = SYSDATE
+			<dynamic prepend = "">
+	            <isPropertyAvailable property = "domainId" prepend = ",">
+	                <isNotNull property = "domainId">DOMAIN_ID = #domainId#</isNotNull>
+	            </isPropertyAvailable>
+				<isPropertyAvailable property = "contextPath" prepend = ",">
+	                <isNotNull property = "contextPath">CONTEXT_PATH = #contextPath#</isNotNull>
+	            </isPropertyAvailable>
+				<isPropertyAvailable property = "diskPath" prepend = ",">
+	                <isNotNull property = "diskPath">DISK_PATH = #diskPath#</isNotNull>
+	            </isPropertyAvailable>
+            </dynamic>
+            where
+                ID = #id#
+    </update>
+    
+    <select id="MS_SELECT_ALL" resultMap="CmsDomainPath-withDomain-result" >
+    	<![CDATA[
+    		select CMS_DOMAIN_PATH.*,CMS_DOMAIN.DOMAIN FROM CMS_DOMAIN_PATH,CMS_DOMAIN 
+    		where CMS_DOMAIN.ID = CMS_DOMAIN_PATH.DOMAIN_ID
+    		order by CMS_DOMAIN_PATH.ID
+    	]]>
+    </select>
+    <select id="queryDomainPathByIds" parameterClass="java.util.Map" resultMap="CmsDomainPath-withDomain-result" >
+    		select CMS_DOMAIN_PATH.*,CMS_DOMAIN.DOMAIN FROM CMS_DOMAIN_PATH,CMS_DOMAIN 
+    		where CMS_DOMAIN.ID = CMS_DOMAIN_PATH.DOMAIN_ID and CMS_DOMAIN_PATH.ID in 
+		<iterate  property="tmpIdList" open="(" close=")" conjunction=",">
+               <![CDATA[#tmpIdList[]#]]>
+		</iterate>
+    		order by CMS_DOMAIN_PATH.ID
+
+    </select>
+    <insert id="MS_INSERT" parameterClass="CmsDomainPath" >
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_DOMAIN_PATH.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        <![CDATA[ 
+            insert into CMS_DOMAIN_PATH
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , DOMAIN_ID  , CONTEXT_PATH,DISK_PATH )
+            values
+              (sysdate  , sysdate , #id# , #domainId# , #contextPath#,#diskPath# )
+        ]]>
+    </insert>
+	<select id="MS_SELECT_DOMAIN_CONTEXT_EXIST_BY_DC" parameterClass="map" resultClass="java.lang.Long">
+        <![CDATA[
+            select count(*) from CMS_DOMAIN_PATH WHERE CONTEXT_PATH = #contextPath# and DOMAIN_ID = #domainId#
+        ]]>
+    </select>
+	<select id="MS_SELECT_DYNAMIC_DOMAIN_PATH" resultMap="CmsDomainPath-id-map" >
+        <![CDATA[
+        	SELECT ID, DOMAIN_ID FROM CMS_DOMAIN_PATH WHERE DOMAIN_ID IN ( SELECT ID FROM CMS_DOMAIN WHERE DOMAIN_TYPE = 1)
+        ]]>
+    </select>        
+</sqlMap>

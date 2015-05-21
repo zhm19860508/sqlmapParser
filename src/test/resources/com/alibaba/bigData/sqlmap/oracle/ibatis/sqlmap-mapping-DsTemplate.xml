@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dstemplate">
+    <typeAlias alias="template" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsTemplate"/>
+     <!--
+      - ===============================================
+      - ds_template表映射到DsTemplate类
+      - ===============================================
+     -->
+    <resultMap id="dsResult" class="template">
+        <result property="id" column="ID"/>
+        <result property="templateType" column="TEMPLATE_TYPE"/>
+        <result property="relTemplateId" column="REL_TEMPLATE_ID"/>
+        <result property="cnName" column="CN_NAME"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="thumbnail" column="THUMBNAIL"/>
+    </resultMap>
+    <!--
+      - ===============================================
+      - 根据id查询
+      - ===============================================
+     -->
+    <select id="getTemplateById" resultMap="dsResult" parameterClass="int"><![CDATA[
+        select  *
+        from
+                DS_TEMPLATE
+        where
+                ID = #id#
+    ]]></select>
+
+   <select id="queryTemplateList" resultMap="dsResult" parameterClass="java.util.Map" >
+      select    *
+      from DS_TEMPLATE
+    <dynamic prepend="where" >
+     <isNotEmpty prepend="and"  property="dsId" >
+		id in (select ds_template_id from ds_template_rel where ds_id=#dsId# )  
+     </isNotEmpty>
+
+     <isNotEmpty  prepend="and"  property="templateId" >
+     	rel_template_id=#templateId#
+     </isNotEmpty>
+     <isNotEmpty  prepend="and"  property="id" >
+     	ID=#id#
+     </isNotEmpty>
+    </dynamic>
+   </select>
+   
+
+   <select id="queryTemplateById" resultMap="dsResult" parameterClass="int" >
+      select    *
+      from DS_TEMPLATE
+    where id =#id#
+   </select>
+
+   <select id="queryTemplate" resultMap="dsResult" parameterClass="java.util.Map" >
+      select    *
+      from DS_TEMPLATE
+    <dynamic prepend="where" >
+     <isNotEmpty prepend="and"  property="templateType" >
+		TEMPLATE_TYPE =#templateType# 
+     </isNotEmpty>
+
+     <isNotEmpty  prepend="and"  property="relTemplateId" >
+     	REL_TEMPLATE_ID=#relTemplateId#
+     </isNotEmpty>
+     <isNotEmpty  prepend="and"  property="id" >
+     	ID=#id#
+     </isNotEmpty>
+    </dynamic>
+   </select>
+
+    <!--
+      - ===============================================
+      - 获取所有
+      - ===============================================
+     -->
+    <select id="getAllTemplate" resultMap="dsResult" ><![CDATA[
+        select
+                *
+        from
+                DS_TEMPLATE
+                
+        ORDER by MODIFY_TIME DESC
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertTemplate" parameterClass="template">
+		<selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DS_TEMPLATE.NEXTVAL AS id FROM DUAL</selectKey>
+                insert into DS_TEMPLATE (
+                ID,
+                USER_ID,
+                TEMPLATE_TYPE,
+                REL_TEMPLATE_ID,
+                CN_NAME,
+                CREATE_TIME,
+                MODIFY_TIME,
+                DESCRIPTION,
+                THUMBNAIL
+        ) values (
+                #id#,
+                #userId#,
+                #templateType#,
+                #relTemplateId#,
+                #cnName#,
+                SYSDATE,
+                SYSDATE,
+                #description#,
+                #thumbnail#
+        )
+    </insert>
+    <!--
+      - ===============================================
+      - 修改
+      - ===============================================
+     -->
+    <update id="updateTemplate" parameterClass="template"><![CDATA[
+        update
+                DS_TEMPLATE
+        set
+                CN_NAME = #cnName#,
+                USER_ID = #userId#,
+                MODIFY_TIME=SYSDATE,
+                DESCRIPTION=#description#,
+                THUMBNAIL=#thumbnail#              
+        where
+                ID = #id#
+    ]]></update>
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteTemplate" parameterClass="int"><![CDATA[
+        delete from
+                DS_TEMPLATE
+         where
+                ID = #id#
+    ]]></delete>
+
+
+</sqlMap>

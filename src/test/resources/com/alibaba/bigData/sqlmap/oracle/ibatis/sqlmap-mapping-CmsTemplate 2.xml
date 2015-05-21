@@ -1,0 +1,514 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsTemplate">        
+    <typeAlias alias="CmsTemplate" type="com.alibaba.china.cmshollywood.cms.common.dal.CmsTemplate"/>
+    <resultMap class="CmsTemplate" id="CmsTemplate-result" >
+        <result property="gmtCreate"	javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"	javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />
+        <result property="gmtPublish"   javaType="java.sql.Timestamp"   column="GMT_PUBLISH" />
+        <result property="id"			javaType="java.lang.Long"		column="ID" />
+        <result property="pageId"		javaType="java.lang.Long"		column="PAGE_ID" />
+        <result property="catalogId"	javaType="java.lang.Long"		column="CATALOG_ID" />
+        <result property="code"			javaType="java.lang.String"		column="CODE" />
+        <result property="name"			javaType="java.lang.String"		column="NAME" />
+        <result property="status"		javaType="java.lang.String"		column="STATUS" />
+		<result property="templateType"		javaType="java.lang.String"		column="TEMPLATE_TYPE" />
+		<result property="imageUrl"		javaType="java.lang.String"		column="IMAGE_URL" />
+		<result property="templateIntroduce"		javaType="java.lang.String"		column="TEMPLATE_INTRODUCE" />
+        <result property="esiEnable"	javaType="java.lang.Long"		column="ESI_ENABLE" />
+    </resultMap>
+    
+    <resultMap class="hashMap" id="CmsTemplate-id-map" >
+        <result property="id"		javaType="java.lang.Long"	    column="ID" />
+        <result property="code"	    javaType="java.lang.String"		column="CODE" />
+    </resultMap>
+    
+    <resultMap class="hashMap" id="CmsTemplateContent-map" >
+        <result property="code"		javaType="java.lang.String"	    column="CODE" />
+        <result property="content"	javaType="java.lang.String"		column="CONTENT" />
+    </resultMap>    
+
+    <select id="MS-SELECT-CMSTEMPLATE-BY-ID" parameterClass="java.lang.Long" resultMap="CmsTemplate-result" >
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE WHERE ID = #id# 
+
+        ]]>
+    </select>
+
+    <update id="updateCmsTemplate" 
+        parameterClass="CmsTemplate" >
+        <![CDATA[
+            update
+                    CMS_TEMPLATE
+            set
+                    GMT_MODIFIED = sysdate , 
+                    PAGE_ID = #pageId# , 
+                    CATALOG_ID = #catalogId# , 
+                    CODE = #code# , 
+                    NAME = #name# , 
+                    STATUS = #status#,
+					IMAGE_URL=#imageUrl#,
+					TEMPLATE_INTRODUCE=#templateIntroduce#,
+					TEMPLATE_TYPE=#templateType#,
+					ESI_ENABLE=#esiEnable#
+            where  
+                ID = #id#
+        ]]>
+    </update>
+
+    <insert id="MS_INSERT_CMSTEMPLATE_FROM_PAGE" parameterClass="CmsTemplate" >
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_TEMPLATE.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_TEMPLATE
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , PAGE_ID  , CATALOG_ID  , CODE  , NAME  , STATUS,IMAGE_URL,TEMPLATE_INTRODUCE,TEMPLATE_TYPE,ESI_ENABLE)
+            values
+              (SYSDATE  , SYSDATE  , #id#  , #pageId#  , #catalogId#  , #code#  , #name#  , #status#,#imageUrl#,#templateIntroduce#,#templateType#,#esiEnable# )
+        ]]>
+    </insert>
+
+    <delete id="deleteCmsTemplate" parameterClass="CmsTemplate"  >
+        <![CDATA[
+            delete from CMS_TEMPLATE where ID = #id# 
+        ]]>
+    </delete>
+    <select id="MS-SELECT-TEMPLATE-BY-CATALOG" parameterClass="java.util.Map" resultMap="CmsTemplate-result" >
+             SELECT * from CMS_TEMPLATE where CATALOG_ID in (
+					<iterate property="catalogids" conjunction=",">
+						#catalogids[]#
+					</iterate>
+					)
+
+    </select>
+    
+	<select id="MS-SELECT-TEMPLATE-CATALOG-BY-CATALOGID" parameterClass="java.util.Map" resultMap="CmsTemplate-result" >
+             SELECT * from CMS_TEMPLATE where 
+             ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2 where RESOURCE_TYPE='template'
+					 and  CATALOG_ID =#catalogid#)
+              ORDER BY GMT_CREATE DESC
+    </select>
+    <update id="MS-UPDATE-CMSTEMPLATE-STATUS-BY-TEMPLATECODE" parameterClass="java.util.Map" >
+        <![CDATA[
+            UPDATE CMS_TEMPLATE
+            SET
+                    GMT_MODIFIED = SYSDATE, 
+                    STATUS = #status#     
+            WHERE  
+                CODE = #tempCode#
+        ]]>
+    </update>
+    <select id="MS-SELECT-TEMPLATE-BY-TEMPLATECODE" parameterClass="java.lang.String" resultMap="CmsTemplate-result" >
+             SELECT * FROM CMS_TEMPLATE WHERE CODE = #tempCode#
+    </select>
+	<select id="MS-SELECT-CMSTEMPLATE-BY-PAGEID" parameterClass="java.lang.Long" resultMap="CmsTemplate-result" >
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE WHERE PAGE_ID = #pageId# 
+
+        ]]>
+    </select>
+    
+    <select id="MS-SELECT-TEMPLATE-BY-CATALOGID" resultMap="CmsTemplate-result" parameterClass="java.util.Map">
+        select
+            *
+        from
+            (
+            select
+                t.*,rownum as myrow
+            from
+                (select * from CMS_TEMPLATE where TEMPLATE_TYPE in ('VIFRAME','ORDINARY','DCMS') 
+             <dynamic>
+              <isNotNull prepend="AND" property="catalogId">
+					ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2 where RESOURCE_TYPE='template'
+					 and  CATALOG_ID in 
+					 <iterate property="catalogId" open="(" close=")" conjunction=",">
+		                      #catalogId[]#
+		            </iterate>
+					)
+              </isNotNull>	
+            </dynamic>	
+                order by GMT_MODIFIED desc) t
+                <![CDATA[
+            where
+                rownum<=#maxvalue#
+            )
+        where
+            myrow>#minvalue#
+    ]]>
+    </select>
+    <select id="MS-SELECT-TEMPLATE-BY-CATALOGID-COUNT" resultClass="java.lang.Long" parameterClass="java.util.Map">
+        select count(*) from CMS_TEMPLATE where  TEMPLATE_TYPE in ('VIFRAME','ORDINARY','DCMS')
+          <dynamic>
+            <isNotNull prepend="AND" property="catalogId">
+					ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2 where RESOURCE_TYPE='template'
+					 and  CATALOG_ID in 
+					 <iterate property="catalogId" open="(" close=")" conjunction=",">
+		                      #catalogId[]#
+		            </iterate>
+					)
+           </isNotNull>	
+       </dynamic>	      
+    </select>
+    
+    <!--find template by code-->
+    <select id="MS-SELECT-CMSTEMPLATE-BY-CODE" parameterClass="java.lang.String" resultMap="CmsTemplate-result">
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE WHERE CODE = #code#
+        ]]>
+    </select>
+    
+    <!-- search template by code-->
+    <select id="MS-SEARCH-TEMPLATE-BY-CODE" parameterClass="java.util.Map" resultMap="CmsTemplate-result">
+    <![CDATA[
+
+select * from CMS_TEMPLATE t where T.TEMPLATE_TYPE IN ('VIFRAME', 'ORDINARY', 'DCMS')  ]]>
+                  <isNotEmpty prepend="AND" property="code" >
+ 				T.CODE LIKE '%'||#code#||'%'
+ 			  </isNotEmpty>
+ 			   <isNotEmpty prepend="AND" property="name" >
+       				  T.NAME LIKE '%'||#name#||'%'
+       			</isNotEmpty>
+				  <isNotNull prepend="AND" property="siteId">
+					ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_SITE where RESOURCE_TYPE='template'
+					 and  SITE_ID in 
+					 <iterate property="siteId" open="(" close=")" conjunction=",">
+		                      #siteId[]#
+		            </iterate>
+					)
+			      </isNotNull>
+       			 <isNotEmpty prepend="AND" property="catalogId" >
+       				 T.ID IN (SELECT RC.RESOURCE_ID
+                      FROM CMS_RESOURCE_CATALOG_V2 RC
+                     WHERE RC.RESOURCE_TYPE = 'template'
+                           AND RC.CATALOG_ID = #catalogId#)
+             </isNotEmpty>
+                 <![CDATA[
+                 order by GMT_MODIFIED desc
+    ]]>
+    </select>
+
+    <update id="MS-UPDATE-CMSTEMPLATE-STATUS-BY-ID" parameterClass="java.util.Map" >
+        <![CDATA[
+            UPDATE CMS_TEMPLATE
+            SET
+                GMT_MODIFIED = SYSDATE, 
+                STATUS = #status#
+            WHERE  
+                ID = #templateId#
+        ]]>
+    </update>  
+	<select id="MS-SELECT-CMSTEMPLATE-BY-IDS"  parameterClass="java.util.Map" resultMap="CmsTemplate-result">
+              SELECT * FROM CMS_TEMPLATE 
+				    <iterate prepend="WHERE" property="tmpIdList" open="(" close=")" conjunction="OR">
+		                      ID =#tmpIdList[]#
+		            </iterate>
+			  ORDER BY GMT_MODIFIED DESC
+    </select>
+	<select id="MS-SELECT-CMSTEMPLATE-UNCHECK"  resultMap="CmsTemplate-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT A.*,ROWNUM RN FROM (
+            SELECT * FROM CMS_TEMPLATE 
+      ]]>
+           WHERE STATUS = #status# and CATALOG_ID!=#catalog#
+      <![CDATA[
+            ORDER BY GMT_MODIFIED DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+      ]]>
+    </select>
+	<select id="MS-COUNT-CMSTEMPLATE-BY-UNCHECK"  resultClass="java.lang.Integer" parameterClass="java.util.Map">
+	      SELECT count(*) FROM CMS_TEMPLATE WHERE STATUS = #status# and CATALOG_ID!=#catalog#
+	</select>
+
+	<select id="MS-SELECT-CMSTEMPLATE-DIVIDE-BY-IDS"  resultMap="CmsTemplate-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT A.*,ROWNUM RN FROM (
+            SELECT * FROM CMS_TEMPLATE 
+      ]]>
+     <iterate prepend="WHERE" property="tmpIdList" open="(" close=")" conjunction="OR">
+		                      ID =#tmpIdList[]#
+	 </iterate>
+     <isNotNull property = "status">AND STATUS = #status#</isNotNull>
+      <![CDATA[
+            ORDER BY GMT_CREATE DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+      ]]>
+    </select>
+	<select id="MS-COUNT-CMSTEMPLATE-DIVIDE-BY-IDS"  resultClass="java.lang.Integer" parameterClass="java.util.Map">
+	      SELECT count(*) FROM CMS_TEMPLATE 
+		       <iterate prepend="WHERE" property="tmpIdList" open="(" close=")" conjunction="OR">
+		                      ID =#tmpIdList[]#
+	           </iterate>
+			   <isNotNull property = "status">AND STATUS = #status#</isNotNull>
+	</select>	
+	<select id="MS_SELECT_CMSTEMPLATE_BY_NAME" resultClass="java.lang.Integer" parameterClass="CmsTemplate">		 
+		<![CDATA[
+			SELECT count(*) FROM CMS_TEMPLATE WHERE NAME = #name# and ID<>#id# and TEMPLATE_TYPE=#templateType# and CATALOG_ID=#catalogId#
+		]]>		
+	</select>
+	
+	<select id="MS-SELECT-VIFRAMETEMPLATE-BY-CATEGORY-ID" parameterClass="java.util.Map" resultMap="CmsTemplate-result">		 
+		<![CDATA[
+			SELECT * FROM CMS_TEMPLATE WHERE TEMPLATE_TYPE=#type# AND CATALOG_ID=#id# ORDER BY ID DESC
+		]]>		
+	</select>
+	
+	<select id="MS-QUERRY-CMSTEMPLATE-BY-NAME-TYPE" parameterClass="java.util.Map" resultMap="CmsTemplate-result">		 
+		<![CDATA[
+			SELECT * FROM CMS_TEMPLATE WHERE NAME=#name# AND TEMPLATE_TYPE=#type# and CATALOG_ID=#categoryId#
+		]]>		
+	</select>
+    
+	<select id="MS-COUNT-TEMPLATE-BY-CAGEGORYID-TYPE" parameterClass="java.util.Map" resultClass="java.lang.Integer">		 
+		<![CDATA[
+			SELECT COUNT(*) FROM CMS_TEMPLATE WHERE TEMPLATE_TYPE=#type# AND CATALOG_ID=#categoryId# 
+		]]>		
+	</select>
+	<select id="MS-DIVIDE-TEMPLATE-BY-CAGEGORYID-TYPE" parameterClass="java.util.Map" resultMap="CmsTemplate-result">		 
+	<![CDATA[
+      SELECT * FROM (
+             SELECT A.*,ROWNUM RN FROM (
+                 SELECT * FROM CMS_TEMPLATE WHERE TEMPLATE_TYPE=#type# AND CATALOG_ID=#categoryId# ORDER BY ID DESC
+             ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+    ]]>		
+	</select>
+
+    <select id="MS-QUERRY-SHORTCUT-BY-NAME-TYPE" parameterClass="java.util.Map" resultMap="CmsTemplate-result">
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE WHERE NAME=#name# AND TEMPLATE_TYPE=#type#
+        ]]>
+    </select>
+
+    <select id="MS-SELECT-SHCT-BY-CATEGORYID-AND-STATUS" parameterClass="java.util.Map" resultMap="CmsTemplate-result">         
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE WHERE TEMPLATE_TYPE=#type# AND CATALOG_ID=#categoryId# AND STATUS=#status# ORDER BY ID DESC
+        ]]>     
+    </select>
+
+    <resultMap id="CmsTemplate-withOther-result" class="CmsTemplate" extends="CmsTemplate-result" >
+        <result property="userId"       javaType="java.lang.String"     column="USER_ID" />
+    </resultMap>
+    <select id="MS_SELECT_SHC_BY_USERID_OR_NAME_OR_STATUS"  parameterClass="java.util.Map"  resultMap="CmsTemplate-withOther-result" >
+        <![CDATA[
+            select * from (
+            select A.*,ROWNUM RN from (
+                select CMS_TEMPLATE.*,CMS_TEMPLATE_USER.USER_ID from CMS_TEMPLATE,CMS_TEMPLATE_USER
+                where CMS_TEMPLATE.ID = CMS_TEMPLATE_USER.TEMPLATE_ID
+                  and CMS_TEMPLATE.TEMPLATE_TYPE = #type#
+        ]]>
+        <isNotEmpty prepend="AND" property="name"> CMS_TEMPLATE.NAME like '%' || #name# || '%' </isNotEmpty>
+        <isNotEmpty prepend="AND" property="userId"> CMS_TEMPLATE_USER.USER_ID like '%' || #userId# || '%' </isNotEmpty>
+        <isNotEmpty prepend="AND" property="status"> CMS_TEMPLATE.STATUS = #status# </isNotEmpty>
+        <![CDATA[
+                order by CMS_TEMPLATE.ID desc
+            ) A where ROWNUM <= #offset# + #length#
+        ) where RN > #offset#
+        ]]>
+    </select>
+    <select id="MS_COUNT_SHC_BY_USERID_OR_NAME_OR_STATUS"  parameterClass="java.util.Map"  resultClass="java.lang.Integer">
+        <![CDATA[
+            select COUNT(*) from CMS_TEMPLATE,CMS_TEMPLATE_USER
+            where CMS_TEMPLATE.ID = CMS_TEMPLATE_USER.TEMPLATE_ID
+                  and CMS_TEMPLATE.TEMPLATE_TYPE = #type#
+        ]]>
+        <isNotEmpty prepend="AND" property="name"> CMS_TEMPLATE.NAME like '%' || #name# || '%' </isNotEmpty>
+        <isNotEmpty prepend="AND" property="userId"> CMS_TEMPLATE_USER.USER_ID like '%' || #userId# || '%' </isNotEmpty>
+        <isNotEmpty prepend="AND" property="status"> CMS_TEMPLATE.STATUS = #status# </isNotEmpty>
+    </select>
+
+    <update id="MS-UPDATE-SHC-STATUS-BY-ID" parameterClass="java.util.Map" >
+        <![CDATA[
+            UPDATE CMS_TEMPLATE
+            SET
+                GMT_MODIFIED = SYSDATE,
+                GMT_PUBLISH = SYSDATE,
+                STATUS = #status#
+            WHERE  
+                ID = #templateId#
+        ]]>
+    </update>
+	
+	<select id="MS_COUNT_TEMPLATE_BY_IDLIST"  parameterClass="java.util.List"  resultClass="java.lang.Long">
+        SELECT count(*) FROM CMS_TEMPLATE 
+            <iterate prepend="WHERE" property="templateIdList" open="(" close=")" conjunction="OR">
+		        ID =#templateIdList[]#
+            </iterate>
+	</select>
+		
+	<select id="MS_GET_TEMPLATE_BY_IDS"  resultMap="CmsTemplate-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT GMT_CREATE,GMT_MODIFIED,GMT_PUBLISH,ID,PAGE_ID,CATALOG_ID,CODE,NAME,STATUS,TEMPLATE_TYPE,IMAGE_URL,TEMPLATE_INTRODUCE,ESI_ENABLE FROM (
+         SELECT A.GMT_CREATE,A.GMT_MODIFIED,A.GMT_PUBLISH,A.ID,A.PAGE_ID,A.CATALOG_ID,A.CODE,A.NAME,A.STATUS,A.TEMPLATE_TYPE,A.IMAGE_URL,A.TEMPLATE_INTRODUCE,ESI_ENABLE,ROWNUM RN FROM (
+            SELECT /*+ ordered use_nl(a,b) */ b.GMT_CREATE,b.GMT_MODIFIED,b.GMT_PUBLISH,b.ID,b.PAGE_ID,b.CATALOG_ID,b.CODE,b.NAME,b.STATUS,b.TEMPLATE_TYPE,b.IMAGE_URL,b.TEMPLATE_INTRODUCE,b.ESI_ENABLE FROM TABLE(CAST(str2numlist(#tempIds#)as numtabletype)) a, CMS_TEMPLATE  b where a.column_value = b.ID     
+            ORDER BY GMT_MODIFIED DESC, ID DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+      ]]>
+    </select>
+    <!--  DCMS-->
+      <select id="MS-SELECT-TEMPLATE-BY-TYPE-CODE-CATALOGID" resultMap="CmsTemplate-result">
+      <![CDATA[
+        select
+            *
+        from
+            (
+            select
+                t.*,rownum as myrow
+            from
+                (select * from CMS_TEMPLATE where  TEMPLATE_TYPE ='DCMS' AND STATUS!='disable'
+                 ]]>
+                 <isNotEmpty prepend="AND" property="name">
+                  (CMS_TEMPLATE.NAME like '%' || #name# || '%' or CMS_TEMPLATE.CODE like '%' || #name# || '%')
+                 </isNotEmpty>
+                 <isNotNull prepend="AND" property="catalogId">
+					ID in (SELECT cr.RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2  cr where cr.RESOURCE_TYPE='template'
+					 and  cr.CATALOG_ID in 
+					 <iterate property="catalogId" open="(" close=")" conjunction=",">
+		                      #catalogId[]#
+		            </iterate>
+					)
+	               </isNotNull>	
+                 order by GMT_MODIFIED desc) t
+            where
+             <![CDATA[
+                rownum<=#maxvalue#
+                 ]]>
+            )
+        where
+            myrow>#minvalue#
+   
+    </select>
+    <select id="MS-SELECT-TEMPLATE-BY-TYPE-CODE-CATALOGID-COUNT" resultClass="java.lang.Long"><![CDATA[
+        select count(*) from CMS_TEMPLATE where TEMPLATE_TYPE ='DCMS' AND STATUS!='disable'
+            ]]>
+        <isNotEmpty prepend="AND" property="name">
+        (CMS_TEMPLATE.NAME like '%' || #name# || '%' or  CMS_TEMPLATE.CODE like '%' || #name# || '%')
+         </isNotEmpty>
+         <isNotNull prepend="AND" property="catalogId">
+					ID in (SELECT cr.RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2  cr where cr.RESOURCE_TYPE='template'
+					 and  cr.CATALOG_ID in 
+					 <iterate property="catalogId" open="(" close=")" conjunction=",">
+		                      #catalogId[]#
+		            </iterate>
+					)
+	      </isNotNull>	
+    </select>
+    
+    <!-- DCMS项目添加 -->
+    <select id="getDCmsTemplateIdByCode" resultClass="java.lang.Long" parameterClass="java.lang.String">		 
+		<![CDATA[
+			SELECT id FROM CMS_TEMPLATE WHERE CODE = #code# 
+			
+		]]>		
+	</select>	
+	
+	<!-- 根据模板CODE查询ID -->
+    <select id="MS-GET-TEMPLATEID-BY-CODES" resultClass="Collection" resultMap="CmsTemplate-id-map">		 
+		<![CDATA[
+			SELECT ID, CODE FROM CMS_TEMPLATE WHERE CODE IN
+		]]>		
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>
+	</select>
+	
+    <select id="MS_GET_PENDING_AUDIT_TEMPLATE_BY_PERIOD" resultMap="CmsTemplate-result">
+      <![CDATA[
+        select
+            *
+        from
+            (
+            select
+                t.*,rownum as myrow
+            from
+                (select * from CMS_TEMPLATE  
+                 where STATUS = #status#  
+                 ]]>
+                <isNotEmpty prepend="AND" property="beginDate"> 
+                	GMT_MODIFIED >= #beginDate#
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="endDate"> 
+                	GMT_MODIFIED <![CDATA[<=]]> #endDate#
+                </isNotEmpty>                
+             <![CDATA[
+                 order by GMT_MODIFIED desc) t
+            where             
+                rownum<=#end#
+            )
+        where
+            myrow>#begin#
+            ]]>   
+    </select>
+    
+    
+    <select id="MS-SELECT-ALL-CMSTEMPLATE"  resultMap="CmsTemplate-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT A.*,ROWNUM RN FROM (
+            SELECT * FROM CMS_TEMPLATE 
+            ORDER BY GMT_MODIFIED DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+      ]]>
+    </select>
+	<select id="MS-COUNT-ALL-CMSTEMPLATE"  resultClass="java.lang.Integer" parameterClass="java.util.Map">
+	      SELECT count(*) FROM CMS_TEMPLATE
+	</select>
+	
+	<select id="MS-GET-TEMPLATEIDANDCODE-BY-CATALOGANDSTATUS" resultClass="java.util.List" parameterClass="java.util.Map" resultMap="CmsTemplate-id-map">		 
+		<![CDATA[
+			SELECT DISTINCT P.ID, P.CODE
+			  FROM CMS_RESOURCE_CATALOG_V2 RC, CMS_TEMPLATE P
+			 WHERE RC.RESOURCE_TYPE = 'template'
+			       ]]>
+			 		<isNotEmpty prepend="AND" property = "status">
+			       			 P.STATUS = #status#
+			       </isNotEmpty>
+			       <![CDATA[
+			       AND RC.RESOURCE_ID = P.ID
+			       AND RC.CATALOG_ID IN
+			       (SELECT C.ID FROM CMS_CATALOG_V2 C START WITH C.ID in
+			           ]]>
+         <iterate property="catalogIds" open="(" close=")" conjunction=",">
+		    #catalogIds[]#
+		 </iterate>
+		  <![CDATA[
+			        CONNECT BY PRIOR C.ID = C.PARENT_ID)
+		]]>		 
+	</select>
+	<select id="MS-SELECT-TEMPLATEMAP-BY-CATALOGIDS" parameterClass="Collection" resultMap="CmsTemplate-id-map">
+         <![CDATA[	    
+             SELECT CODE, ID from CMS_TEMPLATE where 
+             ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2 where RESOURCE_TYPE='template' and CATALOG_ID in
+         ]]>
+         <iterate open="(" close=")" conjunction=",">
+		    #[]#
+		 </iterate> 
+		  <![CDATA[	 )   ]]>
+    </select>
+	<select id="MS-SELECT-LAST-CHECKED-TEMPLATE-CONTENT" parameterClass="string" resultClass="string">
+         <![CDATA[	 
+         	 SELECT /*+ordered use_nl(t v vc)*/ VC.CONTENT from cms.CMS_TEMPLATE T, cms.VCS_RELEASE V, cms.VCS_CONTENT VC 
+         	 where V.LATEST_VERSION=1 and V.VERSION_ID=VC.VERSION_ID and V.RESOURCE_ID=T.ID and V.RESOURCE_TYPE='RT_TEMPLATE' and T.CODE=#templateCode# 
+         ]]>
+    </select> 
+       		
+	<select id="MS-SELECT-ONLINE-TEMPLATE-CONTENTS" parameterClass="java.util.Collection" resultMap="CmsTemplateContent-map">
+         <![CDATA[	 
+         	 SELECT 
+         	 /*+ordered use_nl(t v vc)*/ VC.CONTENT AS content,
+         	 T.CODE AS code
+         	 from cms.CMS_TEMPLATE T, cms.VCS_RELEASE V, cms.VCS_CONTENT VC 
+         	 where V.LATEST_VERSION=1 and V.VERSION_ID=VC.VERSION_ID and V.RESOURCE_ID=T.ID and V.RESOURCE_TYPE='RT_TEMPLATE' and T.CODE in 
+         ]]>
+        <iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>         
+    </select>     
+</sqlMap>

@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.resourcesite">
+	<resultMap id="ResourceSite-result" class="ResourceSite">
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="siteId" javaType="java.lang.Long" column="SITE_ID" />
+		<result property="resourceId" javaType="java.lang.Long" column="RESOURCE_ID" />
+		<result property="resourceType" javaType="java.lang.String" column="RESOURCE_TYPE" />
+		<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+	</resultMap>
+	<update id="updateResourceSite" parameterClass="java.util.Map">
+		UPDATE CMS_RESOURCE_SITE SET  SITE_ID= #otherSiteId#
+		 WHERE SITE_ID=#siteId#
+	</update>
+   <insert id="MS_ADD_RESOURCE_SITE" parameterClass="ResourceSite">		
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_RESOURCE_SITE.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		<![CDATA[
+			INSERT INTO CMS_RESOURCE_SITE
+				(GMT_CREATE , GMT_MODIFIED , ID , RESOURCE_ID , SITE_ID , RESOURCE_TYPE)
+			values
+				(SYSDATE , SYSDATE , #id# , #resourceId# , #siteId# , #resourceType#)
+		]]>
+	</insert>
+	<select id="getResourceSite" parameterClass="java.lang.Long"
+		resultMap="ResourceSite-result">
+		SELECT * FROM CMS_RESOURCE_SITE WHERE SITE_ID=#siteId#
+    </select>
+	<select id="getResourceSiteBySiteAndType" parameterClass="java.util.Map"
+		resultMap="ResourceSite-result">
+		SELECT * FROM CMS_RESOURCE_SITE WHERE SITE_ID=#siteId#  and RESOURCE_TYPE=#resourceType# 
+    </select>
+    <update id="deleteResourceSite" parameterClass="java.util.Map">
+		DELETE FROM  CMS_RESOURCE_SITE 
+		 WHERE RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#resourceType#
+	</update>
+    <update id="deleteResourceBySiteAndType" parameterClass="java.util.Map">
+		DELETE FROM  CMS_RESOURCE_SITE 
+		 WHERE SITE_ID=#siteId# and RESOURCE_TYPE=#resourceType#
+	</update>
+    <select id="queryResourceSite" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		SELECT SITE_ID FROM  CMS_RESOURCE_SITE WHERE RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#resourceType#
+	</select>
+	<update id="deleteResourceBySiteAndTypeAndResourceId" parameterClass="java.util.Map">
+		DELETE FROM  CMS_RESOURCE_SITE 
+		 WHERE SITE_ID=#siteId# and RESOURCE_TYPE=#resourceType# and RESOURCE_ID=#resourceId#
+	</update>
+</sqlMap>

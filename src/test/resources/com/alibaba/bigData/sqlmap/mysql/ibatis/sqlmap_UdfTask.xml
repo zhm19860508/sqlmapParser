@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="UdfTask">
+	<typeAlias alias="udfTaskDO"
+		type="com.alibaba.bigData.dal.entity.UdfTaskDO" />
+	<typeAlias alias="AppNameDO"
+		type="com.alibaba.bigData.dal.entity.AppNameDO" />
+
+	<resultMap class="UdfTaskDO" id="udfTaskDOResult">
+		<result column="task_id" property="taskId" />
+		<result column="jenkins_ip" property="jenkinsIP" />
+		<result column="app_name" property="appName" />
+		<result column="code_path" property="codePath" />
+		<result column="shared_info" property="sharedInfo" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="job_name" property="jobName" />
+	</resultMap>
+
+	<resultMap class="AppNameDO" id="AppNameDOResult">
+		<result column="app_name" property="appName" />
+		<result column="svn_url" property="svnUrl" />
+	</resultMap>
+
+
+	<sql id="udfTaskColumns">
+		select
+		a.task_id,a.jenkins_ip,a.app_name,a.code_path,a.shared_info,a.is_deleted,a.job_name
+	</sql>
+
+
+	<sql id="udfTaskFrom">
+		from bigData_job_udf a
+	</sql>
+
+	<insert id="addUdfTask" parameterClass="udfTaskDO">
+		insert into bigData_job_udf
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsIP">
+				jenkins_ip
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				app_name
+			</isNotNull>
+			<isNotNull prepend="," property="codePath">
+				code_path
+			</isNotNull>
+			<isNotNull prepend="," property="sharedInfo">
+				shared_info
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			<isNotNull prepend="," property="jobName">
+				job_name
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsIP">
+				#jenkinsIP#
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				#appName#
+			</isNotNull>
+			<isNotNull prepend="," property="codePath">
+				#codePath#
+			</isNotNull>
+			<isNotNull prepend="," property="sharedInfo">
+				#sharedInfo#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="jobName">
+				#jobName#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryUdfTaskById" resultMap="udfTaskDOResult">
+		<include refid="udfTaskColumns" />
+		<include refid="udfTaskFrom" />
+		where a.task_id=#taskId#
+	</select>
+
+	<update id="updateUdfTask" parameterClass="udfTaskDO">
+		update bigData_job_udf
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsIP">
+				jenkins_ip=#jenkinsIP#
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				app_name=#appName#
+			</isNotNull>
+			<isNotNull prepend="," property="codePath">
+				code_path=#codePath#
+			</isNotNull>
+			<isNotNull prepend="," property="sharedInfo">
+				shared_info=#sharedInfo#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="jobName">
+				job_name=#jobName#
+			</isNotNull>
+			where task_id = #taskId#
+		</dynamic>
+	</update>
+
+	<update id="deleteUdfTask" parameterClass="java.lang.Integer">
+		update bigData_job_base,bigData_job_udf
+		set
+		bigData_job_base.is_deleted = 1,bigData_job_udf.is_deleted = 1
+		where bigData_job_base.id = #taskId# and bigData_job_udf.task_id = #taskId#
+	</update>
+
+	<select id="queryAllAppName" resultMap="AppNameDOResult">
+		select app_name,svn_url from bigData_app_name
+	</select>
+</sqlMap>

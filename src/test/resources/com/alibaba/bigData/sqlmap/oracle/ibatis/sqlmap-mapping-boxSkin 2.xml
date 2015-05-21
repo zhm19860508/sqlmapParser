@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.skin">
+	<resultMap id="boxSkin-result" class="boxSkinDO">
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="name" javaType="java.lang.String" column="NAME" />
+		<result property="status" javaType="java.lang.String" column="STATUS" />
+		<result property="remark" javaType="java.lang.String" column="REMARK" />
+		<result property="category" javaType="java.lang.String" column="CATEGORY" />
+		<result property="boxPageType" javaType="java.lang.String" column="BOX_PAGE_TYPE" />
+		<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<resultMap id="boxSkinColor-result" class="boxSkinColorDO">
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="skinId" javaType="java.lang.Long" column="skin_id" />
+		<result property="name" javaType="java.lang.String" column="NAME" />
+		<result property="lessName" javaType="java.lang.String" column="LESS_NAME" />
+		<result property="lessValue" javaType="java.lang.String" column="LESS_VALUE" />
+		<result property="gmtCreate" javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<typeAlias alias="boxSkinCategoryCount" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxSkinCategoryCount" />
+	
+	<select id="MS_SELECT_BY_SKINID"  resultClass="boxSkinColorDO"	parameterClass="java.util.HashMap" resultMap="boxSkinColor-result">
+			<![CDATA[
+			select id, gmt_create, gmt_modified, name, less_name, less_value, skin_id from dcms_box_skin_color where skin_id=#id# order by less_name
+			]]>
+	</select>
+		<select id="MS_GET_BOXSKIN_DEFAULT"  resultClass="boxSkinDO"	parameterClass="java.util.HashMap" resultMap="boxSkin-result">
+			<![CDATA[
+			select * from dcms_box_skin where id = (select min(id) from dcms_box_skin s where s.status='valid')
+			]]>
+	</select>
+	
+	<insert id="MS_INSERT_BOXSKINCOLOR" parameterClass="boxSkinColorDO">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_dcms_box_skin_color.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+			<![CDATA[
+		insert into dcms_box_skin_color
+  			(id, gmt_create, gmt_modified, name, less_name, less_value, skin_id)
+			values
+			(#id#, sysdate  , sysdate  , #name#,#lessName#, #lessValue#,#skinId#)
+			]]>
+	</insert>
+	<delete id="MS_DELETE_BOXSKINCOLOR" parameterClass="long">
+        <![CDATA[
+            DELETE from dcms_box_skin_color where skin_id = #id#
+        ]]>
+	</delete>
+	
+		
+	<select id="MS_SELECT_BY_ID" resultClass="boxSkinDO"
+		parameterClass="java.lang.Long" resultMap="boxSkin-result">
+			<![CDATA[
+			select id, gmt_create, gmt_modified, name, status, remark, category, box_page_type from dcms_box_skin
+			WHERE ID=#id#
+			]]>
+	</select>
+	<insert id="MS_INSERT_BOXSKIN" parameterClass="boxSkinDO">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_dcms_box_skin.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+			<![CDATA[
+			insert into dcms_box_skin
+			(id, gmt_create, gmt_modified, name, status, remark, category, box_page_type)
+			values
+			(#id#, sysdate, sysdate , #name#, #status#, #remark#, #category#, #boxPageType#)
+			]]>
+	</insert>
+	<update id="MS_UPDATE_BOXSKIN" parameterClass="boxSkinDO">
+			<![CDATA[ UPDATE dcms_box_skin
+			SET GMT_MODIFIED = sysdate
+			]]>
+		<isNotNull property="name" prepend=",">
+			NAME = #name#
+		</isNotNull>
+		<isNotNull property="status" prepend=",">
+			status = #status#
+		</isNotNull>
+		<isNotNull property="remark" prepend=",">
+			remark = #remark#
+		</isNotNull>
+		<isNotNull property="category" prepend=",">
+			category = #category#
+		</isNotNull>
+		<isNotNull property="boxPageType" prepend=",">
+			box_page_type = #boxPageType#
+		</isNotNull>
+		<![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+	<select id="MS_GET_BOXSKIN_PAGE" resultMap="boxSkin-result"
+		parameterClass="java.util.HashMap">
+		<![CDATA[
+			SELECT * FROM (
+			select ROWNUM AS RN, t.* from  (SELECT c.id, c.gmt_create, c.gmt_modified, c.name, c.status, c.remark, c.category, c.box_page_type from dcms_box_skin C 
+		]]>
+		<isNotNull prepend=" " property="materialLibId">
+	       <![CDATA[ ,CMS_MATERIAL_LIB_RESOURCE m where c.ID=m.RESOURCE_ID and m.material_lib_id = #materialLibId# ]]>
+		</isNotNull>
+		<isNull prepend=" " property="materialLibId">
+			<![CDATA[ WHERE 1=1 ]]>
+		</isNull>
+		<isNotEmpty prepend="and" property="name">
+			c.name = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="category">
+			c.category = #category#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="boxPageType">
+			((c.box_page_type like '%' || #boxPageType# || '%') or (c.box_page_type is null))
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="status">
+			c.status = #status#
+		</isNotEmpty>
+				<![CDATA[
+				order by c.id   desc  ]]>
+					<![CDATA[
+					)
+					t WHERE  ROWNUM <= #offset# + #length#
+					)
+					WHERE   RN > #offset# ]]>
+	</select>
+	<!-- 分类统计 -->
+	<select id="MS_GET_BOXSKIN_CATEGORY_COUNT" resultClass="boxSkinCategoryCount">
+			<![CDATA[
+			SELECT t.category category,count(*) count 
+				FROM dcms_box_skin t GROUP BY t.category
+			]]>
+	</select>
+	<!-- 带参数的分类统计 -->
+	<select id="MS_GET_BOXSKIN_CATEGORY_COUNT_BYEXAMPLE" resultClass="boxSkinCategoryCount">
+			<![CDATA[
+			SELECT c.category category,count(*) count 
+				FROM dcms_box_skin c
+			]]>
+		<isNotNull prepend=" " property="materialLibId">
+	       <![CDATA[ ,CMS_MATERIAL_LIB_RESOURCE m where c.ID=m.RESOURCE_ID and m.material_lib_id = #materialLibId# ]]>
+		</isNotNull>
+		<isNull prepend=" " property="materialLibId">
+			<![CDATA[ WHERE 1=1 ]]>
+		</isNull>
+		<isNotEmpty prepend="and" property="name">
+			c.name = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="category">
+			c.category = #category#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="boxPageType">
+			((c.box_page_type like '%' || #boxPageType# || '%') or (c.box_page_type is null))
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="status">
+			c.status = #status#
+		</isNotEmpty>
+		<![CDATA[
+		 GROUP BY c.category
+		]]>
+	</select>
+	<select id="MS_GET_BOXSKIN_COUNT" resultClass="java.lang.Integer">
+			<![CDATA[
+			select count(*)  from dcms_box_skin C
+			WHERE  1=1
+			]]>
+		<isNotEmpty prepend="and" property="name">
+			c.name = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="status">
+			c.status = #status#
+		</isNotEmpty>
+	</select>
+
+	<delete id="MS_DELETE_BOXSKIN" parameterClass="long">
+        <![CDATA[
+            DELETE from dcms_box_skin where ID = #id#
+        ]]>
+	</delete>
+	
+</sqlMap>

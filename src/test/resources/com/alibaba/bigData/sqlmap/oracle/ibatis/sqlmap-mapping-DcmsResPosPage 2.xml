@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsResPosPage" >
+
+  <typeAlias alias="dcmsResPosPageDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsResPosPageDO" />
+
+  <resultMap id="dcmsResPosPageDOResultMap" class="dcmsResPosPageDO" >
+    <result property="id" column="ID" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="resPosId" column="RES_POS_ID" />
+    <result property="pageId" column="PAGE_ID" />
+    <result property="siteId" column="SITE_ID" />
+  </resultMap> 
+
+  <sql id="dcmsResPosPage_do_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.RES_POS_ID, a1.PAGE_ID, a1.SITE_ID
+  </sql>
+
+  <sql id="dcmsResPosPage_doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="resPosId" prepend="AND" >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="pageId" prepend="AND" >
+        <![CDATA[
+        PAGE_ID = #pageId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsResPosPageDO" >
+    <selectKey resultClass="java.lang.Long" keyProperty="id">
+         SELECT SEQ_DCMS_RES_POS_PAGE.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    INSERT INTO DCMS_RES_POS_PAGE( ID, GMT_CREATE, GMT_MODIFIED, RES_POS_ID, PAGE_ID, SITE_ID)
+     VALUES ( #id#, sysdate, sysdate, #resPosId#, #pageId#, #siteId#)
+  </insert>
+
+  <update id="update" parameterClass="dcmsResPosPageDO" >
+    UPDATE DCMS_RES_POS_PAGE set GMT_MODIFIED = sysdate 
+    <dynamic prepend="" >
+      <isNotNull property="resPosId" prepend="," >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="pageId" prepend="," >
+        <![CDATA[
+        PAGE_ID = #pageId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="," >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="dcmsResPosPageDOResultMap" >
+     SELECT
+    <include refid="dcmsResPosPage_do_columns" />
+    <![CDATA[
+     FROM DCMS_RES_POS_PAGE a1 WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RES_POS_PAGE WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <delete id="deleteByPageId" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RES_POS_PAGE WHERE PAGE_ID = #pageId#
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsResPosPageDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM DCMS_RES_POS_PAGE
+    <include refid="dcmsResPosPage_doQueryParams" />
+  </select>
+
+  <select id="findListByDO" resultMap="dcmsResPosPageDOResultMap" parameterClass="dcmsResPosPageDO" >
+     SELECT
+    <include refid="dcmsResPosPage_do_columns" />
+     FROM DCMS_RES_POS_PAGE a1
+    <include refid="dcmsResPosPage_doQueryParams" />
+  </select>
+  
+  <select id="findListByPageIds" resultMap="dcmsResPosPageDOResultMap" parameterClass="java.util.Map" >
+     SELECT
+    <include refid="dcmsResPosPage_do_columns" />
+     FROM DCMS_RES_POS_PAGE a1
+    <dynamic prepend="WHERE" >
+      <isNotNull property="pageIds" prepend="AND" >
+         PAGE_ID in
+			<iterate property="pageIds" open="(" close=")" conjunction=",">
+				#pageIds[]#
+			</iterate>
+	  </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </select>
+  
+</sqlMap>

@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.onlineposition">
+	<resultMap id="Online-Position-result" class="OnlinePosition">
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="code"          javaType="java.lang.String"     column="CODE" />
+		<result property="url"           javaType="java.lang.String"     column="URL" />
+		<result property="positionId"    javaType="java.lang.Long"       column="POSITION_ID" />
+		<result property="ruleId"        javaType="java.lang.Long"       column="RULE_ID" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"   column="GMT_CREATE" />
+		<result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+		<result property="errorVersionId" javaType="java.lang.Long"       column="ERROR_VERSION_ID" nullValue="0" />
+	</resultMap>
+
+	<!-- 创建页面位置 -->
+	<insert id="createOnlinePosition" parameterClass="OnlinePosition">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_ONLINE_POSITION.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO ONLINE_POSITION(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        CODE,
+		        URL,
+		        POSITION_ID,
+		        RULE_ID,
+				ERROR_VERSION_ID)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #code#,
+		        #url#,
+		        #positionId#,
+		        #ruleId#,
+				#errorVersionId#)		
+		]]>
+	</insert>
+	
+	<!-- 创建在线页面位置和规则关系 -->
+	<insert id="createOnlinePositionRule" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_ONLINE_POS_RULE.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO ONLINE_POS_RULE(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        POSITION_ID,
+		        RULE_ID,
+		        PRIORITY)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #positionId#,
+		        #ruleId#,
+		        #priority#)		
+		]]>		
+	</insert>
+	
+	<!-- 删除在线页面位置和规则关系 -->
+	<delete id="delateOnlinePositionRule" parameterClass="java.lang.Long">
+		DELETE FROM ONLINE_POS_RULE WHERE POSITION_ID = #positionId#
+	</delete>
+
+	<!-- 更新在线页面位置 -->
+	<update id="updateOnlinePosition" parameterClass="OnlinePosition">
+		UPDATE ONLINE_POSITION SET GMT_MODIFIED = sysdate
+		<dynamic prepend = "">
+		    <isNotNull property="url" prepend=",">
+		        URL = #url#
+		    </isNotNull>
+            <isGreaterThan property ="ruleId" prepend="," compareValue="0">
+                RULE_ID = #ruleId#
+            </isGreaterThan>
+			<isGreaterThan property="errorVersionId" prepend="," compareValue="-1">
+                ERROR_VERSION_ID = #errorVersionId#
+            </isGreaterThan>
+        </dynamic>
+		WHERE POSITION_ID=#positionId#
+	</update>
+
+	<!-- 根据code获取在线页面位置 -->
+	<select id="getOnlinePositionByPositionCode" resultMap="Online-Position-result" parameterClass="java.lang.String">
+		SELECT 	ID,
+				GMT_CREATE,
+				GMT_MODIFIED,
+				CODE,
+				URL,
+				POSITION_ID,
+				RULE_ID,
+				ERROR_VERSION_ID
+				FROM ONLINE_POSITION
+		WHERE
+				CODE=#code#
+	</select>
+	
+	<select id="getOnlinePositionById" resultMap="Online-Position-result" parameterClass="java.lang.Long">
+		SELECT 	ID,
+				GMT_CREATE,
+				GMT_MODIFIED,
+				CODE,
+				URL,
+				POSITION_ID,
+				RULE_ID,
+				ERROR_VERSION_ID
+				FROM ONLINE_POSITION
+		WHERE
+				POSITION_ID=#id#
+	</select>
+	
+	<select id="getOnlinePositionByDefaultRuleId" resultMap="Online-Position-result" parameterClass="java.lang.Long">
+		SELECT 	ID,
+				GMT_CREATE,
+				GMT_MODIFIED,
+				CODE,
+				URL,
+				POSITION_ID,
+				RULE_ID,
+				ERROR_VERSION_ID
+				FROM ONLINE_POSITION
+		WHERE
+				RULE_ID=#rid#
+	</select>
+	
+	<select id="getOnlinePositionByRuleId" resultMap="Online-Position-result" parameterClass="java.lang.Long">
+		SELECT 	PO.* 
+		FROM 	ONLINE_POSITION PO,ONLINE_POS_RULE POS 
+		WHERE 	PO.POSITION_ID = POS.POSITION_ID AND POS.RULE_ID = #rid#	
+	</select>
+</sqlMap>

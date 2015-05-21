@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--==========================================================  -->
+<!--Configuration for ibatis sqlmap mapping.                    -->
+<!--==========================================================  -->
+<!--DO NOT EDIT: This is a generated file that is synchronized  -->
+<!--by meidusa eclipse ibatis plugin tool integration.          -->
+<!--Created Tue Jun 26 15:26:38 CST 2007  -->
+<!--==========================================================  -->
+<sqlMap namespace = "cms_CmsShortCutKws">
+    <resultMap class = "CmsShortCutKws" id="CmsShortCutKws-result">
+        <result property="gmtCreate"    javaType="java.sql.Timestamp"   column="GMT_CREATE" />
+        <result property="gmtModified"  javaType="java.sql.Timestamp"   column="GMT_MODIFIED" />
+        <result property="id"           javaType="java.lang.Long"       column="ID" />
+        <result property="templateId"   javaType="java.lang.Long"       column="TEMPLATE_ID" />
+        <result property="keywords"     javaType="java.lang.String"     column="KEYWORDS" />
+        <result property="type"         javaType="java.lang.String"     column="TYPE" />
+        <result property="templateName" javaType="java.lang.String"     column="TEMPLATE_NAME" />
+    </resultMap>
+
+    <insert id="MS-INSERT-CMSSHORTCUTKWS" parameterClass="CmsShortCutKws" >
+         <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_SHORTCUT_KWS.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into CMS_SHORTCUT_KWS
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , TEMPLATE_ID  , KEYWORDS  , TYPE  , TEMPLATE_NAME)
+            values
+              (SYSDATE  , SYSDATE  , #id#  , #templateId#  , #keywords#  , #type#  , #templateName#)
+        ]]>
+    </insert>
+    <select id="MS-SELECT-CMSSHORTCUTKWS-BY-KEYWORDS" parameterClass="java.util.Map" resultMap="CmsShortCutKws-result" >
+        <![CDATA[
+            SELECT * FROM CMS_SHORTCUT_KWS WHERE KEYWORDS = #keywords# AND TYPE = #type#
+        ]]>
+    </select>
+    <select id="MS-SELECT-CMSSHORTCUTKWS-BY-TEMPLATEID" parameterClass="java.lang.Long" resultMap="CmsShortCutKws-result" >
+        <![CDATA[
+            SELECT * FROM CMS_SHORTCUT_KWS WHERE TEMPLATE_ID = #templateId# 
+        ]]>
+    </select>
+    <select id="MS-SELECT-CMSSHORTCUTKWS-BY-IDS"  parameterClass="java.util.Map" resultMap="CmsShortCutKws-result">
+          SELECT * FROM CMS_SHORTCUT_KWS 
+            <iterate prepend="WHERE" property="tmpIdList" open="(" close=")" conjunction="OR">
+                TEMPLATE_ID =#tmpIdList[]#
+            </iterate>
+    </select>
+    <delete id="MS-DELETE-CMSSHORTCUTKWS-BY-TEMPLATEID"  parameterClass="java.lang.Long" >
+        <![CDATA[
+            delete from CMS_SHORTCUT_KWS where TEMPLATE_ID = #templateId# 
+        ]]>
+    </delete>
+</sqlMap>

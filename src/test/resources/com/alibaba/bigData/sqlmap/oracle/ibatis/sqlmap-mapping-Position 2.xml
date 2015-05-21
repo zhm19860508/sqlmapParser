@@ -1,0 +1,343 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.position">
+	<typeAlias alias="Position" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.Position"/>
+	<resultMap id="Position-result" class="Position">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="name"          javaType="java.lang.String"     column="NAME" />
+		<result property="code"          javaType="java.lang.String"     column="CODE" />
+		<result property="callMode"      javaType="java.lang.String"     column="CALL_MODE" />
+		<result property="url"           javaType="java.lang.String"     column="URL" />
+		<result property="catalogId"     javaType="java.lang.Long"       column="CATALOG_ID" />
+		<result property="ruleId"        javaType="java.lang.Long"       column="RULE_ID" />
+		<result property="pageId"        javaType="java.lang.Long"       column="PAGE_ID" />
+		<result property="errorVersionId" javaType="java.lang.Long"       column="ERROR_VERSION_ID" nullValue="0" />
+		<result property="author"        javaType="java.lang.String"     column="AUTHOR" />
+		<result property="status"        javaType="java.lang.String"     column="STATUS" />
+		<result property="description"   javaType="java.lang.String"     column="DESCRIPTION" />
+		<result property="ponline"       javaType="java.lang.String"     column="P_ONLINE" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+	<!-- 创建页面位置 -->
+	<insert id="createPosition" parameterClass="Position">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_POSITION.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO DCMS_POSITION(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        NAME,
+		        CODE,
+		        CALL_MODE,
+		        URL,
+		        CATALOG_ID,
+		        RULE_ID,
+		        PAGE_ID,
+		        AUTHOR,
+		        STATUS,		        
+		        DESCRIPTION,
+		        P_ONLINE,
+				ERROR_VERSION_ID
+				)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #name#,
+		        #code#,
+		        #callMode#,
+		        #url#,
+		        #catalogId#,
+		        #ruleId#,
+		        #pageId#,
+		        #author#,
+		        #status#,
+		        #description#,
+		        #ponline#,
+				#errorVersionId#
+				)		
+		]]>		
+	</insert>
+	
+	<!-- 创建页面位置和规则关系 -->
+	<insert id="createPositionRule" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_POSITION_RULE.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO DCMS_POSITION_RULE(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        POSITION_ID,
+		        RULE_ID,
+		        PRIORITY
+		        )
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #positionId#,
+		        #ruleId#,
+		        #priority#
+		        )		
+		]]>		
+	</insert>
+	
+	<!-- 根据页面位置id获取页面位置 -->
+	<select id="getPositionById" resultMap="Position-result" parameterClass="java.lang.Long">
+		<![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        NAME,
+			        CODE,
+			        CALL_MODE,
+			        URL,
+			        CATALOG_ID,
+			        RULE_ID,
+			        PAGE_ID,
+			        AUTHOR,
+			        STATUS,		        
+			        DESCRIPTION,
+			        P_ONLINE,
+					ERROR_VERSION_ID
+			FROM DCMS_POSITION WHERE ID=#id#
+		]]>
+    </select>
+    
+    <!-- 根据名称获取可用页面位置 -->
+    <select id="getEnablePositionByName" resultMap="Position-result" parameterClass="java.lang.String">
+	    <![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        NAME,
+			        CODE,
+			        CALL_MODE,
+			        URL,
+			        CATALOG_ID,
+			        RULE_ID,
+			        PAGE_ID,
+			        AUTHOR,
+			        STATUS,		        
+			        DESCRIPTION,
+			        P_ONLINE,
+					ERROR_VERSION_ID
+			FROM DCMS_POSITION WHERE NAME=#name# AND STATUS!='disable'
+		]]>
+    </select>
+    
+    <!-- 根据调用名获取可用页面位置 -->
+    <select id="getEnablePositionByCode" resultMap="Position-result" parameterClass="java.lang.String">
+	    <![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        NAME,
+			        CODE,
+			        CALL_MODE,
+			        URL,
+			        CATALOG_ID,
+			        RULE_ID,
+			        PAGE_ID,
+			        AUTHOR,
+			        STATUS,		        
+			        DESCRIPTION,
+			        P_ONLINE,
+					ERROR_VERSION_ID			FROM DCMS_POSITION WHERE CODE=#code# AND STATUS!='disable'
+		]]>
+    </select>
+    
+    <!-- 根据规则id获取页面位置 -->
+	<select id="getPositionListByRuleId" parameterClass="java.lang.Long" resultMap="Position-result">
+		<![CDATA[
+			SELECT  P.ID,
+				    P.GMT_CREATE,
+			        P.GMT_MODIFIED,
+			        P.NAME,
+			        P.CODE,
+			        P.CALL_MODE,
+			        P.URL,
+			        P.CATALOG_ID,
+			        P.RULE_ID,
+			        P.PAGE_ID,
+			        P.AUTHOR,
+			        P.STATUS,		        
+			        P.DESCRIPTION,
+			        P.P_ONLINE,
+					P.ERROR_VERSION_ID
+					
+			FROM DCMS_POSITION_RULE PR, DCMS_POSITION P WHERE PR.POSITION_ID=P.ID AND PR.RULE_ID = #ruleId#
+		]]>
+	</select>
+	
+	<!-- 删除页面位置和规则关系 -->
+	<delete id="delatePositionRule" parameterClass="java.lang.Long">
+		DELETE FROM DCMS_POSITION_RULE WHERE POSITION_ID = #positionId#
+	</delete>
+    
+    <!-- 更新页面位置 -->
+	<update id="updatePosition" parameterClass="Position">
+		UPDATE DCMS_POSITION SET GMT_MODIFIED = sysdate
+		<dynamic prepend = "">
+		    <isNotNull property="name" prepend=",">
+		        NAME = #name#
+		    </isNotNull>    
+		    <isNotNull property="callMode" prepend=",">
+		        CALL_MODE = #callMode#
+		    </isNotNull>
+		    <isNotNull property="url" prepend=",">
+		        URL = #url#
+		    </isNotNull>
+            <isGreaterThan property="catalogId" prepend="," compareValue="0">
+                CATALOG_ID = #catalogId#
+            </isGreaterThan>
+            <isGreaterThan property ="ruleId" prepend="," compareValue="0">
+                RULE_ID = #ruleId#
+            </isGreaterThan>
+            <isGreaterThan property="pageId" prepend="," compareValue="0">
+                PAGE_ID = #pageId#
+            </isGreaterThan>
+			<isGreaterThan property="errorVersionId" prepend="," compareValue="-1">
+                ERROR_VERSION_ID = #errorVersionId#
+            </isGreaterThan>
+            <isNotNull property="status" prepend=",">
+                STATUS = #status#
+            </isNotNull>
+            <isNotNull property ="description" prepend=",">
+                DESCRIPTION = #description#
+            </isNotNull>
+            <isNotNull property ="ponline" prepend=",">
+                P_ONLINE = #ponline#
+            </isNotNull>
+        </dynamic>
+		WHERE ID=#id#
+	</update>
+	
+	<!-- 将页面位置中的页面id去除 -->
+	<update id="removePageIdInPosition" parameterClass="java.lang.Long" >
+		UPDATE DCMS_POSITION SET PAGE_ID=0 WHERE PAGE_ID=#pageId#
+	</update>
+	
+	<!-- 根据条件查询页面位置 -->
+	<sql id="positionCondition">
+	<isNotNull prepend="AND" property="catalogId">
+					p.ID in (SELECT cr.RESOURCE_ID FROM CMS_RESOURCE_CATALOG_V2  cr where RESOURCE_TYPE='position'
+					 and  cr.CATALOG_ID in 
+					 <iterate property="catalogId" open="(" close=")" conjunction=",">
+		                      #catalogId[]#
+		            </iterate>
+					)
+	     </isNotNull>
+				  <isNotNull prepend="AND" property="siteId">
+					ID in (SELECT RESOURCE_ID FROM CMS_RESOURCE_SITE where RESOURCE_TYPE='position'
+					 and  SITE_ID in 
+					 <iterate property="siteId" open="(" close=")" conjunction=",">
+		                      #siteId[]#
+		            </iterate>
+					)
+			      </isNotNull>
+	     <isNotEmpty prepend="AND" property="author">
+	     		Lower(p.AUTHOR)=Lower(#author#)  
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="keyword">
+			(Lower(p.NAME) LIKE '%'||Lower(#keyword#)||'%' OR Lower(p.CODE) LIKE '%'||Lower(#keyword#)||'%' )
+		</isNotEmpty>
+	</sql>
+	<select id="getPositionListByCondition" parameterClass="java.util.Map" resultMap="Position-result">
+	    <![CDATA[
+	                	SELECT p.* FROM DCMS_POSITION p
+	                	WHERE  p.STATUS!='disable'
+	     ]]>
+	     <include refid="positionCondition"/>
+		 <![CDATA[
+			ORDER BY p.GMT_MODIFIED DESC
+	           
+		 ]]>
+	</select>
+	
+    
+    <!-- 删除页面位置 -->
+	<delete id="deletePosition" parameterClass="java.lang.Long">
+		DELETE FROM DCMS_POSITION WHERE ID = #positionId#
+	</delete>
+
+	<!-- 根据页面id获取页面位置 -->
+	<select id="getPositionListByPageId" parameterClass="java.lang.Long" resultMap="Position-result">
+		<![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        NAME,
+			        CODE,
+			        CALL_MODE,
+			        URL,
+			        CATALOG_ID,
+			        RULE_ID,
+			        PAGE_ID,
+			        AUTHOR,
+			        STATUS,		        
+			        DESCRIPTION,
+			        P_ONLINE,
+					ERROR_VERSION_ID
+			FROM DCMS_POSITION WHERE PAGE_ID = #pageId#
+		]]>
+	</select>
+
+	<select id="getPositionListByDefaultRuleId" parameterClass="java.lang.Long" resultMap="Position-result">
+		SELECT  P.ID,
+				P.GMT_CREATE,
+			    P.GMT_MODIFIED,
+			    P.NAME,
+			    P.CODE,
+			    P.CALL_MODE,
+			    P.URL,
+			    P.CATALOG_ID,
+			    P.RULE_ID,
+			    P.PAGE_ID,
+			    P.AUTHOR,
+			    P.STATUS,		        
+			    P.DESCRIPTION,
+			    P.P_ONLINE,
+				P.ERROR_VERSION_ID
+		FROM DCMS_POSITION P, DCMS_RULE R WHERE P.RULE_ID=R.ID AND P.RULE_ID = #rId#
+	</select>
+	
+	<select id="getTemplateCodeByPositionCode" parameterClass="java.lang.String" resultClass="java.lang.String">
+		SELECT t.code FROM DCMS_POSITION p ,DCMS_RULE r,CMS_TEMPLATE t where p.code=#code# and p.rule_id=r.id and r.template_id=t.id
+	</select>
+	
+	<select id="getPositionsPositionsCode" parameterClass="java.util.Map" resultMap="Position-result">
+		<![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        NAME,
+			        CODE,
+			        CALL_MODE,
+			        URL,
+			        CATALOG_ID,
+			        RULE_ID,
+			        PAGE_ID,
+			        AUTHOR,
+			        STATUS,		        
+			        DESCRIPTION,
+			        P_ONLINE,
+					ERROR_VERSION_ID
+			FROM DCMS_POSITION WHERE CODE in
+		]]>		
+		  <iterate property="positionsCode" open="(" close=")" conjunction=",">
+		  	#positionsCode[]#
+		  </iterate>
+	      <isNotEmpty property="noDisable" prepend="and">
+	      		STATUS!='disable'
+	      </isNotEmpty>		
+	</select>	
+</sqlMap>

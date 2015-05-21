@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxpersonallib">
+
+	<resultMap id="BoxPersonalLib-Result"
+		class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPersonalLib">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String" />
+		<result property="props" column="PROPS" javaType="java.lang.String" />
+		<result property="userId" column="USER_ID" javaType="java.lang.String" />
+		<result property="width" column="WIDTH" javaType="java.lang.Double" />
+		<result property="height" column="HEIGHT" javaType="java.lang.Double" />
+		<result property="resourceType" column="RESOURCE_TYPE"
+			javaType="java.lang.String" />
+		<result property="name" column="NAME" javaType="java.lang.String" />
+		<result property="boxCatalog" column="BOX_CATALOG" javaType="java.lang.Long" />
+		<result property="tag" column="TAG" javaType="java.lang.String" />
+		<result property="autoGenPic" column="auto_gen_pic" javaType="java.lang.String" />
+		<result property="status" column="STATUS" javaType="java.lang.String" />
+		<result property="isPost" column="IS_POST" javaType="java.lang.String" />
+		<result property="applyTime" column="APPLY_TIME" javaType="java.util.Date" />
+		<result property="applyText" column="APPLY_TEXT" javaType="java.lang.String" />
+		<result property="auditUser" column="AUDIT_USER" javaType="java.lang.String" />
+		<result property="auditText" column="AUDIT_TEXT" javaType="java.lang.String" />
+		<result property="gridType" column="GRID_TYPE" javaType="java.lang.String" />
+		<result property="auditTime" column="AUDIT_TIME" javaType="java.util.Date" />
+		<result property="toId" column="TO_ID" javaType="java.lang.Long" />
+        <result property="ued" column="UED" javaType="java.lang.String"/>
+        <result property="frontend" column="FRONTEND" javaType="java.lang.String"/>
+		<result property="applyDevice" column="APPLY_DEVICE" javaType="java.lang.String" />
+	</resultMap>
+
+	<select id="MS_SELECT_PERSONALLIB_BY_ID" parameterClass="long"
+		resultMap="BoxPersonalLib-Result" resultClass="BoxPersonalLib">
+	 <![CDATA[
+		select
+		   T.ID,
+		   T.RESOURCE_TYPE,
+		   T.NAME,
+		   T.THUMBNAIL,
+		   T.WIDTH,
+		   T.HEIGHT,
+		   T.BOX_CATALOG,
+		   T.TAG,
+		   T.USER_ID,
+		   T.STATUS,
+		   T.PROPS,
+		   T.IS_POST,
+		   T.GMT_CREATE,
+		   T.GMT_MODIFIED,
+		   T.APPLY_TIME,
+		   T.APPLY_TEXT,
+		   T.AUDIT_USER,
+		   T.AUDIT_TIME,
+		   T.AUDIT_TEXT,
+		   T.AUTO_GEN_PIC,
+		   T.TO_ID,
+		   T.GRID_TYPE,
+		  t.UED AS UED,
+		  t.FRONTEND AS FRONTEND,
+		  t.APPLY_DEVICE
+		from
+		   DCMS_BOX_PERSONAL_LIB T
+		WHERE T.ID =  #id#
+ 	 ]]>
+	</select>
+
+	<sql id="BASE_SEARCH_PERSONALLIB_BY_TAG">
+	 <![CDATA[
+		select
+		   T.ID,
+		   T.RESOURCE_TYPE,
+		   T.NAME,
+		   T.THUMBNAIL,
+		   T.WIDTH,
+		   T.HEIGHT,
+		   T.BOX_CATALOG,
+		   T.TAG,
+		   T.USER_ID,
+		   T.STATUS,
+		   T.PROPS,
+		   T.IS_POST,
+		   T.GMT_CREATE,
+		   T.GMT_MODIFIED,
+		   T.APPLY_TIME,
+		   T.APPLY_TEXT,
+		   T.AUDIT_USER,
+		   T.AUDIT_TIME,
+		   T.AUDIT_TEXT,
+		     T.AUTO_GEN_PIC,
+		   T.TO_ID,
+		   T.GRID_TYPE,
+		  t.UED AS UED,
+		  t.FRONTEND AS FRONTEND,
+		  t.APPLY_DEVICE
+		from
+		   DCMS_BOX_PERSONAL_LIB T
+ 	 ]]>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="keyword">
+				(T.NAME like '%' ||
+				#keyword# || '%' or REGEXP_LIKE(TAG, '(^|[[:space:]])'
+				|| #keyword#
+				|| '([[:space:]]|$$)'))
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="catalogIds">
+				T.BOX_CATALOG in
+				<iterate property="catalogIds" open="(" close=")"
+					conjunction=",">
+					#catalogIds[]#
+				</iterate>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">
+				T.STATUS = #status#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="statuss">
+			  (t.status IS NULL  or
+				T.STATUS  not in
+				<iterate property="statuss" open="(" close=")"
+					conjunction=",">
+					#statuss[]#
+				</iterate>
+				)
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="userId">
+				T.USER_ID = #userId#
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="tagexp">
+			  <![CDATA[
+			    REGEXP_LIKE(TAG, '(^|[[:space:]])' || #tagexp# || '([[:space:]]|$$)')
+	          ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="resourceType">
+			  <![CDATA[
+			    RESOURCE_TYPE = #resourceType#
+	          ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="and" property="gridType">
+			  <![CDATA[
+			    GRID_TYPE = #gridType#
+	          ]]>
+			</isNotEmpty>
+		</dynamic>
+
+		<dynamic prepend="order by ">
+			<isEqual property="orderBy" compareValue="gmtCreateDesc">
+				GMT_CREATE DESC
+			</isEqual>
+			<isEqual property="orderBy" compareValue="gmtCreateAsc">
+				GMT_CREATE ASC
+			</isEqual>
+			<isEmpty property="orderBy"> GMT_MODIFIED DESC</isEmpty>
+		</dynamic>
+	</sql>
+
+	<select id="MS_SEARCH_PERSONALLIB_BY_TAG" resultMap="BoxPersonalLib-Result"
+		parameterClass="java.util.Map" resultClass="BoxPersonalLib">
+        <![CDATA[
+            SELECT * FROM (
+             SELECT A.*,ROWNUM RN FROM (
+        ]]>
+		<include refid="BASE_SEARCH_PERSONALLIB_BY_TAG" />
+		<![CDATA[
+             ) A WHERE ROWNUM <= #offset# + #length#
+            ) WHERE RN > #offset#
+         ]]>
+	</select>
+
+	<select id="MS_SEARCH_PERSONALLIB_BY_TAG_COUNT" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+		   <![CDATA[
+             SELECT count(*) FROM (
+          ]]>
+		<include refid="BASE_SEARCH_PERSONALLIB_BY_TAG" />
+		  <![CDATA[
+		    )
+          ]]>
+	</select>
+
+	<select id="MS_SEARCH_PERSONALLIB_BY_STATUS" resultMap="BoxPersonalLib-Result"
+		parameterClass="java.util.Map" resultClass="BoxPersonalLib">
+		<include refid="BASE_SEARCH_PERSONALLIB_BY_TAG" />
+	</select>
+
+	<insert id="MS_INSERT_BOXPERSONALLIBMODULE"
+		parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPersonalLib">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_DCMS_BOX_PERSONAL_LIB.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_PERSONAL_LIB
+              (ID,NAME, RESOURCE_TYPE,GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  , TAG  ,  USER_ID, WIDTH,   HEIGHT, BOX_CATALOG, PROPS,IS_POST,APPLY_TIME,APPLY_TEXT,AUDIT_USER,AUTO_GEN_PIC,GRID_TYPE,UED,FRONTEND,APPLY_DEVICE)
+            values
+              (#id#,#name#, #resourceType# ,sysdate  , sysdate  , #thumbnail#  , #tag#, #userId#, #width#,#height#,#boxCatalog#,#props#,#isPost#,#applyTime#,#applyText#,#auditUser#,#autoGenPic#,#gridType#,#ued#,#frontend#,#applyDevice#)
+        ]]>
+	</insert>
+	<update id="MS_UPDATE_BOXPERSONALLIBMODULE"
+		parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPersonalLib">
+        <![CDATA[ UPDATE DCMS_BOX_PERSONAL_LIB
+        	SET GMT_MODIFIED = sysdate,
+  				USER_ID  = #userId#
+  				    ]]>
+		<isNotNull property="width" prepend=",">
+			WIDTH = #width#
+		</isNotNull>
+		<isNotNull property="height" prepend=",">
+			HEIGHT = #height#
+		</isNotNull>
+
+		<isNotNull property="name" prepend=",">
+			NAME = #name#
+		</isNotNull>
+		<isNotNull property="thumbnail" prepend=",">
+			THUMBNAIL = #thumbnail#
+		</isNotNull>
+		<isNotNull property="tag" prepend=",">
+			TAG = #tag#
+		</isNotNull>
+		<isNotNull property="autoGenPic" prepend=",">
+			AUTO_GEN_PIC = #autoGenPic#
+		</isNotNull>
+		<isNotNull property="props" prepend=",">
+			PROPS = #props#
+		</isNotNull>
+		<isNotNull property="gridType" prepend=",">
+			GRID_TYPE = #gridType#
+		</isNotNull>
+		<isNotNull property="boxCatalog" prepend=",">
+			BOX_CATALOG = #boxCatalog#
+		</isNotNull>
+        <isNotNull property="ued" prepend=",">
+            UED = #ued#
+        </isNotNull>
+        <isNotNull property="frontend" prepend=",">
+            FRONTEND = #frontend#
+        </isNotNull>
+        <isNotNull property="applyDevice" prepend=",">
+            APPLY_DEVICE = #applyDevice#
+        </isNotNull>
+              <![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+
+	<delete id="MS_DELETE_PERSONALLIB_BYID" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_PERSONAL_LIB where ID = #id#
+        ]]>
+	</delete>
+
+	<update id="MS_UPDATE_PERSONALLIB_STATUS">
+        <![CDATA[
+        UPDATE DCMS_BOX_PERSONAL_LIB SET GMT_MODIFIED = sysdate
+        ]]>
+		<dynamic prepend="">
+			<isNotEmpty property="status" prepend=",">
+				STATUS = #status#
+			</isNotEmpty>
+			<isNotEmpty property="applyText" prepend=",">
+				APPLY_TEXT =
+				#applyText#, APPLY_TIME = sysdate
+			</isNotEmpty>
+			<isNotEmpty property="auditText" prepend=",">
+				AUDIT_TEXT =
+				#auditText#, AUDIT_TIME = sysdate
+			</isNotEmpty>
+			<isNotEmpty property="toId" prepend=",">
+				TO_ID = #toId#
+			</isNotEmpty>
+		</dynamic>
+        <![CDATA[ WHERE ID =  #id#]]>
+	</update>
+</sqlMap>

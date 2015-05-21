@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_VCSCurrent">
+    <!--定义VCSCurrentDO对象别名-->
+    <typeAlias alias="TA-VCSCurrent" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.VCSCurrentDO"/>
+    
+    <!--TA-VCSCurrent对象，JDBC,JAVA字段类型映射-->
+    <resultMap id="RM-VCSCurrentResult" class="TA-VCSCurrent">
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="currentId" column="CURRENT_ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="resourceId" column="RESOURCE_ID" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="resourceStatus" column="RESOURCE_STATUS" jdbcType="NUMERIC" javaType="java.lang.Integer"/>
+        <result property="author" column="AUTHOR" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+    
+    <!--插入VCSCurrent对象-->
+    <insert id="MS-INSERT-VCSCurrent" parameterClass="TA-VCSCurrent">
+        <selectKey resultClass="java.lang.Long" keyProperty="currentId"> SELECT SEQ_VCS_CURRENT.NEXTVAL AS id FROM DUAL </selectKey> <![CDATA[
+            insert into 
+            VCS_CURRENT (GMT_CREATE,GMT_MODIFIED,CURRENT_ID,RESOURCE_ID,RESOURCE_TYPE,RESOURCE_STATUS,AUTHOR)
+            values (sysdate,sysdate,#currentId#,#resourceId#,#resourceType#,#resourceStatus#,#author#)
+        ]]>
+    </insert>
+    
+    <!--根据currentId取得VCSCurrent对象-->
+    <select id="MS-FIND-VCSCurrent-By-currentId" resultMap="RM-VCSCurrentResult"> <![CDATA[
+            select * from VCS_CURRENT where CURRENT_ID = #currentId#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType取得VCSCurrent对象-->
+    <select id="MS-FIND-VCSCurrent-By-resource" resultMap="RM-VCSCurrentResult"> <![CDATA[
+            select * from VCS_CURRENT where RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+        ]]>
+    </select>
+    
+    <!--更新VCSCurrent对象-->
+    <update id="MS-UPDATE-VCSCurrent" parameterClass="TA-VCSCurrent"> <![CDATA[
+        update VCS_CURRENT set
+            GMT_MODIFIED = #gmtModified#,RESOURCE_STATUS = #resourceStatus#,AUTHOR = #author#
+        where CURRENT_ID = #currentId#
+    ]]>
+    </update>
+    
+    <!--检查VCSCuurent对象的resource_status状态-->
+    <select id="MS-FIND-STATUS-By-resource" resultClass="java.lang.Integer"> <![CDATA[
+            select RESOURCE_STATUS from VCS_CURRENT where RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+        ]]>
+    </select>
+</sqlMap>

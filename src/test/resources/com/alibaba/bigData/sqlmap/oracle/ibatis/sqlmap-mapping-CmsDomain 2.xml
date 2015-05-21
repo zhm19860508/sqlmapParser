@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="cms_CmsDomain">        
+
+    <resultMap class="CmsDomain" id="CmsDomain-result" >
+        <result property="gmtCreate"		javaType="java.sql.Timestamp"		column="GMT_CREATE" />
+        <result property="gmtModified"		javaType="java.sql.Timestamp"		column="GMT_MODIFIED" />
+        <result property="id"				javaType="java.lang.Long"			column="ID"	/>
+        <result	property="domain"			javaType="java.lang.String"			column="DOMAIN" />
+        <result property="hosts"			javaType="java.lang.String"			column="HOSTS" />
+        <result property="username"			javaType="java.lang.String"			column="username" />
+        <result property="password"			javaType="java.lang.String"			column="password" />
+        <result property="publicKey"		javaType="java.lang.String"			column="public_key" />
+        <result	property="privateKey"		javaType="java.lang.String"			column="private_key" />
+        <result	property="clusterId"		javaType="java.lang.Long"			column="CLUSTER_ID" />
+    </resultMap>
+    
+    <resultMap class="CmsDomain" id="CmsDomain-result-ext" extends="CmsDomain-result" >
+        <result property="domainType"		javaType="java.lang.Integer"		column="DOMAIN_TYPE" />
+    </resultMap>    
+<sql id="doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[  
+        GMT_CREATE = #gmtCreate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[  
+        GMT_MODIFIED = #gmtModified#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[  
+        ID = #id#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="domain" prepend="AND" >
+        <![CDATA[  
+        DOMAIN = #domain#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="domainType" prepend="AND" >
+        <![CDATA[  
+        DOMAIN_TYPE = #domainType#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="clusterId" prepend="AND" >
+        <![CDATA[  
+        CLUSTER_ID = #clusterId#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+    <select id="MS_SELECT_BY_PRIMARYKEY" resultClass="CmsDomain" parameterClass="map" resultMap="CmsDomain-result" >
+        <![CDATA[
+        	select r.gmt_create,r.gmt_modified,r.id,r.domain_type,r.cluster_id,r.domain,t.hosts,t.username,t.password,t.public_key,t.private_key 
+        	from  CMS_DOMAIN r, cms_cluster t where r.cluster_id=t.id and r.id=#domainId#
+        ]]>
+    </select>   
+	<update id="MS_UPDATE_BY_PRIMARYKEY_ID" parameterClass="CmsDomain" >
+		update cms_domain r set
+		r.GMT_MODIFIED = sysdate
+		<isNotNull prepend="," property="domain" >
+	        r.domain = #domain#
+	     </isNotNull>
+		<isNotNull prepend="," property="domainType" >
+	        r.domain_type = #domainType#
+	     </isNotNull>
+		<isNotNull prepend="," property="clusterId" >
+	        r.cluster_id = #clusterId#
+	     </isNotNull>
+	     where r.id=#id#
+	</update>
+    <update id="MS_UPDATE_BY_PRIMARYKEY_SELECTIVE" parameterClass="CmsDomain" >
+    	update cms_domain r set
+    		 r.GMT_MODIFIED = sysdate
+		     <isNotNull prepend="," property="domain" >
+		        r.DOMAIN = #domain#
+		     </isNotNull>
+		     <isNotNull prepend="," property="clusterId" >
+		        r.cluster_id = #clusterId#
+		     </isNotNull>
+		where ID = #id#
+    </update>
+
+    <insert id="MS_INSERT" parameterClass="CmsDomain" >
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_DOMAIN.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into CMS_DOMAIN
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , DOMAIN  ,CLUSTER_ID)
+            values
+              (sysdate  , sysdate  , #id#  , #domain# ,#clusterId# )
+        ]]>
+    </insert>
+
+    <select id="MS_SELECT_ALL" resultMap="CmsDomain-result" >
+        <![CDATA[
+        	select r.gmt_create,r.gmt_modified,r.id,r.domain_type,r.cluster_id,r.domain,t.hosts,t.username,t.password,t.public_key,t.private_key 
+        	from  CMS_DOMAIN r, cms_cluster t where r.cluster_id=t.id order by r.id
+        ]]>
+    </select>
+    <select id="MS_SELECT_DOMAIN_COUNT_BY_DOMAIN" parameterClass="java.lang.String" resultClass="java.lang.Long">
+        <![CDATA[
+            select count(*) from cms_domain WHERE DOMAIN = #domain#
+        ]]>
+    </select>
+	<select id="MS_SELECT_DOMAIN_BY_DOMAIN" resultMap="CmsDomain-result" >
+        <![CDATA[
+        	select r.gmt_create,r.gmt_modified,r.id,r.domain_type,r.cluster_id,r.domain,t.hosts,t.username,t.password,t.public_key,t.private_key 
+        	from  CMS_DOMAIN r, cms_cluster t where r.cluster_id=t.id and r.domain=#domain#
+        ]]>
+    </select>
+	<select id="MS_SELECT_DOMAIN_BY_DOMAINPATH" resultMap="CmsDomain-result-ext" >
+        <![CDATA[
+        	select r.gmt_create,r.gmt_modified,r.id,r.domain_type,r.cluster_id,r.domain,t.hosts,t.username,t.password,t.public_key,t.private_key 
+        	from  CMS_DOMAIN r, cms_cluster t where r.cluster_id=t.id and r.id in(select u.domain_id from cms_domain_path u where u.id = #domainPathId#)
+        ]]>
+    </select>    
+</sqlMap>

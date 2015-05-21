@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.arrangeblockdetail">
+    <typeAlias alias="arrangeBlockDetail" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.ArrangeBlockDetail"/>
+     <!--
+      - ===============================================
+      - DCMS_ARRANGE_BLOCK_DETAIL表映射到ArrangeBlockDetail类
+      - ===============================================
+     -->
+    <resultMap id="arrangeResult" class="arrangeBlockDetail">
+        <result property="id" column="ID"/>
+        <result property="blockId" column="BLOCK_ID"/>
+        <result property="beginDate" column="BEGIN_DATE"/>
+        <result property="contentType" column="CONTENT_TYPE"/>
+        <result property="templateCode" column="TEMPLATE_CODE"/>
+        <result property="arrangeData.id" column="ARRANGE_DATA_ID"/>        
+        <result property="userId" column="USER_ID"/>
+        <result property="gmtCreate" column="GMT_CREATE"/>
+        <result property="gmtModified" column="GMT_MODIFIED"/>
+        <result property="pushDate" column="PUSH_DATE"/>
+        <result property="pushPeriod" column="PUSH_PERIOD"/>
+    </resultMap>
+
+
+   <select id="queryArrangeBlockDetailListByBlockId" resultMap="arrangeResult" parameterClass="int" >
+      select    *
+      from DCMS_ARRANGE_BLOCK_DETAIL WHERE  BLOCK_ID = #blockId#  ORDER BY BEGIN_DATE DESC
+
+   </select>
+   
+   <select id="queryArrangeBlockDetailListByPushPeriod" resultMap="arrangeResult" parameterClass="int" >
+      select    *   from DCMS_ARRANGE_BLOCK_DETAIL WHERE  <![CDATA[PUSH_PERIOD<>0  ]]>   and  (PUSH_DATE <![CDATA[<]]>sysdate-PUSH_PERIOD/24 or PUSH_DATE is null)
+   </select>
+	<!-- 排期业务专用，不能动，确保是升序的-->
+   <select id="queryArrangeBlockDetailListByBlockIdForArrange" resultMap="arrangeResult" parameterClass="int" >
+      select    *
+      from DCMS_ARRANGE_BLOCK_DETAIL WHERE  BLOCK_ID = #blockId#  ORDER BY BEGIN_DATE
+
+   </select>
+    <select id="queryArrangeBlockDetailListByMap" resultMap="arrangeResult" parameterClass="map" >
+      select    *
+      from DCMS_ARRANGE_BLOCK_DETAIL 
+       <dynamic prepend="where" >
+        <isNotNull prepend="and" property="sDate" >  
+       BEGIN_DATE <![CDATA[>=]]>#sDate# 
+       </isNotNull>
+        <isNotNull prepend="and" property="eDate" > 
+         BEGIN_DATE <![CDATA[<=]]>#eDate#
+         </isNotNull>
+          <isNotNull prepend="and" property="blockId" > 
+          BLOCK_ID=#blockId# 
+          </isNotNull>
+          </dynamic>
+          ORDER BY BEGIN_DATE DESC
+   </select>
+    <select id="queryArrangeBlockDetailById" resultMap="arrangeResult" parameterClass="map" >
+      select    *
+      from DCMS_ARRANGE_BLOCK_DETAIL WHERE ID=#id# 
+   </select>
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertArrangeBlockDetail" parameterClass="arrangeBlockDetail">
+		<selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DCMS_ARRANGE_BLOCK_DETAIL.NEXTVAL AS id FROM DUAL</selectKey>
+                insert into DCMS_ARRANGE_BLOCK_DETAIL (
+                ID,
+                BLOCK_ID,
+                BEGIN_DATE,
+                CONTENT_TYPE,
+                TEMPLATE_CODE,
+                ARRANGE_DATA_ID,
+                USER_ID,
+                GMT_CREATE,
+                GMT_MODIFIED,
+                PUSH_PERIOD,
+                PUSH_DATE
+                
+        ) values (
+                #id#,
+                #blockId#,
+                #beginDate#,
+                #contentType#,
+                #templateCode#,
+                #arrangeData.id#,
+                #userId#,
+                SYSDATE,
+                SYSDATE,
+                #pushPeriod#,
+                #pushDate#
+                )
+    </insert>
+    <!--
+      - ===============================================
+      - 修改
+      - ===============================================
+     -->
+    <update id="updateArrangeBlockDetail" parameterClass="arrangeBlockDetail"><![CDATA[
+        update
+                DCMS_ARRANGE_BLOCK_DETAIL
+        set
+                BEGIN_DATE = #beginDate#,
+                CONTENT_TYPE = #contentType#,
+                TEMPLATE_CODE = #templateCode#,
+                ARRANGE_DATA_ID = #arrangeData.id#,
+                PUSH_PERIOD=#pushPeriod#,
+                PUSH_DATE=#pushDate#,
+                GMT_MODIFIED=SYSDATE            
+        where
+                ID = #id#
+    ]]></update>
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteArrangeBlockDetail" parameterClass="int"><![CDATA[
+        delete from
+                DCMS_ARRANGE_BLOCK_DETAIL
+         where
+                ID = #id#
+    ]]></delete>
+</sqlMap>

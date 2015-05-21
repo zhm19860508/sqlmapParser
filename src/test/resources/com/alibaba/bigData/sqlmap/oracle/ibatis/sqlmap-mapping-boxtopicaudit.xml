@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap>
+
+	<select id="dcmsBoxTopicAudit.selectById" parameterClass="java.lang.Long" resultClass="dcmsBoxTopicAuditDO">
+		<![CDATA[ select ID as id,
+		GMT_CREATE as gmtCreate,
+		GMT_MODIFIED as gmtModified,
+		PAGE_ID as pageId,
+		TEMPLATE_ID as templateId,
+		TOPIC_ID as topicId,
+		IS_CHANGE as isChange,
+		USER_ID as userId,
+		IS_AUDIT as isAudit,
+		PAGE_STATUS as pageStatus,
+		REMARK as remark
+		from DCMS_BOX_TOPIC_AUDIT WHERE ID=#id#
+		 ]]>
+	
+	</select>
+
+	<select id="dcmsBoxTopicAudit.select" parameterClass="dcmsBoxTopicAuditDO"
+		resultClass="dcmsBoxTopicAuditDO">
+		 <![CDATA[ select ID as id,
+		GMT_CREATE as gmtCreate,
+		GMT_MODIFIED as gmtModified,
+		PAGE_ID as pageId,
+		TEMPLATE_ID as templateId,
+		TOPIC_ID as topicId,
+		IS_CHANGE as isChange,
+		USER_ID as userId,
+		IS_AUDIT as isAudit,
+		PAGE_STATUS as pageStatus,
+		REMARK as remark
+		from DCMS_BOX_TOPIC_AUDIT WHERE 1 = 1
+		 ]]>
+		<dynamic>
+			<isNotNull property="id" prepend="and">
+				ID=#id#
+			</isNotNull>
+			<isNotNull property="pageId" prepend="and">
+				PAGE_ID=#pageId#
+			</isNotNull>
+			<isNotNull property="templateId" prepend="and">
+				TEMPLATE_ID=#templateId#
+			</isNotNull>
+			<isNotNull property="topicId" prepend="and">
+				TOPIC_ID = #topicId#
+			</isNotNull>
+			<isNotNull property="userId" prepend="and">
+				USER_ID = #userId#
+			</isNotNull>
+			<isNotNull property="pageStatus" prepend="and">
+				PAGE_STATUS =
+				#pageStatus#
+			</isNotNull>
+		</dynamic>
+		
+		<![CDATA[  order by gmtModified desc ]]>
+	</select>
+
+
+	<select id="dcmsBoxTopicAudit.count" parameterClass="dcmsBoxTopicAuditDO"
+		resultClass="java.lang.Integer">
+		select count(1) from DCMS_BOX_TOPIC_AUDIT
+		where 1 = 1
+		<dynamic>
+			<isNotNull property="id" prepend="and">
+				ID=#id#
+			</isNotNull>
+			<isNotNull property="pageId" prepend="and">
+				PAGE_ID=#pageId#
+			</isNotNull>
+			<isNotNull property="templateId" prepend="and">
+				TEMPLATE_ID=#templateId#
+			</isNotNull>
+			<isNotNull property="topicId" prepend="and">
+				TOPIC_ID = #topicId#
+			</isNotNull>
+			<isNotNull property="userId" prepend="and">
+				USER_ID = #userId#
+			</isNotNull>
+			<isNotNull property="pageStatus" prepend="and">
+				PAGE_STATUS =
+				#pageStatus#
+			</isNotNull>
+		</dynamic>
+	</select>
+
+
+	<insert id="dcmsBoxTopicAudit.insert" parameterClass="dcmsBoxTopicAuditDO">
+	    <selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_DCMS_BOX_TOPIC_AUDIT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		 insert into
+		DCMS_BOX_TOPIC_AUDIT(ID, GMT_CREATE, GMT_MODIFIED, PAGE_ID, TEMPLATE_ID, TOPIC_ID, USER_ID, PAGE_STATUS,IS_CHANGE,IS_AUDIT)
+		values
+		(#id#, sysdate, sysdate, #pageId#, #templateId#, #topicId#, #userId#, #pageStatus#,#isChange#,#isAudit#)
+	     ]]>
+	</insert>
+
+
+	<update id="dcmsBoxTopicAudit.update" parameterClass="dcmsBoxTopicAuditDO">
+		update
+		DCMS_BOX_TOPIC_AUDIT
+		set
+		GMT_MODIFIED=sysdate,PAGE_ID=#pageId#,TEMPLATE_ID=#templateId#,TOPIC_ID=#topicId#,IS_CHANGE=#isChange#,USER_ID=#userId#,IS_AUDIT=#isAudit#,PAGE_STATUS=#pageStatus#,REMARK=#remark#
+		where id = #id#
+	</update>
+
+
+	<update id="dcmsBoxTopicAudit.updateDynamic" parameterClass="dcmsBoxTopicAuditDO">
+		update
+		DCMS_BOX_TOPIC_AUDIT
+		set
+		GMT_MODIFIED=sysdate
+		<dynamic>
+			<isNotNull property="pageId" prepend=",">
+			PAGE_ID=#pageId#
+			</isNotNull>
+			<isNotNull property="templateId" prepend=",">
+			TEMPLATE_ID=#templateId#
+			</isNotNull>
+			<isNotNull property="topicId" prepend=",">
+			TOPIC_ID=#topicId#
+			</isNotNull>
+			<isNotNull property="isChange" prepend=",">
+			IS_CHANGE=#isChange#
+			</isNotNull>
+			<isNotNull property="userId" prepend=",">
+			USER_ID=#userId#
+			</isNotNull>
+			<isNotNull property="isAudit" prepend=",">
+			IS_AUDIT=#isAudit#
+			</isNotNull>
+			<isNotNull property="pageStatus" prepend=",">
+			PAGE_STATUS=#pageStatus#
+			</isNotNull>
+			<isNotNull property="remark" prepend=",">
+			REMARK=#remark#
+			</isNotNull>
+		</dynamic>
+		where id = #id#
+	</update>
+
+
+	<delete id="dcmsBoxTopicAudit.delete" parameterClass="dcmsBoxTopicAuditDO">
+		delete from
+		DCMS_BOX_TOPIC_AUDIT
+		where id = #id#
+	</delete>
+</sqlMap>

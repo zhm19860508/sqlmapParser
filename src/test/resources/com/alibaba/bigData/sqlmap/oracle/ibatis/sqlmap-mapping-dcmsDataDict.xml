@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.dcmsDataDict">
+
+	<resultMap id="dcmsDataDict-Result"
+	class="DcmsDataDict">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="dictCode" column="DICT_CODE" javaType="java.lang.String" />
+		<result property="dictName" column="DICT_NAME" javaType="java.lang.String" />
+		<result property="status" column="STATUS" javaType="java.lang.String" />
+		<result property="parentId" column="PARENT_ID" javaType="java.lang.Long" />
+		<result property="dictType" column="DICT_TYPE" javaType="java.lang.String" />
+		<result property="isDefault" column="IS_DEFAULT" javaType="java.lang.Boolean" />
+	</resultMap>
+
+	<insert id="MS_INSERT_DCMS_DATA_DICT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsDataDict">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_dcms_data_dict.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+        <![CDATA[
+           insert into dcms_data_dict
+  				(ID, GMT_CREATE, GMT_MODIFIED, DICT_NAME, DICT_CODE, STATUS, PARENT_ID, DICT_TYPE, IS_DEFAULT)
+			values
+  				(#id#, sysdate, sysdate, #dictName#, #dictCode#, #status#, #parentId#, #dictType#, #isDefault#)
+        ]]>
+	</insert>
+	<update id="MS_UPDATE_DCMS_DATA_DICT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsDataDict">
+        <![CDATA[ UPDATE dcms_data_dict 
+        	SET GMT_MODIFIED = sysdate 
+        ]]>
+		<isNotNull property="dictCode" prepend=",">
+			dict_Code = #dictCode#
+		</isNotNull>
+		<isNotNull property="dictName" prepend=",">
+			dict_Name = #dictName#
+		</isNotNull>
+		<isNotNull property="status" prepend=",">
+			status = #status#
+		</isNotNull>
+		<isNotNull property="parentId" prepend=",">
+			parent_Id = #parentId#
+		</isNotNull>
+		<isNotNull property="dictType" prepend=",">
+			dict_Type = #dictType#
+		</isNotNull>
+		<isNotNull property="isDefault" prepend=",">
+			is_Default = #isDefault#
+		</isNotNull>
+        <![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+	<select id="MS_GET_DCMS_DATA_DICT" parameterClass="java.util.Map" resultMap="dcmsDataDict-Result">
+        <![CDATA[
+          select id, gmt_create, gmt_modified, dict_name, dict_code, status, parent_id, dict_type, is_default from dcms_data_dict t
+			where t.status='valid'
+	    ]]>
+	    
+	    <isNotEmpty prepend="and" property="dictType">
+			T.dict_Type = #dictType#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="dictCode">
+			T.dict_Code = #dictCode#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="dictName">
+			T.dict_Name = #dictName#
+		</isNotEmpty>
+		<isNotEmpty prepend="and"  property="parentId">
+			t.parent_Id = #parentId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="isDefault">
+			t.is_Default = #isDefault#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			t.id = #id#
+		</isNotEmpty>
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+	</select>
+	
+	<!-- 模糊查询 -->
+	<select id="MS_QUERY_DCMS_DATA_DICT_BY_KEYWORD" parameterClass="java.util.Map" resultMap="dcmsDataDict-Result">
+        <![CDATA[
+          select id, gmt_create, gmt_modified, dict_name, dict_code, status, parent_id, dict_type, is_default from dcms_data_dict t
+			where t.status='valid'
+	    ]]>
+	    
+	    <isNotEmpty prepend="and" property="dictType">
+			T.dict_Type = #dictType#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="keyword">
+			(T.dict_Name like '%'||#keyword#||'%') 
+		</isNotEmpty>
+		<isNotEmpty prepend="and"  property="parentId">
+			t.parent_Id = #parentId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="isDefault">
+			t.is_Default = #isDefault#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="id">
+			t.id = #id#
+		</isNotEmpty>
+        <![CDATA[
+		 order by t.dict_name  ]]>
+	</select>
+	 <delete id="MS_DELETE_DCMS_DATA_DICT" parameterClass="long">
+        <![CDATA[
+            DELETE from dcms_data_dict where ID = #id#
+        ]]>
+    </delete>
+</sqlMap>

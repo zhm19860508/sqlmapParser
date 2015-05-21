@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="GB2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="buCategory">
+	<typeAlias alias="TA-BuName" type="com.alibaba.china.cmshollywood.common.dal.dataobject.BuNameDO"/>
+	<resultMap id="RM-BuNameResult" class="TA-BuName">
+        <result property="id" column="ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="name" column="NAME" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>	
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+    
+    <typeAlias alias="TA-BuPinLei" type="com.alibaba.china.cmshollywood.common.dal.dataobject.BuPinLeiDO"/>
+	<resultMap id="RM-BuPinLeiResult" class="TA-BuPinLei">
+        <result property="id" column="ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="pinLeiName" column="Pinlei_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="buId" column="bu_id" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>	
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+    
+    <typeAlias alias="TA-PinLeiCategory" type="com.alibaba.china.cmshollywood.common.dal.dataobject.PinLeiCategoryDO"/>
+	<resultMap id="RM-PinLeiCategoryResult" class="TA-PinLeiCategory">
+        <result property="id" column="ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="categoryId" column="Category_id" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="pinLeiId" column="Pinlei_id" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="type" column="type" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>	
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </resultMap>
+    
+    <select id="MS-QUERY-ALL-BU" resultMap="RM-BuNameResult" >
+    	select * from Bu_name order by id asc
+    </select>
+    
+    <select id="MS-QUERY-BU-BY-NAME" resultMap="RM-BuNameResult" parameterClass="java.lang.String">
+    	select * from Bu_name where name=#name#
+    </select>
+    
+    <select id="MS-QUERY-BU-BY-ID" resultMap="RM-BuNameResult" parameterClass="java.lang.Long">
+    	select * from Bu_name where id=#id#
+    </select>
+    
+    <select id="MS-QUERY-PINLEI-BY-BUID" resultMap="RM-BuPinLeiResult" >
+    	select * from Bu_Pinlei where bu_id=#buId# order by id desc
+    </select>
+    
+    <select id="MS-QUERY-PINLEI-FOR-NOBU" resultMap="RM-BuPinLeiResult" >
+    	select * from Bu_Pinlei where bu_id is null order by id desc
+    </select>
+    
+    <select id="MS-QUERY-PINLEI-BY-ID" resultMap="RM-BuPinLeiResult" >
+    	select * from Bu_Pinlei where id=#id#
+    </select>
+    
+    <select id="MS-QUERY-PINLEI-BY-NAME" resultMap="RM-BuPinLeiResult" parameterClass="java.lang.String">
+    	select * from Bu_Pinlei where Pinlei_name=#name#
+    </select>
+    
+    <select id="MS-QUERY-PINLEI-CATEGROY-BY-PINLEI-ID" resultMap="RM-PinLeiCategoryResult">
+    	select * from Pinlei_Category where PINLEI_id=#PinLeiId# and type='post'
+    </select>
+
+	<select id="MS-QUERY-UN-PINLEI-POST-CATEGROY" resultClass="java.lang.Long">
+		<![CDATA[
+	    	SELECT pcb.id FROM COMMODITY_POST_CAT pcb,(select category_id from Pinlei_Category where type='post') plc
+				where pcb.id=plc.category_id(+)
+				and plc.category_id is null
+				
+		]]>
+    </select>
+    
+    <select id="MS-QUERY-UN-PINLEI-DISP-CATEGROY" resultClass="java.lang.Long">
+		<![CDATA[				
+				SELECT pcb.id FROM COMMODITY_DISPLAY_CAT pcb,(select category_id from Pinlei_Category where type='disp') plc
+				where pcb.id=plc.category_id(+)
+				and plc.category_id is null
+
+		]]>
+    </select>
+	
+	<select id="MS-QUERY-PINLEI-BY-PINLEI-IDS" resultMap="RM-BuPinLeiResult" >
+    	select * from Bu_Pinlei where id  in (
+       <iterate property="pinleiIdList" conjunction=",">
+            #pinleiIdList[]#
+        </iterate>
+        )
+    </select>
+    
+	 <select id="MS-QUERY-PINLEI-CATEGROY-BY-CATE-ID" resultMap="RM-PinLeiCategoryResult">
+    	select * from Pinlei_Category where CATEGORY_ID=#cateId# and type=#type#
+    </select>
+    
+</sqlMap>

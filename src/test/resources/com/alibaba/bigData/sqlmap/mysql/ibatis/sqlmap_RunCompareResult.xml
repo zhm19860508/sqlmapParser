@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunCompareResult">
+	<typeAlias alias="compareTaskResultDO" type="com.alibaba.bigData.dal.entity.CompareTaskResultDO" />
+	<typeAlias alias="compareTaskStatisticResultDO" type="com.alibaba.bigData.dal.entity.CompareTaskStatisticResultDO" />
+	<typeAlias alias="bugListDO" type="com.alibaba.bigData.dal.entity.BugListDO" />
+	<typeAlias alias="bugDO" type="com.alibaba.bigData.dal.entity.BugDO" />
+	<typeAlias alias="projectDataDO" type="com.alibaba.bigData.dal.entity.ProjectDataDO" />
+	<typeAlias alias="compareSynctabDO" type="com.alibaba.bigData.dal.entity.CompareSynctabDO" />
+
+
+	<resultMap class="CompareTaskResultDO" id="compareResultDOResult">
+
+		<result column="run_id" property="runId" />
+		<result column="result" property="result" />
+		<result column="source_tbl" property="sourceTbl" />
+		<result column="target_tbl" property="targetTbl" />
+		<result column="rule_id" property="ruleId" />
+		<result column="source_pt" property="sourcePt" />
+		<result column="target_pt" property="targetPt" />
+		<result column="source_column" property="sourceColumn" />
+		<result column="target_column" property="targetColumn" />
+		<result column="threshold" property="threshold" />
+		<result column="flag" property="flag" />
+		<result column="run_deloy_script" property="runDeloyScript" />
+		<result column="sourceResult" property="sourceResult" />
+		<result column="targetResult" property="targetResult" />
+		<result column="source_cluster" property="sourceCluster" />
+		<result column="target_cluster" property="targetCluster" />
+		<result column="id" property="Id" />
+		<result column="fulltext_sourceColumn" property="fulltextSourceColumn" />
+		<result column="fulltext_targetColumn" property="fulltextTargetColumn" />
+		<result column="has_fulltext" property="hasFulltext" />
+		<result column="source_key" property="sourceKey" />
+		<result column="target_key" property="targetKey" />
+		<result column="result_len" property="resultLen" />
+		<result column="project_id" property="projectId" />
+	</resultMap>
+
+    <resultMap class="CompareTaskStatisticResultDO" id="compareResultDOStatisticResult">
+    	<result column="task_id" property="taskId" />
+    	<result column="task_name" property="taskName" />
+    	<result column="cnt" property="cnt" />
+        <result column="minpt" property="minpt" />
+        <result column="maxpt" property="maxpt" />
+    </resultMap>
+
+    <resultMap class="BugListDO" id="bugListDO">
+    	<result column="id" property="taskId" />
+    	<result column="task_name" property="taskName" />
+    	<result column="task_type" property="taskType" />
+    	<result column="user_name" property="userName" />
+    	<result column="start_time" property="startTime" />
+    	<result column="last_run_id" property="lastRunId" />
+    	<result column="results" property="results" />
+    	<result column="rule_ids" property="ruleIds" />
+    	<result column="thresholds" property="thresholds" />
+    </resultMap>
+
+	<resultMap class="BugDO" id="bugDO">
+		<result column="task_id" property="taskId" />
+		<result column="kelude_bug_id" property="keludeBugId" />
+	</resultMap>
+
+	<sql id="compareResultColumns">
+		select
+		run_id,result,source_tbl,target_tbl,rule_id,source_pt,target_pt,source_column,target_column,threshold,flag,run_deloy_script,sourceResult,targetResult,source_cluster,target_cluster,id,fulltext_sourceColumn,fulltext_targetColumn,has_fulltext,source_key,target_key,result_len,project_id
+	</sql>
+
+	<sql id="compareResultFrom">
+		from bigData_run_result_compare
+	</sql>
+
+	<insert id="addCompareResult" parameterClass="compareTaskResultDO">
+		insert into bigData_run_result_compare
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				run_id
+			</isNotNull>
+			<isNotNull prepend="," property="result">
+				result
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTbl">
+				source_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="targetTbl">
+				target_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				rule_id
+			</isNotNull>
+			<isNotNull prepend="," property="sourcePt">
+				source_pt
+			</isNotNull>
+			<isNotNull prepend="," property="targetPt">
+				target_pt
+			</isNotNull>
+			<isNotNull prepend="," property="sourceColumn">
+				source_column
+			</isNotNull>
+			<isNotNull prepend="," property="targetColumn">
+				target_column
+			</isNotNull>
+			<isNotNull prepend="," property="threshold">
+				threshold
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag
+			</isNotNull>
+			<isNotNull prepend="," property="runDeloyScript">
+				run_deloy_script
+			</isNotNull>
+			<isNotNull prepend="," property="sourceResult">
+				sourceResult
+			</isNotNull>
+			<isNotNull prepend="," property="targetResult">
+				targetResult
+			</isNotNull>
+			<isNotNull prepend="," property="sourceCluster">
+				source_cluster
+			</isNotNull>
+			<isNotNull prepend="," property="targetCluster">
+				target_cluster
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextSourceColumn">
+				fulltext_sourceColumn
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextTargetColumn">
+				fulltext_targetColumn
+			</isNotNull>
+			<isNotNull prepend="," property="hasFulltext">
+				has_fulltext
+			</isNotNull>
+			<isNotNull prepend="," property="sourceKey">
+				source_key
+			</isNotNull>
+			<isNotNull prepend="," property="targetKey">
+				target_key
+			</isNotNull>
+			<isNotNull prepend="," property="resultLen">
+				result_len
+			</isNotNull>
+			<isNotNull prepend="," property="projectId">
+				project_id
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				#runId#
+			</isNotNull>
+			<isNotNull prepend="," property="result">
+				#result#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTbl">
+				#sourceTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="targetTbl">
+				#targetTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				#ruleId#
+			</isNotNull>
+			<isNotNull prepend="," property="sourcePt">
+				#sourcePt#
+			</isNotNull>
+			<isNotNull prepend="," property="targetPt">
+				#targetPt#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceColumn">
+				#sourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="targetColumn">
+				#targetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="threshold">
+				#threshold#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				#flag#
+			</isNotNull>
+			<isNotNull prepend="," property="runDeloyScript">
+				#runDeloyScript#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceResult">
+				#sourceResult#
+			</isNotNull>
+			<isNotNull prepend="," property="targetResult">
+				#targetResult#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceCluster">
+				#sourceCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="targetCluster">
+				#targetCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextSourceColumn">
+				#fulltextSourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextTargetColumn">
+				#fulltextTargetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="hasFulltext">
+				#hasFulltext#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceKey">
+				#sourceKey#
+			</isNotNull>
+			<isNotNull prepend="," property="targetKey">
+				#targetKey#
+			</isNotNull>
+			<isNotNull prepend="," property="resultLen">
+				#resultLen#
+			</isNotNull>
+			<isNotNull prepend="," property="projectId">
+				#projectId#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="long" keyProperty="Id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryCompareTaskResultByRunId" resultMap="compareResultDOResult" >
+		<include refid="compareResultColumns" />
+		<include refid="compareResultFrom" />
+		where run_id=#id#
+		order by rule_id asc
+	</select>
+
+	<!-- Modified by dongsheng.dds on 2014-03-04. Start -->
+	<select id="queryCompareTaskStatisticResultByRunIdAndDate" resultMap="compareResultDOStatisticResult" >
+		select * from (
+		select c.task_id,c.target_tbl as task_name,count(distinct c.source_pt) as cnt,min(c.source_pt) as minpt, max(c.source_pt) as maxpt
+		from
+		(select  b.task_id,a.target_tbl,replace(a.source_pt,"'","") as source_pt
+		from
+		bigdata_run_result_compare a  join bigdata_run_result_base b on a.run_id =b.id
+		where a.source_pt !="null" and a.source_pt!="" and b.run_status="SUCCESS" and a.project_id = #projectId#) c
+		group by c.task_id ) d
+		where d.cnt >= #cnt#;
+	</select>
+
+	<select id="queryLeastFailureTask" resultMap="bugListDO">
+		select a.id, a.task_name, a.task_type, a.user_name, a.last_run_id, b.start_time, group_concat(result) as results, group_concat(cast(rule_id as char(11))) as rule_ids, group_concat(threshold) as thresholds
+		from bigdata_job_base a, bigdata_run_result_base b, bigdata_run_result_compare c
+		where a.last_run_id=b.id and a.last_run_id=c.run_id
+		and a.project_id=#projectId#
+		and a.is_deleted=0
+		and b.run_status="FAIL"
+		group by a.id
+		order by b.start_time DESC
+	</select>
+
+	<select id="queryKeludeBugId" resultMap="bugDO" >
+		select kelude_bug_id, task_id
+		from bigdata_bug
+		where task_id in ($queryTaskIds$)
+	</select>
+
+	<update id="updateRunResult" parameterClass="compareTaskResultDO">
+		update bigData_run_result_compare
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="result">
+				result = #result#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag = #flag#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceResult">
+				sourceResult = #sourceResult#
+			</isNotNull>
+			<isNotNull prepend="," property="targetResult">
+				targetResult = #targetResult#
+			</isNotNull>
+			<isNotNull prepend="," property="resultLen">
+				result_len = #resultLen#
+			</isNotNull>
+			where run_id = #runId# and rule_id=#ruleId#
+			and source_column=#sourceColumn# and target_column=#targetColumn#
+		</dynamic>
+	</update>
+
+	<select id="queryRunCompareTable" resultClass="java.util.Date">
+		select synctab_time from bigdata_compare_synctab
+		where tableName=#tableName# limit 1
+	</select>
+
+	<insert id="addCompareSynctab" parameterClass="compareSynctabDO">
+		insert into bigdata_compare_synctab
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="tableName">
+				tableName
+			</isNotNull>
+			<isNotNull prepend="," property="synctabTime">
+				synctab_time
+			</isNotNull>
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="tableName">
+				#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="synctabTime">
+				#synctabTime#
+			</isNotNull>
+			)
+		</dynamic>
+	</insert>
+
+	<update id="updateCompareSynctab" parameterClass="compareSynctabDO">
+		update bigdata_compare_synctab
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="synctabTime">
+				synctab_time = #synctabTime#
+			</isNotNull>
+			where tableName = #tableName#
+		</dynamic>
+	</update>
+
+
+
+</sqlMap>

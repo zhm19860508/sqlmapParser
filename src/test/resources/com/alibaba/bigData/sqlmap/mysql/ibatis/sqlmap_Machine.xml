@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Machine">
+	<typeAlias alias="machineDO"
+		type="com.alibaba.bigData.dal.entity.MachineDO" />
+
+
+	<resultMap class="MachineDO" id="machineDOResult">
+		<result column="id" property="id" />
+		<result column="machine_name" property="machineName" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="machine_all_ips" property="machineAllIps" />
+		<result column="admin_account" property="adminAccount" />
+		<result column="admin_password" property="adminPassword" />
+		<result column="machine_status" property="machineStatus" />
+		<result column="machine_desc" property="machineDesc" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="channel_id" property="channelId" />
+		<result column="host_name" property="hostName" />
+		<result column="db_name" property="dbName" />
+		<result column="flag" property="flag" />
+	</resultMap>
+
+
+
+	<sql id="machineColumns">
+		select
+		a.id,a.machine_name,a.machine_ip,a.machine_all_ips,a.admin_account,a.admin_password,a.machine_status,a.machine_desc,a.is_deleted,a.channel_id,a.host_name,a.db_name,a.flag
+	</sql>
+
+	<sql id="machineFrom">
+		from bigData_machine a
+	</sql>
+
+	<sql id="machineJoin">
+		a.is_deleted = 0
+	</sql>
+
+	<sql id="machineQuery">
+		where
+		<include refid="machineJoin" />
+		<isNotNull property="machineName" prepend="AND">
+			a.machine_name =#machineName#
+		</isNotNull>
+		<isNotNull property="fuzzyMachineIp" prepend="AND">
+			a.machine_ip like '$fuzzyMachineIp$%'
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+			a.machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="machineStatus" prepend="AND">
+			a.machine_status=#machineStatus#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+			a.channel_id=#channelId#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+			a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+			#idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<select id="queryMachineListByQuery" resultMap="machineDOResult">
+		<include refid="machineColumns" />
+		<include refid="machineFrom" />
+		<include refid="machineQuery" />
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryMachineDOById" resultMap="machineDOResult">
+		<include refid="machineColumns" />
+		<include refid="machineFrom" />
+		where
+		<include refid="machineJoin" />
+		and a.id=#id#
+	</select>
+
+	<select id="queryMachineCountByQuery" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="machineFrom" />
+		<include refid="machineQuery" />
+	</select>
+
+	<insert id="addMachine" parameterClass="machineDO">
+		insert into bigData_machine
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="machineName">
+				machine_name
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				machine_ip
+			</isNotNull>
+			<isNotNull prepend="," property="machineAllIps">
+				machine_all_ips
+			</isNotNull>
+			<isNotNull prepend="," property="adminAccount">
+				admin_account
+			</isNotNull>
+			<isNotNull prepend="," property="adminPassword">
+				admin_password
+			</isNotNull>
+			<isNotNull prepend="," property="machineStatus">
+				machine_status
+			</isNotNull>
+			<isNotNull prepend="," property="machineDesc">
+				machine_desc
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				channel_id
+			</isNotNull>
+			<isNotNull prepend="," property="hostName">
+				host_name
+			</isNotNull>
+			<isNotNull prepend="," property="dbName">
+				db_name
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="machineName">
+				#machineName#
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				#machineIp#
+			</isNotNull>
+			<isNotNull prepend="," property="machineAllIps">
+				#machineAllIps#
+			</isNotNull>
+			<isNotNull prepend="," property="adminAccount">
+				#adminAccount#
+			</isNotNull>
+			<isNotNull prepend="," property="adminPassword">
+				#adminPassword#
+			</isNotNull>
+			<isNotNull prepend="," property="machineStatus">
+				#machineStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="machineDesc">
+				#machineDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				#channelId#
+			</isNotNull>
+			<isNotNull prepend="," property="hostName">
+				#hostName#
+			</isNotNull>
+			<isNotNull prepend="," property="dbName">
+				#dbName#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateMachine" parameterClass="machineDO">
+		update bigData_machine
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="machineName">
+				machine_name=#machineName#
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				machine_ip=#machineIp#
+			</isNotNull>
+			<isNotNull prepend="," property="machineAllIps">
+				machine_all_ips=#machineAllIps#
+			</isNotNull>
+			<isNotNull prepend="," property="adminAccount">
+				admin_account=#adminAccount#
+			</isNotNull>
+			<isNotNull prepend="," property="adminPassword">
+				admin_password=#adminPassword#
+			</isNotNull>
+			<isNotNull prepend="," property="machineStatus">
+				machine_status=#machineStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="machineDesc">
+				machine_desc=#machineDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				channel_id=#channelId#
+			</isNotNull>
+			<isNotNull prepend="," property="hostName">
+				host_name=#hostName#
+			</isNotNull>
+			<isNotNull prepend="," property="dbName">
+				db_name=#dbName#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag=#flag#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="deleteMachine" parameterClass="java.lang.Integer">
+		update bigData_machine
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+
+	<select id="queryAllChannelName" resultClass="java.lang.String">
+		SELECT distinct channel_id FROM bigData_machine where is_deleted = 0
+	</select>
+
+	<select id="queryMachineIpsByChannelId" resultClass="java.lang.String">
+		SELECT distinct machine_ip FROM bigData_machine where channel_id = #channelId# and is_deleted = 0
+	</select>
+
+	<select id="queryMachineIpsByChannelName" resultMap="machineDOResult">
+		select distinct a1.* from bigData_machine a1,bigData_channel a2 WHERE a1.channel_id = a2.id and a2.channel_name = #channelName# and a1.machine_status='ENABLE' and a1.is_deleted = 0
+	</select>
+
+</sqlMap>

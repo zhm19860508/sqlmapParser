@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_VCSRelease">
+    <!--定义VCSReleaseDO对象别名-->
+    <typeAlias alias="TA-VCSRelease" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.VCSReleaseDO"/>
+    
+    <!--TA-VCSRelease对象，JDBC,JAVA字段类型映射-->
+    <resultMap id="RM-VCSReleaseResult" class="TA-VCSRelease">
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="versionId" column="VERSION_ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="resourceId" column="RESOURCE_ID" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="latestVersion" column="LATEST_VERSION" jdbcType="NUMERIC" javaType="java.lang.Integer"/>
+    </resultMap>
+    
+    <!--插入VCSRelease对象-->
+    <insert id="MS-INSERT-VCSRelease" parameterClass="TA-VCSRelease"> <![CDATA[
+            insert into 
+            VCS_RELEASE (GMT_CREATE,GMT_MODIFIED,VERSION_ID,RESOURCE_ID,RESOURCE_TYPE,LATEST_VERSION)
+            values (sysdate,sysdate,#versionId#,#resourceId#,#resourceType#,#latestVersion#)
+        ]]>
+    </insert>
+    
+    <!--根据versionId取得VCSRelease对象-->
+    <select id="MS-FIND-VCSRelease-By-versionId" resultMap="RM-VCSReleaseResult"> <![CDATA[
+            select * from VCS_RELEASE where VERSION_ID = #versionId#
+        ]]>
+    </select>
+      
+    <!--根据resourceId,resourceType取得VCSRelease对象最新版本-->
+    <select id="MS-FIND-VCSRelease-By-resource-latest" resultMap="RM-VCSReleaseResult"> <![CDATA[
+            select * from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# and LATEST_VERSION=1  order by VERSION_ID desc
+        ]]>
+    </select>
+    
+    <!--根据resourceId、resourceType，资源的历史发布版本的分页取法-->
+    <select id="MS-FIND-VCSRelease-By-resource-old-page" resultMap="RM-VCSReleaseResult"> <![CDATA[
+        select 
+            *
+        from
+            (
+            select 
+                t.*,rownum as myrow
+            from
+                (select VCS_RELEASE.*,rownum from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# and LATEST_VERSION=0 order by GMT_MODIFIED desc) t
+            where
+                rownum<=#maxvalue#
+            )
+        where
+            myrow>#minvalue#
+        ]]>
+    </select>
+    
+    <!--根据resourceId、resourceType，取得资源历史发布版本的数量-->
+    <select id="MS-FIND-VCSRelease-By-resource-old-count" resultClass="java.lang.Long"> <![CDATA[
+            select count(*) from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# and LATEST_VERSION=0
+        ]]>
+    </select>
+    <!--根据resourceId、resourceType，取得最新发布版本的数量-->
+    <select id="MS-FIND-VCSRelease-By-resource-new-count" resultClass="java.lang.Long"> <![CDATA[
+            select count(*) from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# and LATEST_VERSION=1
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType取得所有VCSRelease对象-->
+    <select id="MS-FIND-VCSRelease-By-resource-all" resultMap="RM-VCSReleaseResult"> <![CDATA[
+            select * from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType取得VCSRelease对象，分页取法-->
+    <select id="MS-FIND-VCSRelease-By-resource-all-page" resultMap="RM-VCSReleaseResult"> <![CDATA[
+        select 
+            GMT_MODIFIED,GMT_CREATE,VERSION_ID,RESOURCE_ID,LATEST_VERSION,RESOURCE_TYPE
+        from
+            (
+            select 
+                t.GMT_MODIFIED,t.GMT_CREATE,t.VERSION_ID,t.RESOURCE_ID,t.LATEST_VERSION,t.RESOURCE_TYPE,rownum as myrow
+            from
+                (select GMT_MODIFIED,GMT_CREATE,VERSION_ID,RESOURCE_ID,LATEST_VERSION,RESOURCE_TYPE,rownum from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# order by GMT_MODIFIED desc, VERSION_ID desc) t
+            where
+                rownum<=#maxvalue#
+            )
+        where
+            myrow>#minvalue#
+        ]]>
+    </select>
+    
+    <!--根据resourceType取得VCSRelease对象，分页取法-->
+    <select id="MS-FIND-VCSRelease-By-resourceType-all-page" resultMap="RM-VCSReleaseResult"> <![CDATA[
+        select 
+            *
+        from
+            (
+            select 
+                t.*,rownum as myrow
+            from
+                (select VCS_RELEASE.*,rownum from VCS_RELEASE where RESOURCE_TYPE=#resourceType# and LATEST_VERSION = 1 order by GMT_MODIFIED desc,VERSION_ID desc) t
+            where
+                rownum<=#maxvalue#
+            )
+        where
+            myrow>#minvalue#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType，计算数量-->
+    <select id="MS-FIND-VCSRelease-By-resource-all-count" resultClass="java.lang.Long"> <![CDATA[
+        select count(*) from VCS_RELEASE where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType#
+        ]]>
+    </select>
+    
+    <!--更新VCSRelease对象-->
+    <update id="MS-UPDATE-VCSRelease" parameterClass="TA-VCSRelease"> <![CDATA[
+        update VCS_RELEASE set
+            GMT_MODIFIED = sysdate,LATEST_VERSION = #latestVersion#
+        where VERSION_ID = #versionId#
+    ]]>
+    </update>
+    <!--更新VCSRelease 通过最新版本对象-->
+    <update id="MS-UPDATE-VCSRelease-By-LastVersion" parameterClass="java.util.Map"> <![CDATA[
+        update VCS_RELEASE set 
+		       GMT_MODIFIED = sysdate,LATEST_VERSION = 0
+        where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# and LATEST_VERSION=1
+    ]]>
+    </update>
+	
+	<!--根据多个resourceId取得VCSRelease对象最新版本-->
+    <select id="MS-FIND-VCSRelease-By-resourceids" resultMap="RM-VCSReleaseResult" parameterClass="java.util.Map"> 
+	     <![CDATA[
+            select * from VCS_RELEASE where RESOURCE_TYPE=#resourceType# and LATEST_VERSION=1 and RESOURCE_ID in 
+		 ]]>
+			         <iterate property="resourceIds" open="(" close=")" conjunction=",">
+                         #resourceIds[]#
+                     </iterate>  
+         ORDER BY RESOURCE_ID DESC
+    </select>
+    
+    	<!--根据多个resourceId取得VCSRelease对象最新版本-->
+    <select id="MS-FIND-VCSRelease-COUNT-By-resourceids" resultClass="java.util.HashMap" parameterClass="java.util.Map"> 
+	     <![CDATA[
+            select  RESOURCE_ID ID, count(*) NUM from VCS_RELEASE where RESOURCE_TYPE=#resourceType# and RESOURCE_ID in 
+		 ]]>
+			         <iterate property="resourceIds" open="(" close=")" conjunction=",">
+                         #resourceIds[]#
+                     </iterate>  
+        group by RESOURCE_ID
+    </select>
+</sqlMap>

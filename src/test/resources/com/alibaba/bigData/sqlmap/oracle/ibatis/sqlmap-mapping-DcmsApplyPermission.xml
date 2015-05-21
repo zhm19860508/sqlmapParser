@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.applyPermission">
+    
+    <resultMap id="applyPermission-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsApplyPermission">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP"/>
+        <result property="gmtModify" column="GMT_MODIFY" javaType="java.sql.Timestamp" jdbcType="TIMESTAMP"/>
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/>
+        <result property="permType" column="PERM_TYPE" javaType="java.lang.String"/>
+        <result property="name" column="NAME" javaType="java.lang.String"/>
+        <result property="code" column="CODE" javaType="java.lang.String"/>
+        <result property="endTime" column="END_TIME" javaType="java.sql.Timestamp"/>
+        <result property="remarks" column="REMARKS" javaType="java.lang.String"/>
+        <result property="status" column="STATUS" javaType="java.lang.String"/>
+         <result property="depName" column="DEP_NAME" javaType="java.lang.String"/>
+    </resultMap>
+    
+    
+    <insert id="MS_INSERT_APPLYPERMISSION" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsApplyPermission">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_APPLY_PERMISSION.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            INSERT INTO DCMS_APPLY_PERMISSION
+  				(ID, user_id, perm_type, CODE, NAME, end_time, status, remarks, gmt_create, gmt_modify,DEP_NAME)
+					VALUES
+  				(#id#, #userId#, #permType#, #code#, #name#, #endTime#, #status#, #remarks#, sysdate, sysdate,#depName#)
+        ]]>
+    </insert>
+    
+    <select id="MS_GET_APPLYPERMISSION_BY_ID" resultMap="applyPermission-Result" parameterClass="long">
+        <![CDATA[
+           SELECT *
+		   FROM DCMS_APPLY_PERMISSION t 
+		   where t.id = #id#
+	    ]]>
+         
+    </select>   
+    
+    <delete id="MS_DELETE_APPLYPERMISSION_BY_ID" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_APPLY_PERMISSION where ID = #id#
+        ]]>
+    </delete>
+    
+	<update id="MS_UPDATE_APPLYPERMISSION_BY_ID" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsApplyPermission">
+        <![CDATA[ UPDATE DCMS_APPLY_PERMISSION SET  gmt_modify = sysdate ]]>
+		<dynamic>
+			<isNotNull property="name">,NAME = #name#</isNotNull>
+			<isNotNull property="code">,CODE = #code#</isNotNull>
+			<isNotNull property="userId">,USER_ID = #userId#</isNotNull>
+			<isNotNull property="remarks">,REMARKS = #remarks#</isNotNull>
+			<isNotNull property="permType">,PERM_TYPE = #permType#</isNotNull>
+			<isNotNull property="status">,STATUS = #status#</isNotNull>
+			<isNotNull property="endTime">,END_TIME = #endTime#</isNotNull>
+		</dynamic>
+        <![CDATA[  WHERE ID = #id# ]]>
+	</update>    
+
+    <select id="MS_GET_APPLYPERMISSIONS" resultMap="applyPermission-Result" parameterClass="map">
+        <![CDATA[
+           SELECT * FROM DCMS_APPLY_PERMISSION T  
+	    ]]>
+	    <dynamic prepend="where">
+	        <isNotEmpty prepend="and" property="userId">
+	            user_id = #userId#
+	        </isNotEmpty>
+	        <isNotEmpty prepend="and" property="permType">
+	            perm_type = #permType#
+	        </isNotEmpty>
+	        <isNotEmpty prepend="and" property="status"> 
+	            STATUS = #status#
+	        </isNotEmpty>	
+	        <isNotEmpty prepend="and" property="gmtCreate"> 
+	            to_char(GMT_CREATE,'yyyy-MM-dd') = #gmtCreate#
+	        </isNotEmpty>	   	        	    
+	    </dynamic>
+		<![CDATA[  order by gmt_create desc ]]>
+        
+    </select>    
+
+
+</sqlMap>

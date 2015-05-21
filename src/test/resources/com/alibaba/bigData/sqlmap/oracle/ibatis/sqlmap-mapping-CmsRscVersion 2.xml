@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRscVersion">
+
+	<resultMap class="CmsRscVersion" id="CmsRscVersion-result">
+		<result property="id" 			javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_MODIFIED" />
+		<result property="pageId" 		javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="PAGE_ID" />
+		<result property="rscVersion" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="RSC_VERSION" />
+	</resultMap>
+
+	<insert id="MS_INSERT_CMS_RSC_VERSION" parameterClass="CmsRscVersion">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_RSC_VERSION.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_RSC_VERSION
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  PAGE_ID  , RSC_VERSION )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #pageId# ,   #rscVersion# )
+        ]]>
+	</insert>
+
+
+	<select id="MS_SELECT_CMS_RSC_VERSION_BY_IDS"  resultMap="CmsRscVersion-result" parameterClass="java.util.Map">
+              SELECT * FROM CMS_RSC_VERSION 
+				<iterate prepend="WHERE" property="pageIds" open="(" close=")" conjunction="OR">
+		                      PAGE_ID =#pageIds[]#
+		        </iterate>
+			   ORDER BY GMT_MODIFIED DESC
+    </select>
+    
+    <select id="MS_SELECT_CMS_RSC_VERSION_BY_PAGE_ID"  resultMap="CmsRscVersion-result" parameterClass="java.lang.Long">
+              SELECT * FROM CMS_RSC_VERSION WHERE PAGE_ID = #pageId#
+    </select>
+    
+    <select id="MS_SELECT_CMS_RSC_VERSION_BY_ID"  resultMap="CmsRscVersion-result" parameterClass="java.lang.Long">
+              SELECT * FROM CMS_RSC_VERSION WHERE ID = #id#
+    </select>
+    
+    <update id="MS_UPDATE_CMS_RSC_VERSION" parameterClass="CmsRscVersion">
+        <![CDATA[
+            update
+                    CMS_RSC_VERSION
+            set
+                    GMT_MODIFIED = sysdate , RSC_VERSION = #rscVersion# 
+		  	where  
+                	PAGE_ID = #pageId# 
+        ]]>
+	</update>
+	
+</sqlMap>

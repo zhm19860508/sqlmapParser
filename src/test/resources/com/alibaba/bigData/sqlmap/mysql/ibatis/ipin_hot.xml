@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="hot"
+		type="com.alibaba.china.ipinshared.dataobject.HotDO" />
+    <typeAlias alias="hotQuery" type="com.alibaba.china.ipinshared.query.HotQuery" />
+	<resultMap id="hotResult" class="hot">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="offerUrl" column="offer_url"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="siteType" column="site_type"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="categoryId" column="category_id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+	</resultMap>
+	<sql id="hotColumns">
+		select id,offer_url,site_type,category_id,gmt_created,gmt_modified
+	</sql>
+	<!-- 获取所有的类目 -->
+	<select id="get_all_hots" resultMap="hotResult">
+		<include refid="hotColumns" />
+		 from ipin_hot
+		where is_deleted = 0 order by id desc
+	</select>
+
+	<select id="get_hot_by_id" resultMap="hotResult">
+		<include refid="hotColumns" /> 
+		from
+		ipin_hot where is_deleted = 0 and id = #hotId#
+	</select>
+
+	<!-- 新增类目 -->
+	<insert id="add_new_hot" parameterClass="hot">
+		insert into
+		ipin_hot(offer_url,site_type,category_id,is_deleted,gmt_created,gmt_modified)
+		values(#offerUrl#,#siteType#,#categoryId#,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新类目 -->
+	<update id="update_hot" parameterClass="hot">
+		update ipin_hot set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="offerUrl" prepend=",">
+			offer_url =
+			#offerUrl#
+		</isNotNull>
+		<isNotNull property="siteType" prepend=",">
+			site_type =
+			#siteType#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend=",">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<select id="get_hots_by_query" resultMap="hotResult"
+		parameterClass="hotQuery">
+			<include refid="hotColumns" />
+			  from ipin_hot where  is_deleted = 0
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		order by id desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+	<select id="get_hot_count_by_query" resultClass="java.lang.Integer"
+		parameterClass="hotQuery">
+		select count(*) from ipin_hot  where is_deleted = 0
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+	</select>
+
+</sqlMap>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.arrangeblock">
+	<typeAlias alias="arrangeBlock"
+		type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.ArrangeBlock" />
+	<!--
+		- =============================================== -
+		DCMS_ARRANGE_BLOCK表映射到ArrangeBlock类 -
+		===============================================
+	-->
+	<resultMap id="arrangeResult" class="arrangeBlock">
+		<result property="id" column="ID" />
+		<result property="page.id" column="PAGE_ID" />
+		<result property="name" column="NAME" />
+		<result property="contentType" column="CONTENT_TYPE" />
+		<result property="userId" column="USER_ID" />
+		<result property="gmtCreate" column="GMT_CREATE" />
+		<result property="gmtModified" column="GMT_MODIFIED" />
+		<result property="captureTemplate" column="CAPTURE_TEMPLATE" />
+	</resultMap>
+
+
+	<select id="queryArrangeBlockList" resultMap="arrangeResult"
+		parameterClass="arrangeBlock">
+		select *
+		from DCMS_ARRANGE_BLOCK
+		<dynamic prepend="where">
+			<isGreaterThan prepend="and" property="page.id"
+					compareValue="0">
+					PAGE_ID = #page.id#
+	      	</isGreaterThan>
+	
+			<isGreaterThan prepend="and" property="id"
+					compareValue="0">
+					ID = #id#
+	      	</isGreaterThan>
+		</dynamic>
+      	order by GMT_MODIFIED desc
+	</select>
+
+	<!--
+		- =============================================== - 插入 -
+		===============================================
+	-->
+	<insert id="insertArrangeBlock" parameterClass="arrangeBlock">
+		<selectKey resultClass="int" keyProperty="id">SELECT
+			SEQ_DCMS_ARRANGE_BLOCK.NEXTVAL AS id FROM DUAL</selectKey>
+		insert into DCMS_ARRANGE_BLOCK (
+		ID,
+		PAGE_ID,
+		NAME,
+		CONTENT_TYPE,
+		USER_ID,
+		GMT_CREATE,
+		GMT_MODIFIED,
+		CAPTURE_TEMPLATE
+		) values (
+		#id#,
+		#page.id#,
+		#name#,
+		#contentType#,
+		#userId#,
+		SYSDATE,
+		SYSDATE,
+		#captureTemplate#
+		)
+	</insert>
+	<!--
+		- =============================================== - 修改 -
+		===============================================
+	-->
+	<update id="updateArrangeBlock" parameterClass="arrangeBlock"><![CDATA[
+        update
+                DCMS_ARRANGE_BLOCK
+        set
+                NAME = #name#,
+                CONTENT_TYPE = #contentType#,
+                GMT_MODIFIED=SYSDATE,
+                CAPTURE_TEMPLATE =#captureTemplate#            
+        where
+                ID = #id#
+    ]]></update>
+	<!--
+		- =============================================== - 删除 -
+		===============================================
+	-->
+	<delete id="deleteArrangeBlock" parameterClass="int"><![CDATA[
+        delete from
+                DCMS_ARRANGE_BLOCK
+         where
+                ID = #id#
+    ]]></delete>
+
+
+</sqlMap>

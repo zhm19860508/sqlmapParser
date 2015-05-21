@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="acl_role_resource">
+	<typeAlias alias="aclRoleResources" type="com.alibaba.china.cmshollywood.acl.domain.ACLRoleResources" />
+	<resultMap id="aclRoleResourcesResult" class="aclRoleResources">
+        <result property="id" column="ID" />
+        <result property="roleId" column="ROLE_ID" />
+        <result property="resourceCode" column="RESOURCE_CODE" />
+        <result property="gmtCreate" column="GMT_CREATE" />
+        <result property="gmtModified" column="GMT_MODIFIED" />
+        <result property="createUser" column="CREATE_USER" />
+        <result property="modifyUser" column="MODIFY_USER" />
+	</resultMap>
+	
+	<sql id="selectAclRoleResourcesSql">
+		<![CDATA[
+			select t.id, t.role_id, t.resource_code, t.gmt_create, t.gmt_modified, t.create_user, t.modify_user from acl_role_resource t
+		]]>
+	</sql>
+	
+	<select id="findAclRoleResourcesById" parameterClass="String" resultMap="aclRoleResourcesResult">
+	    <include refid="selectAclRoleResourcesSql"/>
+		<![CDATA[
+			where t.id = #id#
+		]]>
+	</select>
+	
+	<select id="findAclRoleResourcesByWhere" parameterClass="aclRoleResources" resultMap="aclRoleResourcesResult">
+	    <include refid="selectAclRoleResourcesSql"/>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="roleId">
+                t.ROLE_ID = #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="createUser">
+                t.create_user = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertAclRoleResources" parameterClass="aclRoleResources">
+	    insert into acl_role_resource
+	    <dynamic prepend="(">
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                role_id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                resource_code
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                gmt_create
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                gmt_modified
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                create_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                modify_user
+            </isNotEmpty>
+	    </dynamic>
+	    <dynamic prepend=") values (">
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="roleId">
+                #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                #modifyUser#
+            </isNotEmpty>
+	    </dynamic>)
+	</insert>
+	
+	<update id="updateAclRoleResources" parameterClass="aclRoleResources">
+		update acl_role_resource t
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="roleId">
+                t.ROLE_ID = #roleId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                t.create_user = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[
+		   where t.id = #id#
+		]]>  
+	</update>
+	
+	<delete id="deleteAclRoleResources" parameterClass="String">
+	    <![CDATA[
+		  delete from acl_role_resource where id = #id#
+		]]>  
+	</delete>
+	
+	<delete id="deleteAclRoleResourceByRoleIDAndResourceCode" parameterClass="java.util.Map">
+	    <![CDATA[
+		  delete from acl_role_resource where role_id = #roleID# and resource_code = #permission#
+		]]>  
+	</delete>
+</sqlMap>

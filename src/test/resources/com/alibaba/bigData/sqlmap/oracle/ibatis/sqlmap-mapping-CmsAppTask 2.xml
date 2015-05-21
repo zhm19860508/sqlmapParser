@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsAppTask">        
+        
+    <resultMap class="CmsAppTask" id="CmsAppTask-result" >
+    	<result property="id"					javaType="java.lang.Long"		column="ID" />
+        <result property="gmtCreate"			javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"			javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />  
+        <result property="appKey"				javaType="java.lang.String"		column="APP_KEY" />
+        <result property="host"					javaType="java.lang.String"		column="HOST" />
+        <result property="taskType"				javaType="java.lang.String"		column="TASK_TYPE" />
+        <result property="content"				javaType="java.lang.String"		column="CONTENT" />
+        <result property="gmtExpiration"		javaType="java.sql.Timestamp"	column="GMT_EXPIRATION" />
+        <result property="status"				javaType="java.lang.String"		column="STATUS" />
+    </resultMap>
+
+
+	<select id="MS_SELECT_CMS_APP_TASK_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsAppTask-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_TASK WHERE ID = #id# 
+        ]]>
+	</select>
+	
+	<insert id="MS_INSERT_CMS_APP_TASK" parameterClass="CmsAppTask">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_APP_TASK.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_APP_TASK
+              (ID , GMT_CREATE  , GMT_MODIFIED ,  HOST  , APP_KEY  , TASK_TYPE  , STATUS  , CONTENT, GMT_EXPIRATION )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #host#  , #appKey#  , #taskType#  , #status#  , #content#, #gmtExpiration#)
+        ]]>
+	</insert>
+
+
+	<update id="MS_UPDATE_CMS_APP_TASK" parameterClass="CmsAppTask">
+        <![CDATA[
+            update
+                    CMS_APP_TASK
+            set
+                    GMT_MODIFIED = sysdate ,
+                    STATUS = #status#         
+		  	where  
+                ID = #id#
+        ]]>
+	</update>
+	
+	<delete id="MS_DELATE_CMS_APP_TASK" parameterClass="java.lang.Long">
+        <![CDATA[
+            delete FROM CMS_APP_TASK WHERE  ID = #id#
+        ]]>
+	</delete>
+	
+	<select id="MS_SELECT_CMS_APP_TASK_BY_HOST" parameterClass="java.util.Map"
+		resultMap="CmsAppTask-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_TASK WHERE APP_KEY = #appKey# AND HOST = #host# 
+            	AND GMT_EXPIRATION > to_date(#gmtExpiration#,'yyyy-mm-dd hh24:mi:ss') AND STATUS = #status# 
+            	AND ID NOT in (SELECT TASK_ID FROM CMS_APP_TASK_DETAIL WHERE HOST=#hostInstance# AND GMT_CREATE >= to_date(#gmtValid#,'yyyy-mm-dd hh24:mi:ss'))
+            	and rownum < 100 order by GMT_MODIFIED desc
+        ]]>
+	</select>
+	<select id="MS_SELECT_CMS_APP_TASK_BY_APPKEY" parameterClass="java.util.Map"
+		resultMap="CmsAppTask-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_TASK WHERE APP_KEY = #appKey# AND HOST is NULL
+            	AND GMT_EXPIRATION > to_date(#gmtExpiration#,'yyyy-mm-dd hh24:mi:ss') AND STATUS = #status# 
+            	AND ID NOT in (SELECT TASK_ID FROM CMS_APP_TASK_DETAIL WHERE HOST=#host# AND GMT_CREATE >= to_date(#gmtValid#,'yyyy-mm-dd hh24:mi:ss'))
+            	and rownum < 100 order by GMT_MODIFIED desc
+        ]]>
+	</select>
+</sqlMap>

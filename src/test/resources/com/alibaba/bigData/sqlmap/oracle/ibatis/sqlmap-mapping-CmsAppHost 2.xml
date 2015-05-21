@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsAppHost">        
+        
+    <resultMap class="CmsAppHost" id="CmsAppHost-result" >
+    	<result property="id"					javaType="java.lang.Long"		column="ID" />
+        <result property="gmtCreate"			javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"			javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />  
+        <result property="appKey"				javaType="java.lang.String"		column="APP_KEY" />
+        <result property="host"					javaType="java.lang.String"		column="HOST" />
+        <result property="isPreRelease"			javaType="java.lang.String"		column="IS_PRE_RELEASE" />
+        <result property="status"				javaType="java.lang.String"		column="STATUS" />
+        <result property="lastUpdate"			javaType="java.sql.Timestamp"	column="LAST_UPDATE" />
+        <result property="sdkVersion"			javaType="java.lang.String"		column="SDK_VERSION" />
+        <result property="info"					javaType="java.lang.String"		column="INFO" />
+    </resultMap>
+
+	<select id="MS_SELECT_CMS_APP_HOST_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsAppHost-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_HOST WHERE ID = #id# 
+        ]]>
+	</select>
+	
+	
+	<insert id="MS_INSERT_CMS_APP_HOST" parameterClass="CmsAppHost">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_APP_HOST.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_APP_HOST
+              (ID , GMT_CREATE  , GMT_MODIFIED ,  HOST  , APP_KEY  , IS_PRE_RELEASE  , STATUS  , LAST_UPDATE, SDK_VERSION, INFO)
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #host#  , #appKey#  , #isPreRelease#  , #status#  , #lastUpdate#, #sdkVersion#, #info#)
+        ]]>
+	</insert>
+
+
+	<update id="MS_UPDATE_CMS_APP_HOST" parameterClass="CmsAppHost">
+        <![CDATA[
+            update
+                    CMS_APP_HOST
+            set
+                    GMT_MODIFIED = sysdate 
+        ]]>
+		<dynamic prepend="">
+			<isNotEmpty property="isPreRelease" prepend=",">
+				IS_PRE_RELEASE =#isPreRelease#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend=",">
+				STATUS =#status#
+			</isNotEmpty>
+			<isNotEmpty property="lastUpdate" prepend=",">
+				LAST_UPDATE =#lastUpdate#
+			</isNotEmpty>
+			<isNotEmpty property="sdkVersion" prepend=",">
+				SDK_VERSION
+				=#sdkVersion#
+			</isNotEmpty>
+			<isNotEmpty property="info" prepend=",">
+				INFO
+				=#info#
+			</isNotEmpty>
+		</dynamic>
+        <![CDATA[           
+		  where  
+                APP_KEY = #appKey# and HOST = #host#
+        ]]>
+	</update>
+	
+	<delete id="MS_DELATE_CMS_APP_HOST" parameterClass="java.lang.String">
+        <![CDATA[
+            delete FROM CMS_APP_HOST WHERE APP_KEY = #appKey# 
+        ]]>
+	</delete>
+	<select id="MS_SELECT_CMS_APP_HOST_BY_APPKEY_HOST" parameterClass="java.util.Map"
+		resultMap="CmsAppHost-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_HOST 
+        ]]>
+        <dynamic prepend="WHERE">
+			<isNotEmpty property="appKey" prepend="AND">
+				APP_KEY =#appKey#
+			</isNotEmpty>
+			<isNotEmpty property="host" prepend="AND">
+				HOST =#host#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend="AND">
+				STATUS =#status#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	
+	<select id="MS_SEARCH_APP_HOST" parameterClass="java.util.Map"
+		resultMap="CmsAppHost-result">
+        <![CDATA[
+		    SELECT  *
+	        FROM (
+	                SELECT r.*,ROWNUM rnum FROM (
+	                	select p.* from CMS_APP_HOST p 
+	     ]]>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE
+				'%'||#appKey#||'%'
+			</isNotEmpty>
+		</dynamic>
+		  <![CDATA[
+				 order by p.GMT_MODIFIED desc
+		            )r WHERE ROWNUM <= #offset# + #length#
+	            )WHERE rnum >#offset#
+		  ]]>
+	</select>
+
+
+	<select id="MS_SEARCH_APP_HOST_COUNT" parameterClass="java.util.Map"
+		resultClass="java.lang.Long">
+         <![CDATA[
+	                	select count(*) from CMS_APP_HOST p
+	     ]]>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE
+				'%'||#appKey#||'%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	
+
+</sqlMap>

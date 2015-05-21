@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="FieldUDF">
+	<typeAlias alias="FieldUDFDO"
+		type="com.alibaba.bigData.dal.entity.FieldUDFDO" />
+
+	<resultMap class="FieldUDFDO" id="FieldUDFDOResult">
+		<result column="id" property="id" />
+		<result column="request_info_id" property="requestInfoId" />
+		<result column="field" property="field" />
+		<result column="field_type" property="fieldType" />
+		<result column="field_description" property="fieldDesc" />
+		<result column="safe_level" property="safeLevel" />
+		<result column="safe_comment" property="safeComment" />
+		<result column="udf_name" property="udfName" />
+		<result column="udf_param" property="udfParam" />
+		<result column="is_relate" property="isRelate" />
+		<result column="relate_field" property="relateField" />
+		<result column="relate_field" property="relateFieldName" select="FieldUDF.queryFieldById"/>
+		<result column="note" property="note" />
+		<result column="udf_name" property="udfDO" select="UDF.queryUDFByUDFName"/>
+	</resultMap>
+	
+	<resultMap class="FieldUDFDO" id="FieldResult">
+		<result column="field" property="field" />
+		<result column="udf_name" property="udfName" />
+		<result column="udf_param" property="udfParam" />
+	</resultMap>	
+
+	<sql id="FieldUDFColumns">
+		select a.id,a.request_info_id,a.field,a.field_type,a.field_description,a.safe_level,a.safe_comment,a.udf_name,a.udf_param,a.is_relate,a.relate_field,a.note
+	</sql>
+
+	<sql id="FieldUDFFrom">
+		from bigData_field_udf a
+	</sql>
+
+	<sql id="FieldUDFJoin">
+        1 = 1
+	</sql>
+
+	<sql id="FieldUDFQuery">
+        where
+		<include refid="FieldUDFJoin" />
+		<isNotNull property="id" prepend="AND">
+            a.id=#id#
+		</isNotNull>
+		<isNotNull property="requestInfoId" prepend="AND">
+            a.request_info_id=#requestInfoId#
+		</isNotNull>
+		<isNotNull property="field" prepend="AND">
+            a.field=#field#
+		</isNotNull>
+		<isNotNull property="fieldType" prepend="AND">
+            a.field_type=#fieldType#
+		</isNotNull>
+		<isNotNull property="fieldDesc" prepend="AND">
+            a.field_description=#fieldDesc#
+		</isNotNull>
+		<isNotNull property="safeLevel" prepend="AND">
+            a.safe_level=#safeLevel#
+		</isNotNull>
+		<isNotNull property="safeComment" prepend="AND">
+            a.safe_comment=#safeComment#
+		</isNotNull>
+		<isNotNull property="udfName" prepend="AND">
+            a.udf_name=#udfName#
+		</isNotNull>
+		<isNotNull property="udfParam" prepend="AND">
+            a.udf_param=#udfParam#
+		</isNotNull>
+		<isNotNull property="isRelate" prepend="AND">
+            a.is_relate=#isRelate#
+		</isNotNull>
+		<isNotNull property="relateField" prepend="AND">
+            a.relate_field=#relateField#
+		</isNotNull>
+		<isNotNull property="note" prepend="AND">
+            a.note=#note#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addFieldUDF" parameterClass="FieldUDFDO">
+		insert into bigData_field_udf
+		<dynamic prepend="(">
+			<isNotNull property="id" prepend="AND">
+                id
+    		</isNotNull>
+			<isNotNull prepend="," property="requestInfoId">
+				request_info_id
+			</isNotNull>
+			<isNotNull prepend="," property="field">
+				field
+			</isNotNull>
+			<isNotNull prepend="," property="fieldType">
+				field_type
+			</isNotNull>
+			<isNotNull prepend="," property="fieldDesc">
+				field_description
+			</isNotNull>
+			<isNotNull prepend="," property="safeLevel">
+				safe_level
+			</isNotNull>
+			<isNotNull prepend="," property="safeComment">
+				safe_comment
+			</isNotNull>
+			<isNotNull prepend="," property="udfName">
+				udf_name
+			</isNotNull>
+			<isNotNull prepend="," property="udfParam">
+				udf_param
+			</isNotNull>
+			<isNotNull prepend="," property="isRelate">
+				is_relate
+			</isNotNull>
+			<isNotNull prepend="," property="relateField">
+				relate_field
+			</isNotNull>
+			<isNotNull prepend="," property="note">
+				note
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="id">
+                #id#
+    		</isNotNull>
+			<isNotNull prepend="," property="requestInfoId">
+				#requestInfoId#
+			</isNotNull>
+			<isNotNull prepend="," property="field">
+				#field#
+			</isNotNull>
+			<isNotNull prepend="," property="fieldType">
+				#fieldType#
+			</isNotNull>
+			<isNotNull prepend="," property="fieldDesc">
+				#fieldDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="safeLevel">
+				#safeLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="safeComment">
+				#safeComment#
+			</isNotNull>
+			<isNotNull prepend="," property="udfName">
+				#udfName#
+			</isNotNull>
+			<isNotNull prepend="," property="udfParam">
+				#udfParam#
+			</isNotNull>
+			<isNotNull prepend="," property="isRelate">
+				#isRelate#
+			</isNotNull>
+			<isNotNull prepend="," property="relateField">
+				#relateField#
+			</isNotNull>
+			<isNotNull prepend="," property="note">
+				#note#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryFieldUDFById" resultMap="FieldUDFDOResult">
+		<include refid="FieldUDFColumns" />
+		<include refid="FieldUDFFrom" />
+		where a.id=#id#
+	</select>
+	
+	<select id="queryFieldById" resultClass="java.lang.String">
+		select a.field
+		from bigData_field_udf a
+		where a.id=#id#
+	</select>	
+	
+	<select id="queryFieldCountByInfoId" resultClass="java.lang.Integer">
+		select count(1)
+		<include refid="FieldUDFFrom" />
+		where a.request_info_id=#requestInfoId#
+	</select>	
+	
+	<select id="queryFieldUDFByInfoId" resultMap="FieldUDFDOResult">
+		<include refid="FieldUDFColumns" />
+		<include refid="FieldUDFFrom" />
+		where a.request_info_id=#requestInfoId#
+		order by a.id
+	</select>
+	
+	<select id="queryRelatedFieldUDF" resultClass="java.util.HashMap">
+		select CONCAT(a1.field,'/',a2.table_name) as field, a1.id
+		from bigData_field_udf a1,bigData_request_info a2
+		where a2.request_id = #requestId#
+		and a2.id != #requestInfoId#
+		and a1.is_relate = 1
+		and a1.request_info_id =a2.id		
+	</select>
+
+	<update id="updateFieldUDF" parameterClass="FieldUDFDO">
+		update bigData_field_udf
+		<dynamic prepend="set">
+		<isNotNull property="id" prepend=",">
+            id=#id#
+		</isNotNull>
+		<isNotNull property="requestInfoId" prepend=",">
+            request_info_id=#requestInfoId#
+		</isNotNull>
+		<isNotNull property="field" prepend=",">
+            field=#field#
+		</isNotNull>
+		<isNotNull property="fieldType" prepend=",">
+            field_type=#fieldType#
+		</isNotNull>
+		<isNotNull property="fieldDesc" prepend=",">
+            field_description=#fieldDesc#
+		</isNotNull>
+		<isNotNull property="safeLevel" prepend=",">
+            safe_level=#safeLevel#
+		</isNotNull>
+		<isNotNull property="safeComment" prepend=",">
+            safe_comment=#safeComment#
+		</isNotNull>
+		<isNotNull property="udfName" prepend=",">
+            udf_name=#udfName#
+		</isNotNull>
+		<isNotNull property="udfParam" prepend=",">
+            udf_param=#udfParam#
+		</isNotNull>
+		<isNotNull property="isRelate" prepend=",">
+            is_relate=#isRelate#
+		</isNotNull>
+		<isNotNull property="relateField" prepend=",">
+			relate_field =#relateField#
+		</isNotNull>		
+			where id = #id#
+		</dynamic>
+	</update>
+	
+	<delete id="delFieldByRequestInfoId" parameterClass="java.lang.Integer">
+		delete from bigData_field_udf where request_info_id=#requestInfoId#
+	</delete>
+	
+	<select id="queryRelatedFieldUDFByInfoId" resultMap="FieldUDFDOResult">
+		<include refid="FieldUDFColumns" />
+		<include refid="FieldUDFFrom" />
+		where a.relate_field=#relateField#
+	</select>	
+	
+    <select id="getFieldUdf" resultClass="java.util.HashMap" resultMap="FieldResult">
+    	select a.field,a.udf_name,a.udf_param from bigdata_field_udf a where a.request_info_id = #requestInfoId#
+    </select> 	
+
+</sqlMap>

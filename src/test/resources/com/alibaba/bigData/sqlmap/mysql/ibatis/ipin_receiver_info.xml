@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="info"
+		type="com.alibaba.china.ipinshared.dataobject.ReceiverInfoDO" />
+	<resultMap id="infoResult" class="info">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="receiverTel" column="receiver_tel" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="receiverName" column="receiver_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="isDefault" column="is_default" jdbcType="int"
+			javaType="int" />
+	</resultMap>
+	
+	<sql id="infoColumns">
+		select id,user_id,receiver_tel,receiver_name,is_deleted,gmt_created,gmt_modified,is_default
+	</sql>
+
+
+
+	<!-- 根据uid获取用户的收货联系人信息 -->
+	<select id="get_info_by_user_id" resultMap="infoResult"
+		parameterClass="java.lang.Long">
+		<include refid="infoColumns" /> 
+		 from ipin_receiver_info where user_id =
+		#userId# and
+		is_deleted = 0 order by gmt_created asc
+	</select>
+
+	<!-- 根据id获取用户的收货联系人信息 -->
+	<select id="get_info_by_id" resultMap="infoResult"
+		parameterClass="java.lang.Long">
+		<include refid="infoColumns" /> 
+		from ipin_receiver_info where id =
+		#id# and
+		is_deleted = 0 order by gmt_created asc
+	</select>
+
+	<!-- 新增用户收货联系人信息 -->
+	<insert id="add_new_info" parameterClass="info">
+		insert into
+		ipin_receiver_info(user_id,receiver_tel,receiver_name,is_deleted,gmt_created,gmt_modified,is_default)
+		values(#userId#,#receiverTel#,#receiverName#,0,now(),now(),#isDefault#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新户的收货联系人信息 -->
+	<update id="update_info" parameterClass="info">
+		update ipin_receiver_info set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="receiverTel" prepend=",">
+			receiver_tel =
+			#receiverTel#
+		</isNotNull>
+		<isNotNull property="receiverName" prepend=",">
+			receiver_name =
+			#receiverName#
+		</isNotNull>
+		<isNotNull property="isDefault" prepend=",">
+			is_default =
+			#isDefault#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<!-- 删除户的收货联系人信息 -->
+	<update id="delete_info" parameterClass="java.lang.Long">
+		update ipin_receiver_info set is_deleted =  1	where id = #id#
+	</update>
+
+
+	<update id="update_info_default_false" parameterClass="java.lang.Long">
+		update ipin_receiver_info set gmt_modified = now(),
+			is_default =0
+		where user_id = #userId#
+	</update>
+</sqlMap>

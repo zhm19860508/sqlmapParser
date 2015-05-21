@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DataPanelReport">
+	<typeAlias alias="DataPanelReportDO"
+		type="com.alibaba.bigData.dal.entity.DataPanelReportDO" />
+
+	<resultMap class="DataPanelReportDO" id="DataPanelReportDOResult">
+		<result column="id" property="id" />
+		<result column="type" property="type" />
+		<result column="report_name" property="reportName" />
+		<result column="table_name" property="tableName" />
+		<result column="partition" property="partition" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="column_list" property="columnList" />
+		<result column="comment_list" property="commentList" />
+		<result column="statistic" property="statistic" />
+		<result column="order_filter" property="orderFilter" />
+		<result column="run_sql" property="runSql" />
+		<result column="column_dispaly_flag" property="columnDispalyFlag" />
+		<result column="global_table" property="globalTable" />
+		<result column="time_range" property="timeRange" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_by_type" property="groupByType" />
+		<result column="group_by_filter" property="groupByFilter" />
+		<result column="run_project" property="runProject" />
+	</resultMap>
+
+
+	<sql id="DataPanelReportColumns">
+		select
+		a.id,a.type,a.report_name,a.table_name,a.partition,a.gmt_create,a.gmt_modify,a.column_list,a.comment_list
+		,a.statistic,a.order_filter,a.run_sql,a.column_dispaly_flag,a.global_table,a.time_range,a.is_deleted,a.group_by_type,a.group_by_filter,a.run_project
+	</sql>
+
+	<sql id="DataPanelReportFrom">
+		from bigdata_panel_report a
+	</sql>
+
+	<sql id="DataPanelReportWhere">
+		a.is_deleted = 0 
+	</sql>
+
+	<insert id="addDataPanelReport" parameterClass="DataPanelReportDO">
+		insert into bigdata_panel_report
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="type">
+				type
+			</isNotNull>
+			<isNotNull prepend="," property="reportName">
+				report_name
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify
+			</isNotNull>
+			<isNotEmpty  prepend="," property="columnList">
+				column_list
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="commentList">
+				comment_list
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="statistic">
+				statistic
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="orderFilter">
+				order_filter
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="runSql">
+				run_sql
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="globalTable">
+				global_table
+			</isNotEmpty>
+			<isNotNull prepend="," property="timeRange">
+				time_range
+			</isNotNull>
+			<isNotNull prepend="," property="columnDispalyFlag">
+				column_dispaly_flag
+			</isNotNull>
+			<isNotNull prepend="," property="groupByType">
+				group_by_type
+			</isNotNull>
+			<isNotNull prepend="," property="groupByFilter">
+				group_by_filter
+			</isNotNull>
+			<isNotEmpty  prepend="," property="runProject">
+				run_project
+			</isNotEmpty>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="type">
+				#type#
+			</isNotNull>
+			<isNotNull prepend="," property="reportName">
+				#reportName#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>
+			<isNotEmpty  prepend="," property="columnList">
+				#columnList#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="commentList">
+				#commentList#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="statistic">
+				#statistic#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="orderFilter">
+				#orderFilter#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="runSql">
+				#runSql#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="globalTable">
+				#globalTable#
+			</isNotEmpty>
+			<isNotNull prepend="," property="timeRange">
+				#timeRange#
+			</isNotNull>
+			<isNotNull prepend="," property="columnDispalyFlag">
+				#columnDispalyFlag#
+			</isNotNull>
+			<isNotNull prepend="," property="groupByType">
+				#groupByType#
+			</isNotNull>
+			<isNotNull prepend="," property="groupByFilter">
+				#groupByFilter#
+			</isNotNull>
+			<isNotEmpty  prepend="," property="runProject">
+				#runProject#
+			</isNotEmpty>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateDataPanelReport" parameterClass="DataPanelReportDO" >
+		update bigdata_panel_report
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="type">
+				type=#type#
+			</isNotNull>
+			<isNotNull prepend="," property="reportName">
+				report_name=#reportName#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name=#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition=#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create=#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify=#gmtModify#
+			</isNotNull>
+			<isNotEmpty  prepend="," property="columnList">
+				column_list=#columnList#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="commentList">
+				comment_list=#commentList#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="statistic">
+				statistic=#statistic#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="orderFilter">
+				order_filter=#orderFilter#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="runSql">
+				run_sql=#runSql#
+			</isNotEmpty>
+			<isNotEmpty  prepend="," property="globalTable">
+				global_table=#globalTable#
+			</isNotEmpty>
+			<isNotNull prepend="," property="timeRange">
+				time_range=#timeRange#
+			</isNotNull>
+			<isNotNull prepend="," property="columnDispalyFlag">
+				column_dispaly_flag=#columnDispalyFlag#
+			</isNotNull>
+			<isNotNull prepend="," property="groupByType">
+				group_by_type = #groupByType#
+			</isNotNull>
+			<isNotNull prepend="," property="groupByFilter">
+				group_by_filter=#groupByFilter#
+			</isNotNull>
+			<isNotEmpty  prepend="," property="runProject">
+				run_project=#runProject#
+			</isNotEmpty>
+			where id = #id#
+		</dynamic>
+	</update>
+	
+	<update id="deleteDataPanelReport" parameterClass="java.lang.Integer">
+		update bigdata_panel_report
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+	
+	
+	<select id="getDataPanelReportById" resultMap="DataPanelReportDOResult">
+		<include refid="DataPanelReportColumns" />
+		<include refid="DataPanelReportFrom" />
+		where
+		<include refid="DataPanelReportWhere" />
+		and a.id=#id#
+	</select>
+	
+	
+</sqlMap>

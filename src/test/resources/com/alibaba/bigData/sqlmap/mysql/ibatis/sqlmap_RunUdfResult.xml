@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunUdfResult">
+	<typeAlias alias="udfTaskResultDO"
+		type="com.alibaba.bigData.dal.entity.UDFTaskResultDO" />
+
+	<resultMap class="UDFTaskResultDO" id="udfResultDOResult">
+		<result column="id" property="id" />
+		<result column="run_id" property="runId" />
+		<result column="pass_case" property="passCase" />
+		<result column="fail_case" property="failCase" />
+		<result column="total_case" property="totalCase" />
+		<result column="pass_rate" property="passRate" />
+		<result column="jenkins_build_num" property="jenkinsBuildNum" />
+		<result column="result_url" property="resultUrl" />
+		<result column="app_name" property="appName" />
+		<result column="source_svn" property="sourceSvn" />
+		<result column="methods_total" property="methodsTotal" />
+		<result column="methods_cover" property="methodsCover" />
+		<result column="methods_ratio" property="methodsRatio" />
+		<result column="lines_total" property="linesTotal" />
+		<result column="lines_cover" property="linesCover" />
+		<result column="lines_ratio" property="linesRatio" />
+		<result column="branchs_total" property="branchsTotal" />
+		<result column="branchs_cover" property="branchsCover" />
+		<result column="branchs_ratio" property="branchsRatio" />
+		<result column="urgent_warning" property="urgentWarning" />
+		<result column="high_warning" property="highWarning" />
+		<result column="normal_warning" property="normalWarning" />
+		<result column="low_warning" property="lowWarning" />
+		<result column="findbugs_result_url" property="findbugsResultUrl" />
+		<result column="urgent_security" property="urgentSecurity" />
+		<result column="high_security" property="highSecurity" />
+		<result column="normal_security" property="normalSecurity" />
+		<result column="low_security" property="lowSecurity" />
+		<result column="security_result_url" property="securityResultUrl" />
+
+	</resultMap>
+
+
+	<sql id="udfResultColumns">
+		select
+		*
+	</sql>
+
+	<sql id="udfResultFrom">
+		from bigData_run_result_udf
+	</sql>
+
+	<insert id="addUDFResult" parameterClass="udfTaskResultDO">
+		insert into bigData_run_result_udf
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				run_id
+			</isNotNull>
+			<isNotNull prepend="," property="passCase">
+				pass_case
+			</isNotNull>
+			<isNotNull prepend="," property="failCase">
+				fail_case
+			</isNotNull>
+			<isNotNull prepend="," property="totalCase">
+				total_case
+			</isNotNull>
+			<isNotNull prepend="," property="passRate">
+				pass_rate
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsBuildNum">
+				jenkins_build_num
+			</isNotNull>
+			<isNotNull prepend="," property="resultUrl">
+				result_url
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				app_name
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSvn">
+				source_svn
+			</isNotNull>
+			<isNotNull prepend="," property="methodsTotal">
+				methods_total
+			</isNotNull>
+			<isNotNull prepend="," property="methodsCover">
+				methods_cover
+			</isNotNull>
+			<isNotNull prepend="," property="methodsRatio">
+				methods_ratio
+			</isNotNull>
+			<isNotNull prepend="," property="linesTotal">
+				lines_total
+			</isNotNull>
+			<isNotNull prepend="," property="linesCover">
+				lines_cover
+			</isNotNull>
+			<isNotNull prepend="," property="linesRatio">
+				lines_ratio
+			</isNotNull>
+			<isNotNull prepend="," property="branchsTotal">
+				branchs_total
+			</isNotNull>
+			<isNotNull prepend="," property="branchsCover">
+				branchs_cover
+			</isNotNull>
+			<isNotNull prepend="," property="branchsRatio">
+				branchs_ratio
+			</isNotNull>
+			<isNotNull prepend="," property="urgentWarning">
+				urgent_warning
+			</isNotNull>
+			<isNotNull prepend="," property="highWarning">
+				high_warning
+			</isNotNull>
+			<isNotNull prepend="," property="normalWarning">
+				normal_warning
+			</isNotNull>
+			<isNotNull prepend="," property="lowWarning">
+				low_warning
+			</isNotNull>
+			<isNotNull prepend="," property="findbugsResultUrl">
+				findbugs_result_url
+			</isNotNull>
+			<isNotNull prepend="," property="urgentSecurity">
+				urgent_security
+			</isNotNull>
+			<isNotNull prepend="," property="highSecurity">
+				high_security
+			</isNotNull>
+			<isNotNull prepend="," property="normalSecurity">
+				normal_security
+			</isNotNull>
+			<isNotNull prepend="," property="lowSecurity">
+				low_security
+			</isNotNull>
+			<isNotNull prepend="," property="securityResultUrl">
+				security_result_url
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				#runId#
+			</isNotNull>
+			<isNotNull prepend="," property="passCase">
+				#passCase#
+			</isNotNull>
+			<isNotNull prepend="," property="failCase">
+				#failCase#
+			</isNotNull>
+			<isNotNull prepend="," property="totalCase">
+				#totalCase#
+			</isNotNull>
+			<isNotNull prepend="," property="passRate">
+				#passRate#
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsBuildNum">
+				#jenkinsBuildNum#
+			</isNotNull>
+			<isNotNull prepend="," property="resultUrl">
+				#resultUrl#
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				#appName#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSvn">
+				#sourceSvn#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsTotal">
+				#methodsTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsCover">
+				#methodsCover#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsRatio">
+				#methodsRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="linesTotal">
+				#linesTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="linesCover">
+				#linesCover#
+			</isNotNull>
+			<isNotNull prepend="," property="linesRatio">
+				#linesRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsTotal">
+				#branchsTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsCover">
+				#branchsCover#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsRatio">
+				#branchsRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="urgentWarning">
+				#urgentWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="highWarning">
+				#highWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="normalWarning">
+				#normalWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="lowWarning">
+				#lowWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="findbugsResultUrl">
+				#findbugsResultUrl#
+			</isNotNull>
+			<isNotNull prepend="," property="urgentSecurity">
+				#urgentSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="highSecurity">
+				#highSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="normalSecurity">
+				#normalSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="lowSecurity">
+				#lowSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="securityResultUrl">
+				#securityResultUrl#
+			</isNotNull>
+		
+
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+
+	</insert>
+
+	<select id="queryUDFResultByRunId" resultMap="udfResultDOResult" >
+		<include refid="udfResultColumns" />
+		<include refid="udfResultFrom" />
+		where run_id=#runId#
+	</select>
+
+
+	<update id="updateUDFResult" parameterClass="udfTaskResultDO">
+		update bigData_run_result_udf
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="passCase">
+				pass_case = #passCase#
+			</isNotNull>
+			<isNotNull prepend="," property="failCase">
+				fail_case = #failCase#
+			</isNotNull>
+			<isNotNull prepend="," property="totalCase">
+				total_case = #totalCase#
+			</isNotNull>
+			<isNotNull prepend="," property="passRate">
+				pass_rate = #passRate#
+			</isNotNull>
+			<isNotNull prepend="," property="jenkinsBuildNum">
+				jenkins_build_num = #jenkinsBuildNum#
+			</isNotNull>
+			<isNotNull prepend="," property="resultUrl">
+				result_url = #resultUrl#
+			</isNotNull>
+			<isNotNull prepend="," property="appName">
+				app_name = #appName#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSvn">
+				source_svn = #sourceSvn#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsTotal">
+				methods_total = #methodsTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsCover">
+				methods_cover = #methodsCover#
+			</isNotNull>
+			<isNotNull prepend="," property="methodsRatio">
+				methods_ratio = #methodsRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="linesTotal">
+				lines_total = #linesTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="linesCover">
+				lines_cover = #linesCover#
+			</isNotNull>
+			<isNotNull prepend="," property="linesRatio">
+				lines_ratio = #linesRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsTotal">
+				branchs_total = #branchsTotal#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsCover">
+				branchs_cover = #branchsCover#
+			</isNotNull>
+			<isNotNull prepend="," property="branchsRatio">
+				branchs_ratio = #branchsRatio#
+			</isNotNull>
+			<isNotNull prepend="," property="urgentWarning">
+				urgent_warning = #urgentWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="highWarning">
+				high_warning = #highWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="normalWarning">
+				normal_warning = #normalWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="lowWarning">
+				low_warning = #lowWarning#
+			</isNotNull>
+			<isNotNull prepend="," property="findbugsResultUrl">
+				findbugs_result_url = #findbugsResultUrl#
+			</isNotNull>
+			<isNotNull prepend="," property="urgentSecurity">
+				urgent_security = #urgentSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="highSecurity">
+				high_security = #highSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="normalSecurity">
+				normal_security = #normalSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="lowSecurity">
+				low_security = #lowSecurity#
+			</isNotNull>
+			<isNotNull prepend="," property="securityResultUrl">
+				security_result_url = #securityResultUrl#
+			</isNotNull>
+			
+			where run_id=#runId#
+		</dynamic>
+	</update>
+
+</sqlMap>

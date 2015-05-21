@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsResPos" >
+
+  <typeAlias alias="dcmsResPosDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsResPosDO" />
+
+  <resultMap id="dcmsResPosDOResultMap" class="dcmsResPosDO" >
+    <result property="id" column="ID" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="createUser" column="CREATE_USER" />
+    <result property="modifyUser" column="MODIFY_USER" />
+    <result property="status" column="STATUS" />
+    <result property="name" column="NAME" />
+    <result property="alias" column="ALIAS" />
+    <result property="type" column="TYPE" />
+    <result property="topicId" column="TOPIC_ID" />
+    <result property="siteId" column="SITE_ID" />
+    <result property="isDeleted" column="IS_DELETED" />
+    <result property="note" column="NOTE" />
+    <result property="datasourceId" column="DATASOURCE_ID" />
+  </resultMap>
+
+  <sql id="dcmsResPos_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CREATE_USER, a1.MODIFY_USER, a1.STATUS,
+      a1.NAME, a1.ALIAS, a1.TYPE, a1.TOPIC_ID, a1.SITE_ID, a1.IS_DELETED, a1.NOTE, a1.DATASOURCE_ID
+  </sql>
+
+  <sql id="dcmsResPos_do_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CREATE_USER, a1.MODIFY_USER, a1.STATUS,
+      a1.NAME, a1.ALIAS, a1.TYPE, a1.TOPIC_ID, a1.SITE_ID, a1.IS_DELETED, a1.NOTE, a1.DATASOURCE_ID
+  </sql>
+
+  <sql id="dcmsResPos_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="alias" prepend="AND" >
+        <![CDATA[
+        ALIAS = #alias#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="topicId" prepend="AND" >
+        <![CDATA[
+        TOPIC_ID = #topicId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="AND" >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="dcmsResPos_doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="alias" prepend="AND" >
+        <![CDATA[
+        ALIAS = #alias#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="topicId" prepend="AND" >
+        <![CDATA[
+        TOPIC_ID = #topicId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="AND" >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsResPosDO" >
+      <selectKey resultClass="java.lang.Long" keyProperty="id">
+         SELECT SEQ_DCMS_RES_POS.NEXTVAL AS ID FROM DUAL
+      </selectKey>
+    INSERT INTO DCMS_RES_POS( ID, GMT_CREATE, GMT_MODIFIED, CREATE_USER, MODIFY_USER, STATUS,
+      NAME, ALIAS, TYPE, TOPIC_ID, SITE_ID, IS_DELETED, NOTE,DATASOURCE_ID)
+     VALUES ( #id#, sysdate, sysdate, #createUser#, #modifyUser#, #status#,
+      #name#, #alias#, #type#, #topicId#, #siteId#, #isDeleted#, #note#, #datasourceId#)
+  </insert>
+
+  <update id="update" parameterClass="dcmsResPosDO" >
+    UPDATE DCMS_RES_POS set GMT_MODIFIED = sysdate
+    <dynamic prepend="" >
+      <isNotNull property="modifyUser" prepend="," >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="," >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="," >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="alias" prepend="," >
+        <![CDATA[
+        ALIAS = #alias#
+        ]]>
+      </isNotNull>
+        <isNotNull property="topicId" prepend="," >
+        <![CDATA[
+        TOPIC_ID = #topicId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="," >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="," >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+      <!-- 所属站点id不需要更新的
+      <isNotNull property="siteId" prepend="," >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+       -->
+      <isNotNull property="isDeleted" prepend="," >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="," >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="dcmsResPosDOResultMap" >
+     SELECT
+    <include refid="dcmsResPos_do_columns" />
+    <![CDATA[
+     FROM DCMS_RES_POS a1 WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RES_POS WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsResPosDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM DCMS_RES_POS
+    <include refid="dcmsResPos_doQueryParams" />
+  </select>
+
+  <select id="findListByDO" resultMap="dcmsResPosDOResultMap" parameterClass="dcmsResPosDO" >
+     SELECT
+    <include refid="dcmsResPos_do_columns" />
+     FROM DCMS_RES_POS a1
+    <include refid="dcmsResPos_doQueryParams" />
+  </select>
+
+  <select id="queryResPosList" resultMap="dcmsResPosDOResultMap" parameterClass="java.util.Map" >
+     SELECT
+    <include refid="dcmsResPos_do_columns" />
+     FROM DCMS_RES_POS a1
+    <dynamic prepend="WHERE" >
+      <isNotNull property="resPosIds" prepend="AND" >
+         ID in
+			<iterate property="resPosIds" open="(" close=")" conjunction=",">
+				#resPosIds[]#
+			</iterate>
+	  </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME like '%' || #name# || '%'
+        ]]>
+      </isNotNull>
+      <isGreaterThan property="topicId" prepend="AND" compareValue="0">
+        <![CDATA[
+        TOPIC_ID = #topicId#
+        ]]>
+      </isGreaterThan>
+      <isGreaterThan property="siteId" prepend="AND" compareValue="0">
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isGreaterThan>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+    </dynamic>
+    ORDER BY ID DESC
+  </select>
+</sqlMap>

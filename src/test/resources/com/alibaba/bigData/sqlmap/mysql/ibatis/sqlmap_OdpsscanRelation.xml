@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="OdpsscanRelationDAO">
+
+	<typeAlias alias="odpsscanActiveRuleBO"
+		type="com.alibaba.bigData.dal.model.OdpsscanActiveRuleBO" />
+
+	<typeAlias alias="odpsscanRelationRuleBO"
+		type="com.alibaba.bigData.dal.model.OdpsscanRelationRuleBO" />
+
+	<resultMap id="odpsscanRuleActiveRuleAll" class="odpsscanActiveRuleBO">
+		<result property="taskId" column="task_id" javaType="Integer"
+			jdbcType="int" />
+		<result property="ruleName" column="rule_name" />
+		<result property="params" column="params" />
+		<result property="rank" column="rank" javaType="Integer" jdbcType="int"/>
+		<result property="content" column="content" />
+		<result property="nodeType" column="node_type" javaType="Integer"
+			jdbcType="int" />
+		<result property="replaceParamStatus" column="replace_param_status" javaType="Integer"
+			jdbcType="int" />
+	</resultMap>
+
+	<resultMap id="odpsscanRelationRuleResultAll" class="odpsscanRelationRuleBO">
+		<result property="id" column="id" />
+		<result property="ruleId" column="rule_id" javaType="Integer" jdbcType="int" />
+		<result property="ruleName" column="rule_name" />
+		<result property="rank" column="rank" javaType="Integer" jdbcType="int"/>
+		<result property="detail" column="detail" />
+		<result property="eventType" column="event_type" />
+		<result property="params" column="params" />
+	</resultMap>
+
+	<select id="selectRules" parameterClass="Long"
+		resultMap="odpsscanRelationRuleResultAll">
+		select
+		 GROUP_CONCAT(a.id) id,GROUP_CONCAT(a.event_type) event_type,b.rule_id rule_id,b.rule_name rule_name,b.rank rank,b.detail detail,b.params params
+		  from `bigdata_odpsscan_relation` a ,`bigdata_odpsscan_rule` b
+		   where a.task_id=#taskId# and a.status=0 and a.rule_id=b.rule_id and b.status=0
+			group by b.rule_id
+	</select>
+
+	<select id="selectOfflineActiveRules" parameterClass="Integer"
+		resultMap="odpsscanRuleActiveRuleAll">
+		select
+		a.task_id,b.rule_name rule_name,b.rank rank,b.node_type node_type,b.replace_param_status replace_param_status,b.params params,c.content content
+		 from `bigdata_odpsscan_relation` a ,`bigdata_odpsscan_rule` b ,`bigdata_odpsscan_resource` c
+		 where a.task_id=#taskId# and a.status=0 and a.rule_id=b.rule_id and b.status=0 and b.resource_id=c.resource_id and c.status=0
+	</select>
+
+	<select id="selectOnlineActiveRules" parameterClass="Map"
+		resultMap="odpsscanRuleActiveRuleAll">
+		select
+		a.task_id,b.rule_name rule_name,b.rank rank,b.node_type node_type,b.replace_param_status replace_param_status,b.params params,c.content content
+		 from `bigdata_odpsscan_relation` a ,`bigdata_odpsscan_rule` b ,`bigdata_odpsscan_resource` c
+		 where a.project_name=#projectName# and a.event_type=#eventType# and a.status=0 and a.rule_id=b.rule_id and b.status=0 and b.resource_id=c.resource_id and c.status=0
+	</select>
+
+	<select id="selectOnlineActiveRulesByUid" parameterClass="Map"
+		resultMap="odpsscanRuleActiveRuleAll">
+		select
+		a.task_id,b.rule_name rule_name,b.rank rank,b.node_type node_type,b.replace_param_status replace_param_status,b.params params,c.content content
+		 from `bigdata_odpsscan_relation` a ,`bigdata_odpsscan_rule` b ,`bigdata_odpsscan_resource` c ,`bigdata_job_odpsscan` d
+		 where a.project_name=#projectName# and a.event_type=#eventType# and a.status=0 and a.rule_id=b.rule_id and b.status=0 and b.resource_id=c.resource_id and c.status=0
+		 and d.project=#projectName# and d.is_deleted=0 and (d.names like  '%$uid$%' or d.names is null or length(d.names)=0) and a.task_id=d.task_id
+	</select>
+
+	<insert id="insertOnlineList" parameterClass="java.util.Map" >
+        insert into `bigdata_odpsscan_relation` (
+        task_id,project_name,event_type,rule_id
+        ) values
+        <iterate conjunction="," property="relationList" >
+            <![CDATA[ (#relationList[].taskId#,#relationList[].projectName#,#relationList[].eventType#,#relationList[].ruleId#) ]]>
+        </iterate>
+         ON DUPLICATE KEY UPDATE status=0,project_name=VALUES(project_name),event_type=VALUES(event_type)
+    </insert>
+
+    <insert id="insertOfflineList" parameterClass="java.util.Map" >
+        insert into `bigdata_odpsscan_relation` (
+        task_id,rule_id
+        ) values
+        <iterate conjunction="," property="relationList" >
+            <![CDATA[ (#relationList[].taskId#,#relationList[].ruleId#) ]]>
+        </iterate>
+        ON DUPLICATE KEY UPDATE status=0
+    </insert>
+
+	<update id="delete" parameterClass="Integer">
+		update `bigdata_odpsscan_relation` set `status` =1
+		 where `id`=#id#
+	</update>
+
+	<update id="deleteAll" parameterClass="Integer">
+		update `bigdata_odpsscan_relation` set `status` =1
+		 where `task_id`=#taskId#
+	</update>
+</sqlMap>

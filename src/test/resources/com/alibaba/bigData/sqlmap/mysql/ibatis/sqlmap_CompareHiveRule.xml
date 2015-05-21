@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="CompareHiveRule">
+	<typeAlias alias="compareHiveRuleDO"
+		type="com.alibaba.bigData.dal.entity.CompareHiveRuleDO" />
+
+
+	<resultMap class="CompareHiveRuleDO" id="compareHiveRuleDOResult">
+		<result column="rule_id" property="ruleId" />
+		<result column="rule_type" property="ruleType" />
+		<result column="rule_sql" property="ruleSql" />
+		<result column="rule_desc" property="ruleDesc" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="stats_flag" property="statsFlag" />
+		<result column="stats_name" property="statsName" />
+	</resultMap>
+
+	<sql id="compareHiveRuleColumns">
+		select
+		*
+	</sql>
+
+	<sql id="compareHiveRuleFrom">
+		from bigData_compare_hive_rule
+	</sql>
+
+
+	<select id="queryCompareHiveRuleByRuleId" resultMap="compareHiveRuleDOResult">
+		<include refid="compareHiveRuleColumns" />
+		<include refid="compareHiveRuleFrom" />
+		where rule_id=#ruleId#
+		order by rule_type asc
+	</select>
+
+	<select id="queryCompareHiveRule" resultMap="compareHiveRuleDOResult">
+		<include refid="compareHiveRuleColumns" />
+		<include refid="compareHiveRuleFrom" />
+		where is_deleted=0
+		order by rule_type asc
+	</select>
+
+</sqlMap>

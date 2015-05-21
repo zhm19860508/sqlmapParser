@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="agooMessage"
+		type="com.alibaba.china.ipinshared.dataobject.AgooMsgDO" />
+	<resultMap id="agooMessageResult" class="agooMessage">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="targetId" column="target_id" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="fromUserId" column="from_user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="message" column="message" jdbcType="text"
+			javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="msgType" column="msg_type" jdbcType="int"
+			javaType="int" />
+		<result property="groupChatType" column="group_chat_type" jdbcType="int"
+			javaType="int" />
+		<result property="groupChatTypeId" column="group_chat_type_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="fromNickName" column="from_nick_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="isIosRead" column="is_ios_read" jdbcType="int"
+			javaType="int" />
+		<result property="msgTitle" column="msg_title" jdbcType="varchar"
+			javaType="java.lang.String" />
+	</resultMap>
+	<typeAlias alias="agooMessageMQuery" type="com.alibaba.china.ipinshared.m.query.AgooMessageMQuery" />
+
+	<sql id="agooMessageColumns">
+		select id,target_id,from_user_id,user_id,message,is_deleted,gmt_created,gmt_modified,msg_type,group_chat_type,group_chat_type_id,from_nick_name,is_ios_read,msg_title
+	</sql>
+
+
+	<!-- 获取单条Agoo消息 -->
+	<select id="get_agoo_message_by_id" resultMap="agooMessageResult">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message where id = #id#
+	</select>
+
+	<!-- 获取最新的Agoo消息 -->
+	<select id="get_last_agoo_messages" resultMap="agooMessageResult" parameterClass="agooMessageMQuery">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message where  is_deleted = 0 and user_id =
+		#userId#
+		<isNotNull property="msgType" prepend="AND">
+			msg_type =
+			#msgType#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+			
+		</isNotNull>	
+		
+		order by id desc
+		<isNotNull property="id">
+			limit #start#,#size#			
+		</isNotNull>			
+		<isNull property="id" >
+			limit 20
+		</isNull>
+		
+	</select>
+
+
+	<!-- 新增消息记录 -->
+	<insert id="add_new_agoo_messages" parameterClass="agooMessage">
+		insert into
+		ipin_agoo_message(target_id,from_user_id,user_id,message,msg_type,group_chat_type,group_chat_type_id,from_nick_name,msg_title,is_ios_read,is_deleted,gmt_created,gmt_modified)
+		values(#targetId#,#fromUserId#,#userId#,#message#,#msgType#,#groupChatType#,#groupChatTypeId#,#fromNickName#,#msgTitle#,0,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 删除消息 -->
+	<update id="delete_agoo_message" parameterClass="agooMessage">
+		update
+		ipin_agoo_message set gmt_modified = now(),is_delete = 1 where id =
+		#id#
+	</update>
+
+	<!-- 获取两个用户之间的聊天并按照时间顺序 -->
+	<select id="get_chat_messages" resultMap="agooMessageResult" parameterClass="agooMessageMQuery">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message
+		where is_deleted = 0 and user_id in
+		(#userId#,#fromUserId#) and from_user_id in
+		(#userId#,#fromUserId#)
+		<isNotNull property="msgType" prepend="AND">
+			msg_type =
+			#msgType#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+		</isNotNull>
+		order by id desc
+		<isNotNull property="id">
+			limit #start#,#size#			
+		</isNotNull>
+		<isNull property="id" >
+			limit 20
+		</isNull>
+	</select>
+	<select id="get_chat_messages_for_list" resultMap="agooMessageResult" parameterClass="java.util.HashMap">
+		<include refid="agooMessageColumns" /> 
+		 from
+		ipin_agoo_message
+		where is_deleted = 0 and msg_type = 2 and (user_id = 
+		#userId# or from_user_id =#userId#)
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+		</isNotNull>		
+		order by id desc		
+			limit 20		
+	</select>
+	
+	
+	
+	<select id="get_group_chat_messages_for_list" resultMap="agooMessageResult" parameterClass="agooMessageMQuery">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message
+		where is_deleted = 0 and msg_type =3 and  group_chat_type=#groupChatType#
+		and group_chat_type_id =#groupChatTypeId#
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+		</isNotNull>		
+		order by id desc
+		<isNotNull property="id">
+			limit #start#,#size#			
+		</isNotNull>
+		<isNull property="id" >
+			limit 20
+		</isNull>
+	</select>
+
+	<select id="get_msg_count_by_query" resultClass="java.lang.Integer"
+		parameterClass="agooMessageMQuery">
+		select count(*) from ipin_agoo_message  where is_deleted = 0
+		<isNotNull property="msgType" prepend="AND">
+			msg_type =
+			#msgType#
+		</isNotNull>
+		<isNotNull property="userId" prepend="AND">
+			user_id = #userId#			
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id > #id#			
+		</isNotNull>		
+	</select>
+	
+	<select id="get_chat_messages_count" resultClass="java.lang.Integer" parameterClass="agooMessageMQuery">
+		select count(*) from ipin_agoo_message
+		ipin_agoo_message
+		where is_deleted = 0 and user_id in
+		(#userId#,#fromUserId#) and from_user_id in
+		(#userId#,#fromUserId#)
+		<isNotNull property="msgType" prepend="AND">
+			msg_type =
+			#msgType#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+		</isNotNull>
+	</select>
+		
+	<select id="get_group_chat_messages_count" resultClass="java.lang.Integer" parameterClass="agooMessageMQuery">
+		select count(*) from ipin_agoo_message
+		ipin_agoo_message
+		where is_deleted = 0 and msg_type =3 and  group_chat_type=#groupChatType#
+		and group_chat_type_id =#groupChatTypeId#
+		<isNotNull property="id" prepend="AND">
+			id > #id#
+		</isNotNull>		
+	</select>	
+	<!--现在更新只有更新is_ios_read这个需求，其他的先不加了  -->
+	<update id="update_agoo_message" parameterClass="agooMessage">
+		update
+		ipin_agoo_message set gmt_modified = now(),is_ios_read = #isIosRead# where id =
+		#id#
+	</update>
+	
+	<select id="get_last_agoo_messages_for_ios" resultMap="agooMessageResult" parameterClass="agooMessageMQuery">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message where  is_deleted = 0 and user_id =
+		#userId# and msg_type !=3
+		<isNotNull property="isIosRead" prepend="AND">
+			is_ios_read =
+			#isIosRead#
+		</isNotNull>
+		<isNotNull property="createTime" prepend="AND">
+			gmt_created >=
+			#createTime#
+		</isNotNull>
+		
+		<isNotNull property="id" prepend="AND">
+			<![CDATA[
+			id < #id#
+			]]>			
+		</isNotNull>
+		order by id desc	
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>		
+	</select>
+	
+	<select id="get_last_agoo_messages_count_for_ios" resultClass="java.lang.Integer" parameterClass="agooMessageMQuery">
+		select count(*) from
+		ipin_agoo_message where  is_deleted = 0 and user_id =
+		#userId# and msg_type !=3
+		<isNotNull property="isIosRead" prepend="AND">
+			is_ios_read =
+			#isIosRead#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			<![CDATA[
+			id < #id#
+			]]>			
+		</isNotNull>
+		order by id desc	
+	</select>
+	
+	<select id="get_group_chat_messages_for_max_limit" resultMap="agooMessageResult" parameterClass="agooMessageMQuery">
+		<include refid="agooMessageColumns" /> 
+		from
+		ipin_agoo_message
+		where is_deleted = 0 and msg_type =3 and  group_chat_type=#groupChatType#
+		and group_chat_type_id =#groupChatTypeId#
+		<isNotNull property="id" prepend="AND">
+			<![CDATA[
+			id < #id#
+			]]>			
+		</isNotNull>		
+		order by id desc
+		<isNotNull property="id">
+			limit #start#,#size#			
+		</isNotNull>
+		<isNull property="id" >
+			limit 20
+		</isNull>
+	</select>
+	
+	<select id="get_group_chat_messages_count_for_max_limit" resultClass="java.lang.Integer" parameterClass="agooMessageMQuery">
+		select count(*) from ipin_agoo_message
+		ipin_agoo_message
+		where is_deleted = 0 and msg_type =3 and  group_chat_type=#groupChatType#
+		and group_chat_type_id =#groupChatTypeId#
+		<isNotNull property="id" prepend="AND">
+			<![CDATA[
+			id < #id#
+			]]>			
+		</isNotNull>	
+	</select>	
+</sqlMap>

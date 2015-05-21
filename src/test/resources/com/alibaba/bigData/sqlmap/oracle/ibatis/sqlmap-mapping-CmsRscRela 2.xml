@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRscRela">
+
+	<resultMap class="CmsRscRela" id="CmsRscRela-result">
+		<result property="id" 			javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_MODIFIED" />
+		<result property="rscId" 		javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="RSC_ID" />
+		<result property="rscChildId" 	javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="RSC_CHILD_ID" />
+		<result property="rscType" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="RSC_TYPE" />
+	</resultMap>
+
+
+
+	<insert id="MS_INSERT_CMS_RSC_RELA" parameterClass="CmsRscRela">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_RSC_RELA.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_RSC_RELA
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  RSC_ID  ,RSC_CHILD_ID, RSC_TYPE )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #rscId# ,  #rscChildId#  , #rscType# )
+        ]]>
+	</insert>
+
+	<select id="MS_SELECT_CMS_RSC_RELA_BY_RSC_ID" parameterClass="java.lang.Long"
+		resultMap="CmsRscRela-result">
+        <![CDATA[
+            SELECT * FROM CMS_RSC_RELA WHERE RSC_ID = #rscId# 
+        ]]>
+	</select>
+	
+	<delete id="MS_DELATE_CMS_RSC_RELA_BY_RSC_ID" parameterClass="java.util.Map">
+        <![CDATA[
+            delete FROM CMS_RSC_RELA WHERE RSC_ID = #rscId#  and RSC_TYPE = #rscType#
+        ]]>
+	</delete>
+
+	<select id="MS_SEARCH_CMS_RSC_RELA_BY_CHILD_RSC_ID" parameterClass="java.util.Map"
+		resultMap="CmsRscRela-result">
+        <![CDATA[
+        SELECT *
+		  FROM (select p.*, ROWNUM rnum
+		          from (select rsc.*
+		                  from (select rela.*
+		                          from cms_rsc_rela rela
+		                         start with rsc_child_id = #rscChildId# 
+		                        connect by prior rsc_id = rsc_child_id) rsc
+		                 where rsc.rsc_type = 'RT_PAGE'
+		                 order by rsc.id) p
+		         WHERE ROWNUM <= #offset# + #length#) r
+		 WHERE rnum > #offset#
+        ]]>
+	</select>
+
+	<select id="MS_COUNT_CMS_RSC_RELA_BY_CHILD_RSC_ID" parameterClass="java.util.Map"
+		resultClass="java.lang.Long">
+        <![CDATA[
+        select count(*)
+		                  from (select rela.*
+		                          from cms_rsc_rela rela
+		                         start with rsc_child_id = #rscChildId# 
+		                        connect by prior rsc_id = rsc_child_id) rsc
+		                 where rsc.rsc_type = 'RT_PAGE'
+        ]]>
+	</select>
+	
+	<select id="MS_QUERY_CMS_RSC_RELA_BY_RSC_ID" parameterClass="java.util.Map"
+		resultMap="CmsRscRela-result">
+        <![CDATA[
+        select *
+			  from cms_rsc_rela a
+			 start with a.rsc_id = (select rs.id
+			                          from cms_rsc rs
+			                         where rs.rsc_type = #rscType#
+			                           and rs.rela_id = #relaId#
+			                           and rownum < 2)
+			connect by prior rsc_child_id = rsc_id
+        ]]>
+	</select>
+	
+
+
+</sqlMap>

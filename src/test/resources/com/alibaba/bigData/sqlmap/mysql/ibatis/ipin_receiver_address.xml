@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="address"
+		type="com.alibaba.china.ipinshared.dataobject.ReceiverAddressDO" />
+	<resultMap id="addressResult" class="address">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="receiverAddress" column="receiver_address"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="receiverLatitude" column="receiver_latitude"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="receiverLongitude" column="receiver_longitude"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="isDefault" column="is_default" jdbcType="int"
+			javaType="int" />
+		<result property="shortName" column="short_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="geohash" column="geohash" jdbcType="varchar"
+			javaType="java.lang.String" />
+	</resultMap>
+	
+	<sql id="addressColumns">
+		select id,user_id,receiver_address,receiver_latitude,receiver_longitude,is_deleted,gmt_created,gmt_modified,is_default,short_name,geohash
+	</sql>
+
+	<!-- 新增收货地址 -->
+	<insert id="add_new_address" parameterClass="address">
+		insert into
+		ipin_receiver_address(user_id,receiver_address,receiver_latitude,receiver_longitude,is_deleted,gmt_created,gmt_modified,is_default,short_name,geohash)
+		values(#userId#,#receiverAddress#,#receiverLatitude#,#receiverLongitude#,0,now(),now(),#isDefault#,#shortName#,#geohash#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+
+	
+
+	<!-- 获取单个收货地址 -->
+	<select id="get_address_by_id" resultMap="addressResult"
+		parameterClass="java.lang.Long">
+		<include refid="addressColumns" /> 
+		 from ipin_receiver_address where id = #id# and
+		is_deleted =
+		0
+	</select>
+
+	<!-- 获取用户的收货地址 -->
+	<select id="get_address_by_user_id" resultMap="addressResult"
+		parameterClass="java.lang.Long">
+		<include refid="addressColumns" /> 
+		from ipin_receiver_address where user_id =
+		#userId# and
+		is_deleted =
+		0 order by gmt_created asc
+	</select>
+
+	<!-- 更新户的收货地址 -->
+	<update id="update_address" parameterClass="address">
+		update ipin_receiver_address set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="receiverAddress" prepend=",">
+			receiver_address =
+			#receiverAddress#
+		</isNotNull>
+		<isNotNull property="receiverLatitude" prepend=",">
+			receiver_latitude =
+			#receiverLatitude#
+		</isNotNull>
+		<isNotNull property="receiverLongitude" prepend=",">
+			receiver_longitude =
+			#receiverLongitude#
+		</isNotNull>
+
+		<isNotNull property="isDefault" prepend=",">
+			is_default =
+			#isDefault#
+		</isNotNull>
+		<isNotNull property="shortName" prepend=",">
+			short_name =
+			#shortName#
+		</isNotNull>
+		<isNotNull property="geohash" prepend=",">
+			geohash =
+			#geohash#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<update id="update_address_default_false" parameterClass="java.lang.Long">
+		update ipin_receiver_address set gmt_modified = now(),
+			is_default =0
+		where user_id = #userId#
+	</update>
+
+	<select id="get_default_address_by_userId" resultMap="addressResult"
+		parameterClass="java.lang.Long">
+		<include refid="addressColumns" /> 
+		 from ipin_receiver_address where user_id =
+		#userId# and
+		is_deleted =
+		0 and is_default = 1
+	</select>
+
+</sqlMap>

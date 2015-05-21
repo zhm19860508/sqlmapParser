@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ScanTaskConf">
+	<typeAlias alias="scanTaskDO"
+		type="com.alibaba.bigData.dal.entity.HiveScanTaskConfDO" />
+
+
+	<resultMap class="scanTaskDO" id="scanTaskconfDO">
+		<result column="taskID" property="taskID" />
+		<result column="svn" property="svn" />
+		<result column="staffID" property="staffID" />
+		<result column="in_path" property="inPath" />
+		<result column="ex_path" property="exPath" />
+		<result column="in_type" property="inType" />
+		<result column="ex_type" property="exType" />
+		<result column="conversions" property="conversions" />
+		<result column="script_ids" property="scriptIds" />
+		<result column="auto_scan" property="autoScan" />
+		<result column="svn_trigger" property="svnTrigger" />
+		<result column="svn_trigger_notify" property="svnTriggerNotify" />
+		<result column="auto_scan_notify" property="autoScanNotify" />
+		<result column="time_stamp_type" property="timeType" />
+		<result column="time_stamp_value" property="timeValue" />
+		<result column="status" property="status" />
+
+
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+		a.taskID,a.svn,a.staffId,a.in_path,a.ex_path,a.in_type,a.ex_type,a.conversions,a.script_ids,a.auto_scan,
+		a.svn_trigger,a.svn_trigger_notify,a.auto_scan_notify,a.time_stamp_type,a.time_stamp_value,a.status
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_conf a
+	</sql>
+
+	<insert id="addScanTask" parameterClass="scanTaskDO">
+		insert into bigData_hiveScan_conf
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				taskID
+			</isNotNull>
+			<isNotNull prepend="," property="svn">
+				svn
+			</isNotNull>
+			<isNotNull prepend="," property="staffID">
+				staffID
+			</isNotNull>
+			<isNotNull prepend="," property="inPath">
+				in_path
+			</isNotNull>
+			<isNotNull prepend="," property="exPath">
+				ex_path
+			</isNotNull>
+			<isNotNull prepend="," property="inType">
+				in_type
+			</isNotNull>
+			<isNotNull prepend="," property="exType">
+				ex_type
+			</isNotNull>
+			<isNotNull prepend="," property="conversions">
+				conversions
+			</isNotNull>
+			<isNotNull prepend="," property="scriptIds">
+				script_ids
+			</isNotNull>
+			<isNotNull prepend="," property="autoScan">
+				auto_scan
+			</isNotNull>
+			<isNotNull prepend="," property="svnTrigger">
+				svn_trigger
+			</isNotNull>
+			<isNotNull prepend="," property="svnTriggerNotify">
+				svn_trigger_notify
+			</isNotNull>
+			<isNotNull prepend="," property="autoScanNotify">
+				auto_scan_notify
+				</isNotNull>
+			<isNotNull prepend="," property="timeType">
+				time_stamp_type
+			</isNotNull>
+			<isNotNull prepend="," property="timeValue">
+				time_stamp_value
+			</isNotNull>
+			,created_at,updated_at
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				#taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="svn">
+				#svn#
+			</isNotNull>
+			<isNotNull prepend="," property="staffID">
+				#staffID#
+			</isNotNull>
+			<isNotNull prepend="," property="inPath">
+				#inPath#
+			</isNotNull>
+			<isNotNull prepend="," property="exPath">
+				#exPath#
+			</isNotNull>
+			<isNotNull prepend="," property="inType">
+				#inType#
+			</isNotNull>
+			<isNotNull prepend="," property="exType">
+				#exType#
+			</isNotNull>
+			<isNotNull prepend="," property="conversions">
+				#conversions#
+			</isNotNull>
+			<isNotNull prepend="," property="scriptIds">
+				#scriptIds#
+			</isNotNull>
+			<isNotNull prepend="," property="autoScan">
+				#autoScan#
+			</isNotNull>
+			<isNotNull prepend="," property="svnTrigger">
+				#svnTrigger#
+			</isNotNull>
+			<isNotNull prepend="," property="svnTriggerNotify">
+				#svnTriggerNotify#
+			</isNotNull>
+			<isNotNull prepend="," property="autoScanNotify">
+				#autoScanNotify#
+			</isNotNull>
+			<isNotNull prepend="," property="timeType">
+				#timeType#
+			</isNotNull>
+			<isNotNull prepend="," property="timeValue">
+				#timeValue#
+			</isNotNull>
+			,now(),now()
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryScanTaskBytaskID" parameterClass="java.lang.Integer" resultMap="scanTaskconfDO">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.taskID=#taskID#
+	</select>
+
+	<select id="queryBytaskIDAndSvntrigger" resultMap="scanTaskconfDO">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.taskID=#taskID# and svn_trigger=1
+	</select>
+
+	<update id="updateScanTask" parameterClass="scanTaskDO">
+		update bigData_hiveScan_conf
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="svn">
+				svn=#svn#
+			</isNotNull>
+			<isNotNull prepend="," property="staffID">
+				staffID=#staffID#
+			</isNotNull>
+			<isNotNull prepend="," property="inPath">
+				in_path=#inPath#
+			</isNotNull>
+			<isNotNull prepend="," property="exPath">
+				ex_path=#exPath#
+			</isNotNull>
+			<isNotNull prepend="," property="inType">
+				in_type=#inType#
+			</isNotNull>
+			<isNotNull prepend="," property="exType">
+				ex_type=#exType#
+			</isNotNull>
+			<isNotNull prepend="," property="conversions">
+				conversions=#conversions#
+			</isNotNull>
+			<isNotNull prepend="," property="scriptIds">
+				script_ids=#scriptIds#
+			</isNotNull>
+			<isNotNull prepend="," property="autoScan">
+				auto_scan=#autoScan#
+			</isNotNull>
+			<isNotNull prepend="," property="svnTrigger">
+				svn_trigger=#svnTrigger#
+			</isNotNull>
+			<isNotNull prepend="," property="svnTriggerNotify">
+				svn_trigger_notify=#svnTriggerNotify#
+			</isNotNull>
+			<isNotNull prepend="," property="autoScanNotify">
+				auto_scan_notify=#autoScanNotify#
+			</isNotNull>
+			<isNotNull prepend="," property="timeType">
+				time_stamp_type=#timeType#
+			</isNotNull>
+			<isNotNull prepend="," property="timeValue">
+				time_stamp_value=#timeValue#
+			</isNotNull>
+			,updated_at=now()
+			where taskID = #taskID#
+		</dynamic>
+	</update>
+
+	<update id="deleteScanTask" parameterClass="java.lang.Integer">
+		update bigData_job_base,bigData_hiveScan_conf
+		set
+		bigData_job_base.is_deleted = 1 = 1,bigData_hiveScan_conf.status = 9
+		where bigData_job_base.id = #taskID# and bigData_hiveScan_conf.taskID = #taskID#
+	</update>
+
+    <select id="getSvnAccount" resultClass="java.util.HashMap">
+        select user_name as username,password
+        from bigData_svn_account
+    </select>
+    
+    <update id="updateSvnPasswd" parameterClass="java.util.HashMap">
+        update bigData_svn_account
+        set
+        password = #password#
+        where
+        user_name=#username#
+    </update>
+
+</sqlMap>

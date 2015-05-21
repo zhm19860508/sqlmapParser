@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://toolkit.alibaba-inc.com/dtd/ibatis/sql-map-2.dtd">
+<sqlMap namespace="cms_CmsFeedback">
+    
+    <cacheModel id="Cms_Feedback" type="LRU">
+        <flushInterval hours="24"/>
+    </cacheModel>
+    
+    <resultMap id="CmsFeedback-result" class="CmsFeedback">
+        <result property="id"  javaType="java.lang.Long" column="ID" />
+        <result property="title" javaType="java.lang.String" column="TITLE" />
+        <result property="userid" javaType="java.lang.String" column="USER_ID" />
+        <result property="gmtCreate" javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+        <result property="content" javaType="java.lang.String" column="CONTENT" />
+    </resultMap>
+    
+    <!--
+      - ===============================================
+      - 添加一个CmsFeedback对象
+      - ===============================================
+    -->
+    <insert id="MS_CREATE_FEEDBACK" parameterClass="CmsFeedback">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_FEEDBACK.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        
+        <![CDATA[
+        insert into CMS_FEEDBACK (
+                ID,
+                TITLE,
+                USER_ID,
+                GMT_CREATE,
+                GMT_MODIFIED,
+                CONTENT                
+        ) values (
+                #id#,
+                #title#,
+                #userid#,
+                sysdate,
+               	sysdate,
+                #content#                
+        )
+    ]]>
+    </insert>
+       
+    <!--
+      - ===============================================
+      - 修改feedback操作
+      - ===============================================
+    -->
+    <update id="MS_MODIFY_FEEDBACK" parameterClass="CmsFeedback"><![CDATA[
+    	update CMS_FEEDBACK 
+    	set
+    		TITLE = #title#,
+    		GMT_MODIFIED = sysdate,
+    		CONTENT = #content#
+    	
+    	where ID = #id#
+    ]]>
+    </update>  
+    
+    <!--
+      - ===============================================
+      - 删除feedback操作
+      - ===============================================
+    --> 
+    <delete id="MS_DELETE_FEEDBACK_BY_ID" parameterClass="java.lang.Long"><![CDATA[
+    	delete from CMS_FEEDBACK where ID = #id#
+    ]]>
+    </delete>
+    
+	<!--
+      - ===============================================
+      - 分页获取全部feedback
+      - ===============================================
+    -->     
+   	<select id="MS_RETRIEVE_ALL_FEEDBACK_BY_PAGE" parameterClass="java.util.Map"
+		resultMap="CmsFeedback-result">	   
+	   <![CDATA[
+		   SELECT * FROM (
+			   SELECT cmfd.*,ROWNUM rnum FROM (
+				   SELECT * FROM CMS_FEEDBACK 
+		]]>		   
+		<isNotEmpty prepend="where" property="userid">
+			USER_ID = #userid#
+		</isNotEmpty>
+		<![CDATA[		   
+				   ORDER BY GMT_MODIFIED DESC,id DESC
+			   )cmfd WHERE ROWNUM <= #offset# + #length#
+		   ) WHERE rnum >#offset#
+	   ]]>
+	</select>
+	
+	<!--
+      - ===============================================
+      - 根据id获取某条feedback
+      - ===============================================
+    -->  
+    <select id="MS_GET_FEEDBACK_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsFeedback-result">	
+		<![CDATA[
+			SELECT * FROM CMS_FEEDBACK
+			WHERE ID = #id#
+		]]>
+	</select>
+	
+	<!--
+      - ===============================================
+      - 获取feedback总数
+      - ===============================================
+    -->  
+    <select id="MS_GET_FEEDBACK_COUNT" parameterClass="java.util.Map" resultClass="java.lang.Long">
+   		<![CDATA[ 
+   			SELECT COUNT(*) FROM CMS_FEEDBACK
+   		]]> 
+   		<isNotEmpty prepend="where" property="userid">
+			USER_ID = #userid#
+		</isNotEmpty>	
+    </select>
+</sqlMap>

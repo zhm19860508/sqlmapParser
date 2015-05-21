@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.onlineTemplate">
+	<resultMap id="OnlineTemplate-result" class="OnlineTemplate">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="versionId"     javaType="java.lang.Long"       column="VERSION_ID" />
+		<result property="code"          javaType="java.lang.String"     column="TEMPLATE_CODE" />
+		<result property="content"       javaType="java.lang.String"     column="TEMPLATE_CONTENT" />
+		<result property="containTdp"    javaType="java.lang.String"     column="CONTAIN_TDP" />
+		<result property="directCall"    javaType="java.lang.String"     column="DIRECT_CALL" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+	<!-- 创建页面位置 -->
+	<insert id="addOnlineTemplateContent" parameterClass="OnlineTemplate">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_ONLINE_TPL_CONTENT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO ONLINE_TPL_CONTENT(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        TEMPLATE_CODE,
+		        TEMPLATE_CONTENT,
+		        CONTAIN_TDP,
+		        DIRECT_CALL,		        
+		        VERSION_ID)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #code#,
+		        #content#,
+		        #containTdp#,
+		        #directCall#,
+		        #versionId#)		
+		]]>		
+	</insert>
+	<select id="getNotInRuleVersion" resultClass="java.lang.Long">
+		select otc.version_id from online_tpl_content otc where otc.version_id not in ( select o.version_id from online_rule t,online_tpl_content o where t.tpl_version_id=o.version_id)
+	</select>
+	<select id="getRuleVersionIds" resultClass="java.lang.Long">
+		select o.version_id from online_rule t,online_tpl_content o where t.tpl_version_id=o.version_id
+	</select>
+</sqlMap>

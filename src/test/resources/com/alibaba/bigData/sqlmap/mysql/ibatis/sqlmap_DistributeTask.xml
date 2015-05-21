@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DistributeTask">
+	<typeAlias alias="distributeTaskDO"
+		type="com.alibaba.bigData.dal.entity.DistributeTaskDO" />
+
+
+	<resultMap class="DistributeTaskDO" id="distributeTaskDOResult">
+		<result column="task_id" property="taskId" />
+		<result column="table_name" property="tableName" />
+		<result column="partition" property="partition" />
+		<result column="expect" property="expect" />
+		<result column="rule_ids" property="ruleIds" />
+		<result column="test_column" property="testColumn" />
+		<result column="rule_param" property="ruleParam" />
+		<result column="env" property="env" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="packageName" property="packageName" />
+		<result column="private_rule_ids" property="privateRuleIds" />
+		<result column="run_project" property="runProject" />
+	</resultMap>
+
+	<resultMap class="DistributeTaskDO" id="distributeTaskDOFullResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="title" property="projectName" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="group_id" property="groupId" />
+		<result column="table_name" property="tableName" />
+		<result column="work_flow_project_id" property="requestId" />
+	</resultMap>
+	<sql id="distributeTaskColumns">
+		select
+		a.task_id,a.table_name,a.partition,a.expect,a.rule_ids,a.test_column,a.rule_param,is_deleted,a.env,a.packageName,a.private_rule_ids,a.run_project
+	</sql>
+
+	<sql id="distributeTaskFullColumns">
+		select
+		a.task_id,a.table_name,b.id,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,c.title
+	</sql>
+
+	<sql id="distributeTaskFrom">
+		from bigData_job_distribute a
+	</sql>
+
+
+	<sql id="distributeTaskQuery">
+        where b.is_deleted = 0
+		<isNotNull property="taskName" prepend="AND">
+            task_name like '$taskName$%'
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            table_name like '$tableName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            b.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="distributeTaskJoinQuery">
+		where b.is_deleted=0
+ 		<isNotNull property="taskName" prepend="AND">
+            task_name like '$taskName$%'
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            a.title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            source_tbl = #tableName#
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            b.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="distributeTaskJoinQueryNoFuzzyMatch">
+		where b.is_deleted=0
+ 		<isNotNull property="taskName" prepend="AND">
+            task_name = #taskName#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            a.title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            source_tbl = #tableName#
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            b.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<!-- 这段代码2014-09-18后可以删除。 -->
+	<!--select id="queryDisTaskListWithTableName" resultMap="distributeTaskDOFullResult">
+
+		select d.task_id,d.table_name,d.id,d.project_id,d.task_name,d.task_description,d.task_type,d.run_type,d.channel_id,d.machine_ip,d.user_name,d.group_id,c.title,c.work_flow_project_id
+		from(
+		select
+		a.task_id,a.table_name,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id
+		from
+		bigData_job_base b left join bigData_job_distribute a on(b.id=a.task_id) ) d left join bigData_project c
+		on (d.project_id = c.id)
+		<include refid="distributeTaskJoinQuery" />
+		order by d.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+
+	</select-->
+
+	<select id="queryDisTaskListWithTableName" resultMap="distributeTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl as table_name,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQuery" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+	
+	<select id="queryDisTaskListWithTableNameForceIndex" resultMap="distributeTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl as table_name,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b force index(task_name) left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQuery" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryDisTaskListWithTableNameNoFuzzyMatch" resultMap="distributeTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl as table_name,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQueryNoFuzzyMatch" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+
+	</select>
+
+	<!-- 这段代码2014-09-18后可以删除。 -->
+	<!--select id="queryDisTaskCountWithTableName" resultClass="java.lang.Integer">
+		select
+		a.task_id,a.table_name,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id
+
+		from bigData_job_base b left join bigData_job_distribute a on(b.id=a.task_id) ) d left join bigData_project c
+		on (d.project_id = c.id)
+		<include refid="distributeTaskJoinQuery" />
+
+	</select-->
+
+	<select id="queryDisTaskCountWithTableName" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQuery" />
+	</select>
+	
+	<select id="queryDisTaskCountWithTableNameForceIndex" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b force index(task_name) left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQuery" />
+	</select>
+
+	<select id="queryDisTaskCountWithTableNameNoFuzzyMatch" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="distributeTaskJoinQueryNoFuzzyMatch" />
+	</select>
+
+
+	<insert id="addDistributeTask" parameterClass="distributeTaskDO">
+		insert into bigData_job_distribute
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				expect
+			</isNotNull>
+			<isNotNull prepend="," property="ruleIds">
+				rule_ids
+			</isNotNull>
+			<isNotNull prepend="," property="testColumn">
+				test_column
+			</isNotNull>
+			<isNotNull prepend="," property="ruleParam">
+				rule_param
+			</isNotNull>
+			<isNotNull prepend="," property="env">
+				env
+			</isNotNull>
+			<isNotNull prepend="," property="packageName">
+				packageName
+			</isNotNull>
+			<isNotNull prepend="," property="privateRuleIds">
+				private_rule_ids
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				run_project
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				#expect#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleIds">
+				#ruleIds#
+			</isNotNull>
+			<isNotNull prepend="," property="testColumn">
+				#testColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleParam">
+				#ruleParam#
+			</isNotNull>
+			<isNotNull prepend="," property="env">
+				#env#
+			</isNotNull>
+			<isNotNull prepend="," property="packageName">
+				#packageName#
+			</isNotNull>
+			<isNotNull prepend="," property="privateRuleIds">
+				#privateRuleIds#
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				#runProject#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryDistributeTaskByTaskId" resultMap="distributeTaskDOResult">
+		<include refid="distributeTaskColumns" />
+		<include refid="distributeTaskFrom" />
+		where a.task_id=#taskId#
+	</select>
+
+	<update id="updateDistributeTask" parameterClass="distributeTaskDO">
+		update bigData_job_distribute
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name=#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition=#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				expect=#expect#
+			</isNotNull>
+			<isNull prepend="," property="ruleIds">
+				rule_ids=null
+			</isNull>
+			<isNotNull prepend="," property="ruleIds">
+				rule_ids=#ruleIds#
+			</isNotNull>
+			<isNull prepend="," property="testColumn">
+				test_column=null
+			</isNull>
+			<isNotNull prepend="," property="testColumn">
+				test_column=#testColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleParam">
+				rule_param=#ruleParam#
+			</isNotNull>
+			<isNotNull prepend="," property="env">
+				env=#env#
+			</isNotNull>
+			<isNotNull prepend="," property="packageName">
+				packageName=#packageName#
+			</isNotNull>
+			<isNotNull prepend="," property="privateRuleIds">
+				private_rule_ids=#privateRuleIds#
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				run_project=#runProject#
+			</isNotNull>
+			where task_id = #taskId#
+		</dynamic>
+	</update>
+
+	<update id="deleteDistributeTask" parameterClass="java.lang.Integer">
+		update bigData_job_base,bigData_job_distribute
+		set
+		bigData_job_base.is_deleted = 1,bigData_job_distribute.is_deleted = 1
+		where bigData_job_base.id = #task_id# and bigData_job_distribute.task_id = #task_id#
+	</update>
+</sqlMap>

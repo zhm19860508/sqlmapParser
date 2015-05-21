@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsmodule">
+    <typeAlias alias="dsModule" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsModule"/>
+      <!--
+      - ===============================================
+      - HW_AD表映射到DS_MODULE类
+      - ===============================================
+     -->
+    <resultMap id="dsModuleResult" class="dsModule">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="dataSource.id" column="DS_ID"/>
+        <result property="pageId" column="PAGE_ID"/>
+
+
+    </resultMap>
+
+    <!--
+      - ===============================================
+      - 查询
+      - ===============================================
+     -->
+    <select id="queryDsModule" resultMap="dsModuleResult" parameterClass="java.util.Map">
+      select    *
+      from DS_MODULE
+    <dynamic prepend="where" >
+      <isNotNull prepend="and" property="id" >
+        ID = #id#
+      </isNotNull>
+      <isNotNull prepend="and" property="name" >
+        NAME like  '%'||#name#||'%'
+      </isNotNull>
+      <isNotNull prepend="and" property="userId" >
+        USER_ID = #userId#
+      </isNotNull>
+      <isNotNull prepend="and" property="dsId" >
+         DS_ID = #dsId#
+      </isNotNull>
+      <isNotNull prepend="and" property="pageId" >
+         PAGE_ID = #pageId#
+      </isNotNull>
+    </dynamic>
+    ORDER BY MODIFY_TIME DESC
+    </select>
+    
+
+    <!--
+      - ===============================================
+      - 查询所有
+      - ===============================================
+     -->
+    <select id="getAllDsModule" resultMap="dsModuleResult"><![CDATA[
+        select
+                *
+        from
+                DS_MODULE
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 根据id查询
+      - ===============================================
+     -->
+    <select id="getDsModuleById" resultMap="dsModuleResult" parameterClass="int"><![CDATA[
+        select *
+        from
+                DS_MODULE
+        where
+                ID = #id#
+    ]]></select>
+
+	<!-- 取序列器-->
+    <select id="seleteDsModuleIdKey" resultClass="int" >
+        SELECT SEQ_DS_MODULE.NEXTVAL AS ID FROM DUAL
+    </select>
+
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertDsModule" parameterClass="dsModule">
+		<selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DS_MODULE.NEXTVAL AS ID FROM DUAL</selectKey>
+        insert into DS_MODULE (
+                ID,
+                USER_ID,
+                CREATE_TIME,
+                MODIFY_TIME,
+                NAME,
+                DS_ID,
+                PAGE_ID
+
+        ) values (
+                #id#,
+                #userId#,
+                SYSDATE,
+                SYSDATE,
+                #name#,
+                #dataSource.id#,
+                #pageId#
+        )
+    </insert>
+    <!-- insert by id,not need sequence -->
+    <insert id="addDsModule" parameterClass="dsModule">
+        insert into DS_MODULE (
+                ID,
+                USER_ID,
+                CREATE_TIME,
+                MODIFY_TIME,
+                NAME,
+                DS_ID,
+                PAGE_ID
+        ) values (
+                #id#,
+                #userId#,
+                SYSDATE,
+                SYSDATE,
+                #name#,
+                #dataSource.id#,
+                #pageId#
+        )
+    </insert>
+    <!--
+      - ===============================================
+      - 更新
+      - ===============================================
+     -->
+    <update id="updateDsModule" parameterClass="dsModule">
+        update
+                DS_MODULE
+        set
+                MODIFY_TIME = SYSDATE,
+                NAME = #name#,
+                DS_ID = #dataSource.id#,
+                PAGE_ID = #pageId#
+        where
+                ID = #id#
+   </update>
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteDsModuleById" parameterClass="int">
+        delete from
+                DS_MODULE
+         where
+                ID = #id#
+                
+    </delete>
+</sqlMap>

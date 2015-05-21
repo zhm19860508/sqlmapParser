@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="suggestion"
+		type="com.alibaba.china.ipinshared.dataobject.SuggestionDO" />
+	<resultMap id="suggestionResult" class="suggestion">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="suggestion" column="suggestion" jdbcType="text"
+			javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="platform" column="platform" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="deviceVersion" column="device_version"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="sysVersion" column="sys_version" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="appVersion" column="app_version" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="contactInfo" column="contact_info"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="loginName" column="login_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="contactType" column="contact_type"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="contactValue" column="contact_value"
+			jdbcType="varchar" javaType="java.lang.String" />
+	</resultMap>
+
+	<sql id="suggestionColumns">
+		select
+		id,user_id,suggestion,is_deleted,gmt_created,gmt_modified,platform,device_version,sys_version,app_version,contact_info,login_name,contact_type,contact_value
+		<!-- 获取所有的建议 -->
+	</sql>
+	<select id="get_all_suggestion" resultMap="suggestionResult">
+		<include refid="suggestionColumns" />
+		from
+		ipin_suggestion
+		where is_deleted = 0 order by id desc
+	</select>
+
+	<!-- 新增建议 -->
+	<insert id="add_new_suggestion" parameterClass="suggestion">
+		insert into
+		ipin_suggestion(user_id,suggestion,is_deleted,gmt_created,gmt_modified,platform,device_version,sys_version,app_version,contact_info,login_name,contact_type,contact_value)
+		values(#userId#,#suggestion#,0,now(),now(),#platform#,#deviceVersion#,#sysVersion#,#appVersion#,#contactInfo#,#loginName#,#contactType#,#contactValue#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+</sqlMap>

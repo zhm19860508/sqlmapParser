@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="BaseTask">
+	<typeAlias alias="taskSummary"
+		type="com.alibaba.bigData.dal.entity.TaskSummary" />
+	<typeAlias alias="ResultBO"
+		type="com.alibaba.bigData.dal.model.ResultBO" />
+	<typeAlias alias="taskWithLastResult"
+		type="com.alibaba.bigData.dal.entity.TaskWithLastResult" />
+	<typeAlias alias="ProjectDO"
+		type="com.alibaba.bigData.dal.entity.ProjectDO" />
+
+	<!-- 在job—base表上增加了最后一次执行记录的信息，重新建立resultmap，以免影响其他功能 -->
+	<resultMap class="taskWithLastResult" id="taskSummaryResultWithLastRun">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_id" property="groupId" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="last_run_id" property="lastRunId"/>
+		<result column="last_run_id" property="lastResultDO" select="RunResult.queryTaskResultSimpleByRunId"/>
+		<result column="source_tbl"  property="sourceTbl"/>
+		<result column="target_tbl"  property="targetTbl"/>
+		<result column="monitor_id"  property="monitorId" />
+	</resultMap>
+	<resultMap class="TaskSummary" id="taskSummaryResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_id" property="groupId" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="monitor_id"  property="monitorId" />
+		<result column="version"  property="version" />
+	</resultMap>
+
+	<resultMap class="ResultBO" id="taskSummaryResultNoLoop">
+		<result column="group_id" property="groupId" />
+		<result column="group_name" property="groupName" />
+	</resultMap>
+
+
+	<resultMap class="TaskSummary" id="taskSummaryResultMap">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_id" property="groupId" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="monitorTaskMap">
+		<result column="id" property="id" />
+		<result column="task_name" property="taskName" />
+		<result column="task_type" property="taskType" />
+		<result column="run_status" property="lastRunStatus" />
+	</resultMap>
+
+	<resultMap class="ProjectDO" id="monitorProjectMap">
+		<result column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="summary" property="summary" />
+		<result column="user_name" property="userName" />
+		<result column="work_flow_project_id" property="requestId" />
+		<result column="status" property="status" />
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="taskSummaryResultAndRunRes">
+		<result column="task_id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_id" property="groupId" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="lastRuner" />
+		<result column="run_status" property="lastRunStatus" />
+		<result column="id" property="lastRunId" />
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="taskSummaryResultWithProj">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="group_id" property="groupId" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="title" property="projectName" />
+		<result column="work_flow_project_id" property="requestId" />
+		<result column="version" property="version" />
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="myTaskResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="title" property="projectName" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_name" property="channelName" />
+		<result column="user_name" property="userName" />
+		<result column="group_name" property="groupName" />
+		<result column="last_run_id" property="lastRunId"/>
+		<result column="last_run_id" property="lastResultDO" select="RunResult.queryTaskBaseResultByRunId"/>
+		<result column="version" property="version"/>
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="getTaskId">
+		<result column="id" property="id" />
+	</resultMap>
+	
+	<resultMap class="TaskSummary" id="getTaskIdAndRunId">
+		<result column="id" property="id" />
+		<result column="last_run_id" property="lastRunId"/>
+	</resultMap>
+
+	<select id="getTaskIdFromBaseJob" resultMap="getTaskId">
+		select id from  bigdata_job_base where project_id=#projectId#
+	</select>
+
+	<sql id="baseTaskColumns">
+		select
+		a.id,a.project_id,a.task_name,a.task_description,a.task_type,a.run_type,a.channel_id,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.gmt_create,a.gmt_modify,a.last_run_id,a.monitor_id,a.version
+	</sql>
+
+	<sql id="baseTaskColumnsWithoutId">
+		select
+		a.task_name,a.task_description,a.task_type,a.run_type,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.channel_id,a.gmt_create,a.gmt_modify,a.project_id,a.monitor_id,a.last_run_id,a.source_tbl,a.source_tbl,a.version
+	</sql>
+
+	<sql id="baseTaskColumnsWithProj">
+		select
+		a.id,a.project_id,a.task_name,a.task_description,a.task_type,a.run_type,a.channel_id,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.gmt_create,a.gmt_modify,b.title,b.work_flow_project_id,a.version
+	</sql>
+
+
+	<sql id="baseTaskFrom">
+		from bigData_job_base a
+	</sql>
+
+	<sql id="baseTaskFromWithProj">
+		from bigData_job_base a left join bigData_project b on(a.project_id = b.id)
+	</sql>
+
+	<sql id="baseTaskJoin">
+        a.is_deleted = 0
+	</sql>
+
+	<sql id="baseTaskQuery">
+        where
+		<include refid="baseTaskJoin" />
+		<isNotNull property="taskName" prepend="AND">
+            a.task_name like '$taskName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            a.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            a.machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            a.task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            a.run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            a.channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            a.group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="baseTaskQueryNoFuzzyMatch">
+        where
+		<include refid="baseTaskJoin" />
+		<isNotNull property="taskName" prepend="AND">
+            a.task_name = #taskName#
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            a.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            a.machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            a.task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            a.run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            a.channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            a.group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="baseTaskQueryWithProj">
+		<include refid="baseTaskQuery" />
+		<isNotNull property="projectName" prepend="AND">
+            b.title like '$projectName$%'
+		</isNotNull>
+	</sql>
+
+	<sql id="baseTaskQueryWithProjNoFuzzyMatch">
+		<include refid="baseTaskQueryNoFuzzyMatch" />
+		<isNotNull property="projectName" prepend="AND">
+            b.title like '$projectName$%'
+		</isNotNull>
+	</sql>
+
+	<update id="killWaitAndDeployTasks" parameterClass="java.lang.Integer">
+		update bigdata_job_base a, bigdata_run_result_base b
+		set b.run_status='KILLED'
+		where a.id = b.task_id
+		and project_id = #projectId#
+		and b.run_status ＝ 'WAITING' <!-- 此处改为只更新等待的任务状态，否则后续查不出执行任务 in ('WAITING' ,'DEPLOYING')  -->
+	</update>
+	
+	<select id="getDeployRunIdByPorjectId" parameterClass="java.lang.Integer" resultMap="getTaskIdAndRunId">
+			select a.id, a.last_run_id 
+			from bigdata_job_base a, bigdata_run_result_base b 
+			where a.id=b.task_id  
+			and a.project_id=#projectId# 
+			and b.run_status in ('DEPLOYING','WAITING') 
+			and a.is_deleted=0 
+			and a.task_type = 'COMPARE';
+	</select>
+
+	<insert id="addBaseTask" parameterClass="taskSummary">
+		insert into bigData_job_base
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="projectId">
+				project_id
+			</isNotNull>
+			<isNotNull prepend="," property="taskName">
+				task_name
+			</isNotNull>
+			<isNotNull prepend="," property="taskDescription">
+				task_description
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				task_type
+			</isNotNull>
+			<isNotNull prepend="," property="runType">
+				run_type
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				channel_id
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				machine_ip
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				user_name
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				deploy_script
+			</isNotNull>
+
+			<isNotNull prepend="," property="killScript">
+				kill_script
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				group_id
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTable">
+				source_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="targetTable">
+				target_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="version">
+				version
+			</isNotNull>
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="projectId">
+				#projectId#
+			</isNotNull>
+			<isNotNull prepend="," property="taskName">
+				#taskName#
+			</isNotNull>
+			<isNotNull prepend="," property="taskDescription">
+				#taskDescription#
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				#taskType#
+			</isNotNull>
+			<isNotNull prepend="," property="runType">
+				#runType#
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				#channelId#
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				#machineIp#
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				#userName#
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				#deployScript#
+			</isNotNull>
+			<isNotNull prepend="," property="killScript">
+				#killScript#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				#groupId#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTable">
+				#sourceTable#
+			</isNotNull>
+			<isNotNull prepend="," property="targetTable">
+				#targetTable#
+			</isNotNull>
+			<isNotNull prepend="," property="version">
+				#version#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryBaseTaskById" resultMap="taskSummaryResult">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		where a.id=#id#
+	</select>
+	<select id="queryBaseNoDelTaskById" resultMap="taskSummaryResult">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		where a.id=#id# and a.is_deleted=0
+	</select>
+
+	<select id="queryNoRunTaskById" resultMap="taskSummaryResult">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		where a.project_id=#id# and a.last_run_id is null and a.is_deleted=0
+	</select>
+
+	<select id="queryTaskAndRunResById" resultMap="taskSummaryResultAndRunRes">
+		select
+		    b.project_id,
+		    a.id,
+		    a.task_id,
+		    b.task_name,
+		    b.task_description,
+		    b.task_type,
+		    b.run_type,
+		    b.user_name,
+		    b.channel_id,
+		    b.group_id,
+		    b.machine_ip,
+		    b.deploy_script,
+		    b.kill_script,
+		    a.run_status,
+		    b.gmt_create,
+		    b.gmt_modify,
+		    a.start_time,
+		    a.end_time,
+		    a.run_user,
+		    a.id,
+		    a.is_deleted
+		from
+		    bigData_run_result_base a,
+		    bigData_job_base b
+		where
+		    b.project_id = #projectId#
+		    and b.last_run_id = a.id 
+		    and a.is_deleted = 0  
+		    and b.is_deleted =0;
+		    
+	</select>
+	
+	<select id="queryAllTaskAndRunResById" resultMap="taskSummaryResultAndRunRes">
+		select
+		    b.project_id,
+		    b.id as task_id,
+		    b.task_name,
+		    b.task_description,
+		    b.task_type,
+		    b.run_type,
+		    b.user_name,
+		    b.channel_id,
+		    b.group_id,
+		    b.machine_ip,
+		    b.deploy_script,
+		    b.kill_script,
+		    b.gmt_create,
+		    b.gmt_modify,
+		    b.is_deleted,
+		    null as end_time,
+		    null as start_time,
+		    null as id,
+		    null as run_status,
+		    null as run_user
+		from
+		    bigData_job_base b
+		where
+		    b.project_id = #projectId#
+		    and b.is_deleted =0;
+	</select>
+
+	<select id="queryFAILTaskAndRunResById" resultMap="taskSummaryResultAndRunRes">
+		select
+		    b.project_id,
+		    a.id,
+		    a.task_id,
+		    b.task_name,
+		    b.task_description,
+		    b.task_type,
+		    b.run_type,
+		    b.user_name,
+		    b.channel_id,
+		    b.group_id,
+		    b.machine_ip,
+		    b.deploy_script,
+		    b.kill_script,
+		    a.run_status,
+		    b.gmt_create,
+		    b.gmt_modify,
+		    a.start_time,
+		    a.end_time,
+		    a.run_user,
+		    a.id,
+		    a.is_deleted
+		from
+		    bigData_run_result_base a,
+		    bigData_job_base b 
+		where
+		    b.project_id = #projectId#   
+		    and a.run_status='FAIL' 
+		    and b.last_run_id = a.id 
+		    and a.is_deleted = 0  
+		    and b.is_deleted =0;
+		    
+	</select>
+
+	<select id="queryMyTask" resultMap="myTaskResult">
+    	select a.id,a.project_id,b.title,a.task_name,a.task_description,a.task_type,a.run_type,c.channel_name,d.group_name,a.user_name,a.last_run_id,a.version from
+        (select id,project_id,task_name,task_description,task_type,run_type,user_name,channel_id,group_id,last_run_id,version from bigData_job_base where is_deleted=0 and user_name=#userName#
+		order by id desc
+		<isNotNull property="size">
+
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+        )a
+        left join
+        (select id,title from bigData_project)b on a.project_id = b.id
+        left join
+        (select id,channel_name from bigData_channel)c on a.channel_id = c.id
+        left join
+        (select id,group_name from bigData_group)d on a.group_id=d.id
+
+	</select>
+
+	<select id="queryMyTaskCnt" resultClass="java.lang.Integer">
+		select
+            count(*)
+        from
+            bigData_job_base
+        where
+            is_deleted=0
+            and user_name=#userName#
+	</select>
+
+	<select id="queryBaseTaskByProjectId" resultMap="taskSummaryResult">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		where a.project_id = #projectId#
+		and a.is_deleted =0
+	</select>
+
+	<!-- 增加字段后增加的方法 -->
+	<select id="queryTaskWithLastRunByProjectId" resultMap="taskSummaryResultWithLastRun">
+		select a.id,a.project_id,a.task_name,a.task_description,a.task_type,a.run_type,a.channel_id,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.gmt_create,a.gmt_modify,a.last_run_id,a.monitor_id,a.source_tbl,a.target_tbl
+		from bigData_job_base a
+		where a.project_id = #projectId#
+		and a.is_deleted =0
+		<isNotNull property="taskType">
+		and a.task_type = #taskType#
+		</isNotNull>
+		order by a.gmt_create desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<!-- 获取已监控的任务 -->
+	<select id="queryMonitorTask" resultMap="taskSummaryResultWithLastRun">
+		select a.id,a.project_id,a.task_name,a.task_description,a.task_type,a.run_type,a.channel_id,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.gmt_create,a.gmt_modify,a.last_run_id,a.monitor_id,a.source_tbl,a.target_tbl
+		from bigData_job_base a
+		where a.project_id = #projectId#
+		and a.is_deleted =0 and monitor_id is not null
+		<isNotNull property="taskType">
+		and a.task_type = #taskType#
+		</isNotNull>
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<!-- 获取未监控的任务 -->
+	<select id="queryNoMonitorTask" resultMap="taskSummaryResultWithLastRun">
+		select a.id,a.project_id,a.task_name,a.task_description,a.task_type,a.run_type,a.channel_id,a.machine_ip,a.user_name,a.deploy_script,a.kill_script,a.is_deleted,a.group_id,a.gmt_create,a.gmt_modify,a.last_run_id,a.monitor_id,a.source_tbl,a.target_tbl
+		from bigData_job_base a
+		where a.project_id = #projectId#
+		and a.is_deleted =0 and monitor_id is null
+		<isNotNull property="taskType">
+		and a.task_type = #taskType#
+		</isNotNull>
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryBaseTaskByProjectIdMap" resultClass="java.util.HashMap" resultMap="taskSummaryResultMap">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		where a.project_id = #projectId#
+		and a.is_deleted =0
+	</select>
+
+	<select id="queryTaskCountByQuery" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="baseTaskFrom" />
+		<include refid="baseTaskQuery" />
+	</select>
+
+	<select id="queryTaskCountByQueryWithProj" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="baseTaskFromWithProj" />
+		<include refid="baseTaskQueryWithProj" />
+	</select>
+	
+	<select id="queryTaskCountByQueryWithProjForceIndex" resultClass="java.lang.Integer">
+		select count(*)
+		<!-- Can be deleted after 2014-11-11 <include refid="baseTaskFromWithProj" />  -->
+		from bigData_job_base a force index(task_name) left join bigData_project b on(a.project_id = b.id)
+		<include refid="baseTaskQueryWithProj" />
+	</select>
+
+	<select id="queryTaskCountByQueryWithProjIndex" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigdata_job_base
+		where is_deleted=0
+	</select>
+
+	<select id="queryTaskCountByQueryWithProjNoFuzzyMatch" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="baseTaskFromWithProj" />
+		<include refid="baseTaskQueryWithProjNoFuzzyMatch" />
+	</select>
+
+	<select id="queryBaseTaskListByQuery" resultMap="taskSummaryResult">
+		<include refid="baseTaskColumns" />
+		<include refid="baseTaskFrom" />
+		<include refid="baseTaskQuery" />
+		order by id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryMonitorTaskByQuery" resultMap="monitorTaskMap">
+		select a.id,a.task_name,a.task_type,b.run_status
+		from
+		bigdata_job_base a left join bigdata_run_result_base b on a.last_run_id=b.id
+		where a.monitor_id is null and a.user_name=#userName# and a.task_name like '$taskName$%' and a.is_deleted=0
+	</select>
+
+	<select id="queryMonitorProjectByQuery" resultMap="monitorProjectMap">
+		select id, title, summary,user_name, work_flow_project_id, status
+		from bigdata_project
+		where is_deleted=0 and
+		<![CDATA[
+		 status <> 0
+		 ]]>
+		 and monitor_id is null and member_ids like '%$userName$%' and title like '$projectName$%'
+	</select>
+
+	<select id="queryBaseTaskListNoLoopByQuery" resultMap="taskSummaryResultNoLoop" >
+		select a.group_id, b.group_name
+		from bigData_job_base a, bigData_group b
+		where a.group_id = b.id and a.is_deleted = 0
+		<isNotNull prepend="AND" property="taskType">
+		<![CDATA[
+			a.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+		<![CDATA[
+			a.group_id=#groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+		<![CDATA[
+			a.gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryBaseTaskListByQueryWithProj" resultMap="taskSummaryResultWithProj">
+		<include refid="baseTaskColumnsWithProj" />
+		<include refid="baseTaskFromWithProj" />
+		<include refid="baseTaskQueryWithProj" />
+		order by id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryBaseTaskListByQueryWithProjForceIndex" resultMap="taskSummaryResultWithProj">
+		<include refid="baseTaskColumnsWithProj" />
+		<!--Can be deleted after 2014-11-11. <include refid="baseTaskFromWithProj" />  -->
+		from bigData_job_base a force index(task_name) left join bigData_project b on(a.project_id = b.id)
+		<include refid="baseTaskQueryWithProj" />
+		order by id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryBaseTaskListByQueryWithProjNoFuzzyMatch" resultMap="taskSummaryResultWithProj">
+		<include refid="baseTaskColumnsWithProj" />
+		<include refid="baseTaskFromWithProj" />
+		<include refid="baseTaskQueryWithProjNoFuzzyMatch" />
+		order by id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<update id="updateBaseTask" parameterClass="taskSummary">
+		update bigData_job_base
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="projectId">
+				project_id=#projectId#
+			</isNotNull>
+			<isNotNull prepend="," property="taskName">
+				task_name=#taskName#
+			</isNotNull>
+			<isNotNull prepend="," property="taskDescription">
+				task_description=#taskDescription#
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				task_type=#taskType#
+			</isNotNull>
+			<isNotNull prepend="," property="runType">
+				run_type=#runType#
+			</isNotNull>
+			<isNotNull prepend="," property="channelId">
+				channel_id=#channelId#
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				machine_ip=#machineIp#
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				user_name=#userName#
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				deploy_script=#deployScript#
+			</isNotNull>
+			<isNotNull prepend="," property="killScript">
+				kill_script=#killScript#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				group_id=#groupId#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create=#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify=#gmtModify#
+			</isNotNull>
+			<isNotNull prepend="," property="lastRunId">
+				last_run_id=#lastRunId#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTable">
+				source_tbl=#sourceTable#
+			</isNotNull>
+			<isNotNull prepend="," property="targetTable">
+				target_tbl=#targetTable#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="updateChannelID" parameterClass="java.util.HashMap">
+		update bigData_job_base
+		set channel_id = #newChannelID#
+		where channel_id = #oldChannelID#
+	</update>
+
+	<update id="updateSelectedMonitorId" parameterClass="java.util.HashMap">
+		update bigData_job_base
+		set monitor_id = #monitorId#
+		where id in ($selectedIds$)
+	</update>
+
+	<update id="updateNotSelectedMonitorId" parameterClass="java.util.HashMap">
+		update bigData_job_base
+		set monitor_id = null
+		where id in ($notSelectedIds$)
+	</update>
+
+	<update id="updateMonitorId" parameterClass="java.util.HashMap">
+		update bigData_job_base
+		set monitor_id = #monitorId#
+		where project_id = #projectId#
+	</update>
+
+	<update id="updateMonitorIdByTaskId" parameterClass="java.util.HashMap">
+		update bigData_job_base
+		set monitor_id = #monitorId#
+		where id = #taskId#
+	</update>
+
+	<update id="delMonitorId">
+		update bigData_job_base
+		set monitor_id = null
+		where monitor_id = #monitorId#
+	</update>
+
+	<update id="setLastRunIdToTask">
+		update bigData_job_base
+		set last_run_id = #runId#
+		where id = #taskId#
+	</update>
+
+</sqlMap>

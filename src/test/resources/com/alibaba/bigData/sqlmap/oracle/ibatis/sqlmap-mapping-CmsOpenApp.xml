@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsOpenApp">
+
+	<resultMap class="CmsOpenApp" id="CmsOpenApp-result">
+		<result property="id" 			  javaType="java.lang.Long"     column="ID" />
+		<result property="gmtCreate" 	  javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified"    javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+		<result property="appName" 		  javaType="java.lang.String"   column="APP_NAME" />
+		<result property="appCode" 		  javaType="java.lang.String"   column="APP_CODE" />
+		<result property="cmsSiteParentId"   javaType="java.lang.Long"     column="CMS_SITE_PARENT_ID" />
+		<result property="appMd5Key"      javaType="java.lang.String"   column="APP_MD5_KEY" />
+		<result property="loginUrl"       javaType="java.lang.String"   column="LOGIN_URL" />
+		<result property="configs" 		  javaType="java.lang.String"   column="CONFIGS" />
+	</resultMap>
+	<insert id="MS_INSERT_CMS_OPEN_APP" parameterClass="CmsOpenApp">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_OPEN_APP.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_OPEN_APP
+              (ID , GMT_CREATE, GMT_MODIFIED,  APP_NAME  , APP_CODE  , CMS_SITE_PARENT_ID  , APP_MD5_KEY  , LOGIN_URL, CONFIGS )
+            values
+              (#id#,SYSDATE , SYSDATE ,  #appName#  , #appCode#  , #cmsSiteParentId#  , #appMd5Key#  , #loginUrl#, #configs#)
+        ]]>
+	</insert>
+	<select id="MS_SELECT_CMS_OPEN_APP_BY_APPCODE" parameterClass="java.lang.String" resultMap="CmsOpenApp-result">
+        <![CDATA[
+            SELECT * FROM CMS_OPEN_APP WHERE APP_CODE = #appCode#
+        ]]>
+	</select>
+	<update id="MS_UPDATE_CMS_OPEN_APP" parameterClass="CmsOpenApp">
+	   <![CDATA[
+          update
+             CMS_OPEN_APP
+          set
+            GMT_MODIFIED = sysdate
+        ]]>
+		<dynamic prepend="">
+            <isNotNull prepend="," property="appName" >
+		        APP_NAME = #appName#
+		     </isNotNull>
+            <isNotNull prepend="," property="cmsSiteParentId" >
+		        CMS_SITE_PARENT_ID = #cmsSiteParentId#
+		     </isNotNull>
+            <isNotNull prepend="," property="appMd5Key" >
+		        APP_MD5_KEY = #appMd5Key#
+		     </isNotNull>
+            <isNotNull prepend="," property="loginUrl" >
+		        LOGIN_URL = #loginUrl#
+		     </isNotNull>
+            <isNotNull prepend="," property="configs" >
+		        CONFIGS = #configs#
+		     </isNotNull>
+		 </dynamic>
+		<![CDATA[  where
+             APP_CODE = #appCode#
+             ]]>
+	</update>
+	<select id="MS_SEARCH_CMS_OPEN_APP" parameterClass="java.util.Map" resultMap="CmsOpenApp-result">
+        <![CDATA[
+		    SELECT  * FROM (
+	             SELECT r.*,ROWNUM rnum FROM (
+	                	select p.* from CMS_OPEN_APP p
+							order by p.GMT_MODIFIED desc
+		            ) r WHERE ROWNUM <= #offset# + #length#
+	            )WHERE rnum >#offset#
+		  ]]>
+	</select>
+
+	<select id="MS_COUNT_CMS_OPEN_APP" parameterClass="java.util.Map" resultClass="java.lang.Long">
+         <![CDATA[
+	                	select count(*) from CMS_OPEN_APP p
+	     ]]>
+	</select>
+</sqlMap>

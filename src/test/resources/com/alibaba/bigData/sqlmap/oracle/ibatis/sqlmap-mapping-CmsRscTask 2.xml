@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRscTask">
+
+	<resultMap class="CmsRscTask" id="CmsRscTask-result">
+		<result property="id" 			javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_MODIFIED" />
+		<result property="versionId" 	javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="VERSION_ID" />
+		<result property="pageId" 		javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="PAGE_ID" />
+		<result property="pageType" 	javaType="java.lang.String"		jdbcType = "VARCHAR"	column="PAGE_TYPE" />
+		<result property="status" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="STATUS" />
+		<result property="gmtPublish" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_PUBLISH" />
+		<result property="updateTemplates" 	javaType="java.lang.String" jdbcType="VARCHAR"	column="UPDATE_TEMPLATES" />
+	</resultMap>
+
+
+
+	<insert id="MS_INSERT_CMS_RSC_TASK" parameterClass="CmsRscTask">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_RSC_TASK.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_RSC_TASK
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  PAGE_ID  , PAGE_TYPE , VERSION_ID, STATUS, GMT_PUBLISH,UPDATE_TEMPLATES )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #pageId#  , #pageType# , #versionId#, #status#, #gmtPublish#,#updateTemplates#)
+        ]]>
+	</insert>
+
+
+	<update id="MS_UPDATE_CMS_RSC_TASK" parameterClass="CmsRscTask">
+        <![CDATA[
+            update
+                    CMS_RSC_TASK
+            set
+                    GMT_MODIFIED = sysdate 
+        ]]>
+		<dynamic prepend="">
+			<isNotEmpty property="status" prepend=",">
+				STATUS =#status#
+			</isNotEmpty>
+			<isNotEmpty property="gmtPublish" prepend=",">
+				GMT_PUBLISH =#gmtPublish#
+			</isNotEmpty>
+		</dynamic>
+        <![CDATA[           
+		  where  
+                ID = #id# 
+        ]]>
+	</update>
+	
+
+	 <select id ="QUERY_CMS_RSC_TASK_BY_STATUS" resultMap = "CmsRscTask-result">
+        <![CDATA[
+        SELECT ID , GMT_CREATE  , GMT_MODIFIED  ,  PAGE_ID  , PAGE_TYPE , VERSION_ID, STATUS, GMT_PUBLISH,UPDATE_TEMPLATES FROM CMS_RSC_TASK where STATUS = #status# and ROWNUM < 10 ORDER BY ID
+        ]]>
+    </select>
+	
+</sqlMap>

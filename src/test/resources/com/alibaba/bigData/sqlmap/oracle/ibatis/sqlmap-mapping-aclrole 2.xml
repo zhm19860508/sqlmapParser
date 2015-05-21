@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="acl_role">
+	<typeAlias alias="aCLRoleBean" type="com.alibaba.china.cmshollywood.acl.domain.ACLRole" />
+	<resultMap id="aCLRoleBeanResult" class="aCLRoleBean">
+        <result property="id"          column="ID" />
+        <result property="name"        column="NAME" />
+        <result property="lev"         column="LEV" />
+        <result property="isOutsite"   column="IS_OUTSITE" />
+        <result property="isDelete"    column="IS_DELETE" />
+        <result property="isVisible"   column="IS_VISIBLE" />
+        <result property="description" column="DESCRIPTION" />
+        <result property="gmtCreate"   column="GMT_CREATE" />
+        <result property="gmtModified" column="GMT_MODIFIED" />
+        <result property="createUser"  column="CREATE_USER" />
+        <result property="modifyUser"  column="MODIFY_USER" />
+	</resultMap>
+	
+	<typeAlias alias="aclSiteRole" type="com.alibaba.china.cmshollywood.acl.domain.ACLSiteRole" />
+	<resultMap id="aclSiteRoleResult" class="aclSiteRole">
+	    <result property="id"          column="ID" />
+        <result property="name"        column="NAME" />
+        <result property="lev"         column="LEV" />
+        <result property="isDelete"    column="IS_DELETE" />
+        <result property="expiredDate" column="EXPIRED_DATE" />
+	</resultMap>
+	
+	<typeAlias alias="aCLRoleResource" type="com.alibaba.china.cmshollywood.acl.domain.ACLRoleResource" />
+	<resultMap id="aCLRoleResourceResult" class="aCLRoleResource">
+	    <result property="id"          column="ID" />
+        <result property="name"        column="NAME" />
+        <result property="url"         column="URL" />
+        <result property="resourceType" column="RESOURCE_TYPE" />
+	</resultMap>
+	
+	<sql id="selectACLRoleBeanSql">
+		<![CDATA[
+			select t.id, t.name, t.lev, t.is_outsite, t.is_delete, t.is_visible, t.description, t.gmt_create, t.gmt_modified, t.create_user, t.modify_user from acl_role t
+		]]>
+	</sql>
+	
+	<sql id="findResourceByRoleSql">
+		<![CDATA[
+			select r.name, r.url, r.resource_type
+              from acl_role_resource rr
+             inner join acl_resource r
+                on rr.resource_code = r.id
+		]]>
+	</sql>
+	
+	<select id="getRolesByResources" parameterClass="java.util.Map" resultClass="aCLRoleBean">
+	    <![CDATA[
+	        select t.resource_type description, rr.id, rr.name, rr.lev
+              from acl_resource t
+             inner join (select rr.resource_code, r.id, r.name, r.lev 
+                           from acl_role_resource rr
+                          inner join (select r.id, r.name, r.lev from acl_role r where r.is_delete = #isDelete# and r.is_outsite = #isOutsite# and r.lev > #lev# order by r.lev) r
+                             on rr.role_id = r.id
+        ]]>
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="resourceIDs">
+                rr.resource_code in
+                <iterate property="resourceIDs" open="(" close=")" conjunction=",">
+			          #resourceIDs[]#
+		        </iterate>
+            </isNotEmpty>
+		</dynamic>
+        <![CDATA[                 
+                         ) rr
+               on t.id = rr.resource_code
+        ]]>
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceIDs">
+                t.id in
+                <iterate property="resourceIDs" open="(" close=")" conjunction=",">
+			          #resourceIDs[]#
+		        </iterate>
+            </isNotEmpty>
+		</dynamic>
+        <![CDATA[
+            group by t.resource_type, rr.id, rr.name, rr.lev
+	    ]]>
+	</select>
+	
+	<select id="findResourceByRoles" parameterClass="java.util.Map" resultMap="aCLRoleResourceResult">
+	    <![CDATA[
+	        select r.id, r.name, r.url, r.resource_type
+              from acl_resource r
+             inner join (select rr.resource_code from acl_role_resource rr
+        ]]>
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="status">
+                rr.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleIDs">
+                rr.role_id in
+                <iterate property="roleIDs" open="(" close=")" conjunction=",">
+			          #roleIDs[]#
+		        </iterate>
+            </isNotEmpty>
+		</dynamic>
+        <![CDATA[      
+            ) rr on r.id = rr.resource_code
+	    ]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                r.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                r.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findRoleBySiteAndUser" parameterClass="java.util.Map" resultClass="aclSiteRole">
+	    <![CDATA[
+			select r.id, r.name, r.lev, usr.expired_date expiredDate
+              from acl_user_site_role usr
+             inner join (select r.id, r.name, r.lev from acl_role r where r.is_delete = #isDelete#) r 
+                on usr.role_id = r.id
+		]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="status">
+                usr.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteIDs">
+                usr.site_id in
+                <iterate property="siteIDs" open="(" close=")" conjunction=",">
+			          #siteIDs[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                usr.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    order by r.lev
+		]]>
+	</select>
+	
+	<select id="findACLRoleBeanById" parameterClass="String" resultMap="aCLRoleBeanResult">
+	    <include refid="selectACLRoleBeanSql"/>
+		<![CDATA[
+			where t.id = #id#
+		]]>
+	</select>
+	
+	<select id="findACLRolesByIDs" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    <![CDATA[
+	        select count(*) from acl_role t 
+	         where t.is_delete = #isDelete#
+	           and t.id in
+	    ]]>
+	    <iterate property="roleIDs" open="(" close=")" conjunction=",">
+			  #roleIDs[]#
+		</iterate>
+	</select>
+	
+	<select id="findACLRoleBeanByWhere" parameterClass="aCLRoleBean" resultMap="aCLRoleBeanResult">
+	    <include refid="selectACLRoleBeanSql"/>
+	    <dynamic prepend="where">
+	        <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isOutsite">
+                t.is_outsite = #isOutsite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="name">
+                t.NAME = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="lev">
+                t.lev = #lev#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="description">
+                t.description = #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="createUser">
+                t.create_user = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+			order by t.lev, t.gmt_create
+		]]>
+	</select>
+	
+	<select id="findACLRolesCanApply" parameterClass="java.util.Map" resultMap="aCLRoleBeanResult">
+	    <include refid="selectACLRoleBeanSql"/>
+	    <![CDATA[
+	        , (select usr.role_id
+                 from acl_user_site_role usr
+                where usr.status in
+        ]]>
+        <iterate property="status" open="(" close=")" conjunction=",">
+			  #status[]#
+		</iterate>
+        <![CDATA[       
+                  and usr.user_id = #userID#
+                  and usr.site_id = #siteID#) usr
+        where t.id = usr.role_id(+)
+          and usr.role_id is null
+          and t.is_delete = #isDelete#
+          and t.lev > #lev#
+          and t.is_outsite = #isOutsite#
+        order by t.lev, t.gmt_create
+	    ]]>
+	</select>
+	
+	<select id="findACLRolesCanApplyNew" parameterClass="java.util.Map" resultClass="aCLRoleBean">
+	    <![CDATA[
+	        select t.id, t.name, t.lev, t.is_outsite isOutsite, t.is_visible isVisible, t.description,
+	               usr.status, usr.expired_date expiredDate
+              from acl_role t 
+              left join (select usr.role_id, usr.status, usr.expired_date from acl_user_site_role usr 
+                          where usr.user_id = #userID# 
+                            and usr.site_id = #siteID#) usr
+                on t.id = usr.role_id
+             where t.is_delete = #isDelete#
+               and t.lev > #lev#
+               and t.is_outsite = #isOutsite#
+             order by t.lev, t.gmt_create
+        ]]>
+	</select>
+	
+	<select id="findACLRolesHasPermission" parameterClass="java.util.Map" resultClass="String">
+	    <![CDATA[
+	        select rr.role_id
+              from acl_resource t 
+             inner join (select rr.role_id, rr.resource_code 
+                           from acl_role_resource rr 
+                          where rr.role_id in
+        ]]>
+        <iterate property="roleIDs" open="(" close=")" conjunction=",">
+			  #roleIDs[]#
+		</iterate>
+		<![CDATA[
+                         ) rr
+               on t.id = rr.resource_code
+        ]]>
+        <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    group by rr.role_id having count(*) > 0
+		]]>
+	</select>
+	
+	<select id="findSiteAndRolesByUserID" parameterClass="java.util.Map" resultClass="aclSiteRole">
+	    <![CDATA[
+	        select t.site_id siteID, t.role_id id, t.status, t.expired_date expiredDate, t.message,
+	               r.name, r.lev
+              from acl_user_site_role t
+             inner join (select r.id, r.name, r.lev from acl_role r where r.is_delete = #isDelete# and r.is_outsite = #outSite#) r
+                on t.role_id = r.id
+	    ]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="siteID">
+                t.site_id > #siteID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteIDs">
+                t.site_id in
+                <iterate property="siteIDs" open="(" close=")" conjunction=",">
+			          #siteIDs[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="status">
+                t.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="userID">
+                t.user_id = #userID#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findAllSiteManager" parameterClass="java.util.Map" resultClass="aclSiteRole">
+	    <![CDATA[
+	        select t.site_id siteID, t.user_id userID, t.user_name userName, t.expired_date expiredDate
+              from acl_user_site_role t
+             inner join (select r.id from acl_role r where r.is_delete = #isDelete# and r.lev = #lev#) r 
+                on t.role_id = r.id
+	    ]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="siteID">
+                t.site_id > #siteID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="status">
+                t.status = #status#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="siteIDs">
+                t.site_id in
+                <iterate property="siteIDs" open="(" close=")" conjunction=",">
+			          #siteIDs[]#
+		        </iterate>
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<insert id="insertACLRoleBean" parameterClass="aCLRoleBean">
+	    insert into acl_role
+	    <dynamic prepend="(">
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="name">
+                name
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="lev">
+                lev
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isOutsite">
+                is_outsite
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                is_delete
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isVisible">
+                is_visible
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                description
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                gmt_create
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                gmt_modified
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                create_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                modify_user
+            </isNotEmpty>
+	    </dynamic>
+	    <dynamic prepend=") values (">
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="name">
+                #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="lev">
+                #lev#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isOutsite">
+                #isOutsite#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isVisible">
+                #isVisible#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                #modifyUser#
+            </isNotEmpty>
+	    </dynamic>)
+	</insert>
+	
+	<update id="updateACLRoleBean" parameterClass="aCLRoleBean">
+		update acl_role t
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="name">
+                t.NAME = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="lev">
+                t.lev = #lev#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isOutsite">
+                t.is_outsite = #isOutsite#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isVisible">
+                t.is_visible = #isVisible#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                t.description = #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="createUser">
+                t.create_user = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[
+		   where t.id = #id#
+		]]>  
+	</update>
+	
+	<delete id="deleteACLRoleBean" parameterClass="String">
+	    <![CDATA[
+		  delete from acl_role where id = #id#
+		]]>  
+	</delete>
+</sqlMap>

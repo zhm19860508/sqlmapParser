@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.departmentSite">
+	<resultMap id="DepartmentSite-result" class="DepartmentSite">
+		<result property="id" 				javaType="java.lang.Long" 	column="ID" />
+		<result property="depId" 		    javaType="java.lang.String" column="DEP_ID" />
+		<result property="siteId" 		javaType="java.lang.Long" 	column="SITE_ID" />
+		<result property="syncStatus" 		javaType="java.lang.String" column="SYNC_STATUS" />
+		<result property="gmtCreate" 		javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified" 		javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+	</resultMap>
+	<insert id="MS_ADD_DEPARTMENT_SITE" parameterClass="DepartmentSite">		
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_DEPARTMENT_SITE.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		<![CDATA[
+			INSERT INTO CMS_DEPARTMENT_SITE 
+				(GMT_CREATE , GMT_MODIFIED , ID , DEP_ID , SITE_ID , SYNC_STATUS)
+			values
+				(SYSDATE , SYSDATE , #id# , #depId# , #siteId# , #syncStatus#)
+		]]>
+	</insert>
+	<!-- 删除类目和部门关系 -->
+	<delete id="MS_DELETE_DEPARTMENT_SITE" parameterClass="java.lang.Long">
+		DELETE FROM CMS_DEPARTMENT_SITE WHERE SITE_ID = #siteId#
+	</delete>
+	<select id="MS_ITERATE_DEPARTMENT" parameterClass="java.util.Map" resultMap="DepartmentSite-result">
+       	  <![CDATA[
+            SELECT * FROM (
+             SELECT A.*,ROWNUM RN FROM ( 
+               SELECT * FROM CMS_DEPARTMENT_SITE 
+               order by ID
+             ) A WHERE ROWNUM <= #offset# + #length#
+            ) WHERE RN > #offset#
+      ]]>
+	</select>
+	
+	<select id="MS_SELECT_BY_DEPARTMENT_IDS" resultMap="DepartmentSite-result" parameterClass="Collection">
+		SELECT * FROM CMS_DEPARTMENT_SITE where DEP_ID in 
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>
+	</select>
+	
+	<select id="MS_SELECT_BY_SITE_ID" resultMap="DepartmentSite-result" parameterClass="java.lang.Long">
+		SELECT * FROM CMS_DEPARTMENT_SITE where SITE_ID = #siteId#
+	</select>		
+		
+	<update id="MS_UPDATE_SYNC_STATUS" parameterClass="java.util.Map">
+		UPDATE CMS_DEPARTMENT_SITE SET SYNC_STATUS = #syncStatus#,GMT_MODIFIED = sysdate WHERE ID=#id#
+	</update>		
+	
+    <select id="MS_GET_DEPARTMENT_CHANGED_SITE" resultClass="java.util.HashMap">
+      <![CDATA[
+        select
+            *
+        from
+            (
+            select
+                t.*,rownum as myrow
+            from
+                (select    ID,GMT_MODIFIED,
+                           DEP_ID,SITE_ID,
+                           (select name from cms_site where id=c.site_id) as SITE_NAME,
+                           (select dep_name from cms_department where dep_id=c.dep_id) as DEP_NAME 
+                 from      cms_department_site c
+                 where     SYNC_STATUS = #status#  
+                 ]]>
+                <isNotEmpty prepend="AND" property="beginDate"> 
+                	GMT_MODIFIED >= #beginDate#
+                </isNotEmpty>
+                <isNotEmpty prepend="AND" property="endDate"> 
+                	GMT_MODIFIED <![CDATA[<=]]> #endDate#
+                </isNotEmpty>                
+             <![CDATA[
+                 order by GMT_MODIFIED desc) t
+            where             
+                rownum<=#end#
+            )
+        where
+            myrow>#begin#
+            ]]>   
+    </select>	
+</sqlMap>

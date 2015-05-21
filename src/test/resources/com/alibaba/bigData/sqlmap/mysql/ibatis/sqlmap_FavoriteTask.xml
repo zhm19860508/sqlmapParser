@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="FavoriteTask">
+	<typeAlias alias="FavoriteTask"
+		type="com.alibaba.bigData.dal.entity.FavoriteTaskDO" />
+
+	<resultMap class="FavoriteTask" id="FavoriteTaskResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskID" />
+		<result column="user_name" property="userName" />
+	</resultMap>
+
+	<resultMap class="TaskSummary" id="FavTaskResult">
+		<result column="fav_id" property="favId" />
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="user_name" property="userName" />
+		<result column="group_name" property="groupName" />
+	</resultMap>
+
+	<select id="queryForDuplicate" resultClass="java.lang.Integer">
+		select
+		count(*)
+		from
+		bigData_favorite_job
+		where
+		task_id=#taskID#
+		and
+		user_name=#userName#
+	</select>
+
+	<select id="queryFavoriteId" resultClass="java.lang.Integer">
+		select
+		id
+		from
+		bigData_favorite_job
+		where
+		task_id=#taskID#
+		and
+		user_name=#userName#
+	</select>
+
+	<insert id="addFavoriteTask" parameterClass="FavoriteTask">
+		insert into bigData_favorite_job
+				(
+				task_id,
+				user_name
+				)
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				#taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				#userName#
+			</isNotNull>
+			)
+		</dynamic>
+	</insert>
+
+	<delete id="deleteFavoriteTask" parameterClass="java.lang.Integer">
+        delete
+		from
+		bigData_favorite_job
+		where
+		id=#id#
+	</delete>
+
+	<select id="queryMyFavTask" resultMap="FavTaskResult">
+		select a.id, b.project_id, b.task_name, b.task_description, b.task_type, c.group_name,
+		a.user_name, a.id as fav_id from bigData_favorite_job a,bigData_job_base b, bigData_group c
+		where a.user_name = #empId# and b.id=a.task_id   and  b.is_deleted = 0
+		and c.id=b.group_id
+        order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryFavTaskCount" resultClass="java.lang.Integer">
+		select
+            count(*)
+        from
+            bigData_favorite_job a,
+            bigData_job_base b
+            where
+                a.task_id = b.id
+        and
+            a.user_name = #empId#
+	</select>
+
+</sqlMap>

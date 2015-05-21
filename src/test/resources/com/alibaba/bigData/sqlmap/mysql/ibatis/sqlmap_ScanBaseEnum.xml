@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ScanBaseEnum">
+	<typeAlias alias="scanBaseEnum"
+		type="com.alibaba.bigData.dal.entity.HiveScanBaseEnumDO" />
+
+
+	<resultMap class="scanBaseEnum" id="scanBaseEnumDO">
+		<result column="namespace" property="namespace" />
+		<result column="attr" property="attr" />
+		<result column="value" property="value" />
+		<result column="label" property="label" />
+		<result column="type" property="type" />
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+		a.namespace,a.attr,a.value,a.label,a.type
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_baseEnum a
+	</sql>
+
+	<select id="queryAllScanBaseEnum" resultMap="scanBaseEnumDO">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+	</select>
+
+
+	<select id="queryScanBaseEnumBynamespace" resultMap="scanBaseEnumDO" parameterClass="java.lang.String">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.namespace=#namespace#
+	</select>
+
+
+
+
+</sqlMap>

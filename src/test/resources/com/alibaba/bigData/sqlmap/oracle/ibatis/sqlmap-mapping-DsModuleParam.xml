@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsmoduleparam">
+    <typeAlias alias="dsModule" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsModule"/>
+    <typeAlias alias="dsModuleParam" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsModuleParam"/>
+    <!--
+      - ===============================================
+      - DS_MODULE_PARM表映射到类
+      - ===============================================
+     -->
+    <resultMap id="dsModuleParam" class="dsModuleParam">
+        <result property="id" column="ID"/>
+        <result property="dsModule.id" column="DS_MODULE_ID"/>
+        <result property="dataSourceParam" column="DATA_SOURCE_PARAM"/>
+        <result property="value" column="VALUE"/>        
+    </resultMap>
+
+
+    <!--
+      - ===============================================
+      - 查询
+      - ===============================================
+     -->
+    <select id="getDsModuleParamByDsModuleId" resultMap="dsModuleParam" parameterClass="int">
+      select   *
+      from DS_MODULE_PARM
+      where DS_MODULE_ID = #dsModuleId#    
+    </select>
+    <select id="getAllDsModuleParam" resultMap="dsModuleParam" >
+      select    *
+      from DS_MODULE_PARM 
+    </select>
+    <!-- 
+     - ====================================================
+     - 删除
+     - ====================================================
+     -->
+    <delete id="deleteDsModuleParamByDsModuleId" parameterClass="int" >
+       delete  from   DS_MODULE_PARM
+       where   DS_MODULE_ID = #dsModuleId#
+    </delete>
+    
+    
+    <!-- 
+     - ====================================================
+     - 插入
+     - ====================================================    
+     -->
+    <insert id="insertDsModuleParam" parameterClass="dsModuleParam">
+      <selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DS_MODULE_PARM.NEXTVAL AS ID FROM DUAL</selectKey>
+       insert into DS_MODULE_PARM (
+                ID,
+                DS_MODULE_ID,
+                DATA_SOURCE_PARAM,
+                VALUE
+        ) values(
+                #id#,
+                #dsModule.id#,
+                #dataSourceParam#,
+                #value#       
+        )      
+    </insert>
+   
+</sqlMap>

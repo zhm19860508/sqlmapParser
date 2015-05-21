@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="OdpsRunResult">
+
+	<typeAlias alias="odpsTaskResultDO" type="com.alibaba.bigData.dal.entity.OdpsScanResultDO" />
+
+	<resultMap class="odpsTaskResultDO" id="taskResultDOResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_log" property="runLog" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="monitor_type" property="monitorType" />
+	</resultMap>
+
+
+
+
+	<sql id="taskResultColumns">
+		select a.id,a.task_id,a.run_log,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,a.monitor_type
+	</sql>
+
+
+	<sql id="taskResultFrom">
+		from bigdata_run_result_odpsscan a
+	</sql>
+
+
+
+	<insert id="addTaskBaseResult" parameterClass="odpsTaskResultDO">
+		insert into bigdata_run_result_odpsscan
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				run_log
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				run_status
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				start_time
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				run_user
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type
+			</isNotNull>
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				#runLog#
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				#runStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				#startTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				#endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				#runUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				#monitorType#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryTaskBaseResultByRunId" resultMap="taskResultDOResult">
+		<include refid="taskResultColumns" />
+		<include refid="taskResultFrom" />
+		where a.id=#id#
+	</select>
+
+
+
+
+	<select id="queryRunStatusByRunId" resultClass="java.lang.String">
+		select run_status from bigdata_run_result_odpsscan a
+		where a.id=#id#
+	</select>
+
+	<select id="queryRunLogByRunId" resultClass="java.lang.String">
+		select run_log from bigdata_run_result_odpsscan a
+		where a.id=#id#
+	</select>
+
+
+
+
+	<update id="updateRunResult" parameterClass="odpsTaskResultDO">
+		update bigdata_run_result_odpsscan
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id = #taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				run_log = #runLog#
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				run_status = #runStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				start_time = #startTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				run_user = #runUser#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				is_deleted = #isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type = #monitorType#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+
+
+	<update id="deleteRunResult" parameterClass="java.lang.Integer">
+		update bigdata_run_result_odpsscan
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+
+
+
+
+
+
+
+</sqlMap>

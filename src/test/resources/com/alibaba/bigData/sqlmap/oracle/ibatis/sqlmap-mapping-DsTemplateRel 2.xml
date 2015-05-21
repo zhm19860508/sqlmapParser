@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dstemplaterel">
+    <typeAlias alias="dstemplaterel" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsTemplateRel"/>
+     <!--
+      - ===============================================
+      - DS_TEMPLATE_REL表映射到DsTemplateRel类
+      - ===============================================
+     -->
+    <resultMap id="dsResult" class="dstemplaterel">
+        <result property="id" column="ID"/>
+        <result property="dataSource.id" column="DS_ID"/>
+        <result property="dsTemplate.id" column="DS_TEMPLATE_ID"/>
+    </resultMap>
+
+
+  <select id="queryDsTemplateRel" resultMap="dsResult" parameterClass="dstemplaterel" >
+      select    *
+      from DS_TEMPLATE_REL
+    <dynamic prepend="where" >
+      <isGreaterThan prepend="and" property="dataSource.id"   compareValue ="0">
+        DS_ID = #dataSource.id#
+      </isGreaterThan>
+
+      <isGreaterThan prepend="and" property="dsTemplate.id"  compareValue ="0">
+        DS_TEMPLATE_ID = #dsTemplate.id#
+      </isGreaterThan>
+    </dynamic>
+
+  </select>
+
+
+
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertDsTemplateRel" parameterClass="dstemplaterel">
+    <selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DS_TEMPLATE_REL.NEXTVAL AS id FROM DUAL</selectKey>
+        insert into DS_TEMPLATE_REL (
+                ID,
+                DS_ID,
+                DS_TEMPLATE_ID
+        ) values (
+                #id#,
+                #dataSource.id#,
+                #dsTemplate.id#    
+        )
+    </insert>
+
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteDsTemplateRel" parameterClass="dstemplaterel"><![CDATA[
+        delete from
+                DS_TEMPLATE_REL
+         where
+        DS_ID = #dataSource.id# 
+        and DS_TEMPLATE_ID = #dsTemplate.id#
+    ]]></delete>
+
+</sqlMap>

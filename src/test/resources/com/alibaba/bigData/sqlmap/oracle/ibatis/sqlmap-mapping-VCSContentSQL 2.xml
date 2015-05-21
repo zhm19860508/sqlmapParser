@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_VCSContent">
+    <!--定义VCSContentDO对象别名-->
+    <typeAlias alias="TA-VCSContent" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.VCSContentDO"/>
+    
+    <!--TA-VCSContent对象，JDBC,JAVA字段类型映射-->
+    <resultMap id="RM-VCSContentResult" class="TA-VCSContent">
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="versionId" column="VERSION_ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="content" column="CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>
+    </resultMap>
+    
+
+     <resultMap id="RM-VCSContent-LAST" class="CmsPageContent">
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="pageContent" column="PAGE_CONTENT" jdbcType="CLOB" javaType="java.lang.String"/>
+    </resultMap>  
+    
+
+    <!--插入VCSContent对象-->
+    <insert id="MS-INSERT-VCSContent" parameterClass="TA-VCSContent"> <![CDATA[
+			insert into 
+			VCS_CONTENT (GMT_CREATE,GMT_MODIFIED,VERSION_ID,CONTENT)
+			values (sysdate,sysdate,#versionId#,#content#)
+		]]>
+    </insert>
+    
+    <!--根据版本号取得VCSContent对象-->
+    <select id="MS-FIND-VCSContent-By-versionId" resultMap="RM-VCSContentResult"> <![CDATA[
+			select * from VCS_CONTENT where VERSION_ID = #versionId#
+		]]>
+    </select>
+    
+    <!--根据版本号批量取得VCSContent对象-->
+    <select id="MS-FIND-VCSContent-By-versionIds"  resultMap="RM-VCSContentResult"> <![CDATA[
+			select * from VCS_CONTENT where VERSION_ID in
+		]]>
+		<iterate property="versionIds" open="(" close=")"
+				conjunction=",">
+				#versionIds[]#
+		</iterate>
+    </select>
+
+    
+    <!--根据资源ID和类型，取得资源当前内容对象-->
+    <select id="MS-FIND-VCSContent-By-resourceId" resultMap="RM-VCSContentResult"> <![CDATA[
+			 SELECT *
+  FROM VCS_CONTENT C
+ WHERE C.VERSION_ID =(SELECT R.VERSION_ID
+          FROM VCS_RELEASE R
+         WHERE R.RESOURCE_TYPE = #resType# AND r.resource_id=#resId#
+               AND R.LATEST_VERSION = 1)
+		]]>
+    </select>
+    
+ 
+
+    
+      <!-- 查询最版本页面内容及页面更新时间 -->
+    <select id="MS-FIND-LAST-PAGE-CONTENT" parameterClass="Long" resultMap="RM-VCSContent-LAST">
+      <![CDATA[
+			SELECT /*+ordered use_nl(p v vc)*/ VC.CONTENT as PAGE_CONTENT,V.GMT_MODIFIED as GMT_MODIFIED
+			from cms.CMS_PAGE P ,cms.VCS_RELEASE V, cms.VCS_CONTENT VC 
+			where V.LATEST_VERSION=1 and V.VERSION_ID=VC.VERSION_ID and V.RESOURCE_ID=P.ID 
+			  and V.RESOURCE_TYPE = 'RT_PAGE' and P.ID = #pageId#
+	  ]]>
+    </select> 
+</sqlMap>

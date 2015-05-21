@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.queryrule">
+	<typeAlias alias="dcmsQueryRuleDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsQueryRuleDO"/>
+
+	<!-- 
+		开发负责人：xiaotong.huangxt
+		功能说明：DCMS编辑数据源
+		前台 或 后台：    后台
+		频率：10000次
+		分表数量：单表
+		是否有缓存：是
+		数据量及增长趋势：最终达到百万量级，1年内10w级
+	-->
+	<select id="queryById" parameterClass="java.lang.Long" resultClass="dcmsQueryRuleDO">
+		select 	ID as id,
+				GMT_CREATE as gmtCreate,
+				GMT_MODIFIED as gmtModified,
+				QUERY as query,
+				TYPE as type,
+				QUERY_TYPE as queryType,
+				UPDATE_PERIOD as updatePeriod,
+				UPDATE_BEGIN_TIME as updateBeginTime
+		from DCMS_QUERY_RULE 
+		WHERE ID=#id#
+	</select>
+
+	<!-- 
+		开发负责人：xiaotong.huangxt
+		功能说明：DCMS编辑数据源
+		前台 或 后台：    后台
+		频率：10000次
+		分表数量：单表
+		是否有缓存：是
+		数据量及增长趋势：最终达到百万量级，1年内10w级
+	-->
+	<insert id="insert" parameterClass="dcmsQueryRuleDO">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_QUERY_RULE.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        
+		insert into DCMS_QUERY_RULE
+		(ID,GMT_CREATE,GMT_MODIFIED,QUERY,TYPE,QUERY_TYPE,UPDATE_PERIOD,UPDATE_BEGIN_TIME)
+		values
+		(#id#, sysdate, sysdate, #query#,#type#,#queryType#,#updatePeriod#,#updateBeginTime#)
+	</insert>
+
+	<!-- 
+		开发负责人：xiaotong.huangxt
+		功能说明：DCMS编辑数据源
+		前台 或 后台：    后台
+		频率：10000次
+		分表数量：单表
+		是否有缓存：是
+		数据量及增长趋势：最终达到百万量级，1年内10w级
+	-->
+	<update id="update" parameterClass="dcmsQueryRuleDO">
+		update DCMS_QUERY_RULE
+		set GMT_MODIFIED = sysdate
+		
+		<dynamic>
+			<isNotEmpty property="query" prepend=",">
+				QUERY = #query#
+			</isNotEmpty>
+			<isNotEmpty property="type" prepend=",">
+				TYPE = #type#
+			</isNotEmpty>
+			<isNotEmpty property="queryType" prepend=",">
+				QUERY_TYPE = #queryType#
+			</isNotEmpty>
+			<isNotNull property="updatePeriod" prepend=",">
+				UPDATE_PERIOD = #updatePeriod#
+			</isNotNull>
+			<isNotNull property="updateBeginTime" prepend=",">
+				UPDATE_BEGIN_TIME = #updateBeginTime#
+			</isNotNull>
+		</dynamic>
+		
+		where id = #id# 
+	</update>
+</sqlMap>

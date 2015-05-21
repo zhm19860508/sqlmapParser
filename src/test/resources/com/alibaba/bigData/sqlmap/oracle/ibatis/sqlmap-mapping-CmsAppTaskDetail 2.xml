@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsAppTaskDetail">        
+        
+    <resultMap class="CmsAppTaskDetail" id="CmsAppTaskDetail-result" >
+    	<result property="id"					javaType="java.lang.Long"		column="ID" />
+        <result property="gmtCreate"			javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"			javaType="java.sql.Timestamp"	column="GMT_MODIFIED" /> 
+        <result property="taskId"				javaType="java.lang.Long"		column="TASK_ID" /> 
+        <result property="host"					javaType="java.lang.String"		column="HOST" />
+        <result property="result"				javaType="java.lang.String"		column="RESULT" />
+        <result property="content"				javaType="java.lang.String"		column="CONTENT" />
+    </resultMap>
+
+
+	<select id="MS_SELECT_CMS_APP_TASK_DETAIL_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsAppTaskDetail-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_TASK_DETAIL WHERE ID = #id# 
+        ]]>
+	</select>
+	
+	<insert id="MS_INSERT_CMS_APP_TASK_DETAIL" parameterClass="CmsAppTaskDetail">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_APP_TASK_DETAIL.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_APP_TASK_DETAIL
+              (ID , GMT_CREATE  , GMT_MODIFIED ,  HOST  , TASK_ID  , RESULT  , CONTENT   )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #host#  , #taskId#  , #result#  , #content# )
+        ]]>
+	</insert>
+	
+	<delete id="MS_DELATE_CMS_APP_TASK_DETAIL" parameterClass="java.lang.Long">
+        <![CDATA[
+            delete FROM CMS_APP_TASK_DETAIL WHERE ID = #id# 
+        ]]>
+	</delete>
+
+	<select id="MS_SELECT_CMS_APP_TASK_DETAIL_BY_IDS" resultMap="CmsAppTaskDetail-result"
+		parameterClass="java.util.Map">
+	     <![CDATA[
+	            SELECT * FROM CMS_APP_TASK_DETAIL WHERE HOST = #host# AND  TASK_ID IN
+			]]>
+		<iterate property="taskIds" open="(" close=")" conjunction=",">
+			#taskIds[]#
+		</iterate>
+	</select>	
+	
+	<update id="MS_UPDATE_CMS_APP_TASK_DETAIL" parameterClass="CmsAppTaskDetail">
+        <![CDATA[
+            update
+                    CMS_APP_TASK_DETAIL
+            set
+                    GMT_MODIFIED = sysdate ,
+                    RESULT = #result#,
+                    CONTENT = #content#          
+		  	where  
+                HOST = #host# AND  TASK_ID = #taskId#
+        ]]>
+	</update>
+</sqlMap>

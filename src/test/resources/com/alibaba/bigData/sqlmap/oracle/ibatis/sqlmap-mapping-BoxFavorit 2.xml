@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxfavorit">
+
+
+	<resultMap id="BoxFavorit-Result"
+		class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxFavorit">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="name" column="NAME" javaType="java.lang.String" />
+		<result property="tag" column="TAG" javaType="java.lang.String" />
+		<result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String" />
+		<result property="userId" column="USER_ID" javaType="java.lang.String" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="BoxFavorit-Result2"
+		class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxFavorit">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="name" column="NAME" javaType="java.lang.String" />
+		<result property="tag" column="TAG" javaType="java.lang.String" />
+		<result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String" />
+		<result property="userId" column="USER_ID" javaType="java.lang.String" />
+		<result property="source" column="SOURCE" javaType="java.lang.String" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="MS_GET_BOXFAVORITS_BY_IDS_AND_PAGE" resultMap="BoxFavorit-Result"
+		parameterClass="java.util.Map">
+        <![CDATA[
+		SELECT * FROM 
+		(
+		  SELECT ROWNUM AS RN, 
+          t.ID AS ID,
+		  t.NAME AS NAME,
+		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+ 		  t.GMT_CREATE  as GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED  
+		  FROM 
+		  (
+			  SELECT * FROM 
+			  ]]>
+		<isEqual property="table" compareValue="DCMS_BOX_MODULE">
+			DCMS_BOX_MODULE
+		        </isEqual>
+		<isEqual property="table" compareValue="DCMS_BOX_CELL">
+			DCMS_BOX_CELL
+		        </isEqual>
+		        <![CDATA[ where  id in 
+				   ]]>
+		<iterate open="(" close=")" conjunction="," property="ids">
+			#ids[]#
+		        </iterate>
+		        <![CDATA[
+				 order by GMT_MODIFIED 
+			) t
+			 WHERE  ROWNUM <= #offset# + #length#
+		)    
+		WHERE   RN > #offset#
+		  ]]>
+	</select>
+
+
+	<select id="MS_GET_BOXFAVORITS_BY_IDS_COUNT" resultClass="java.lang.Long"
+		parameterClass="java.util.Map">
+        <![CDATA[
+           SELECT COUNT(*)
+		  FROM ]]>
+
+		<isEqual property="table" compareValue="DCMS_BOX_MODULE">
+			DCMS_BOX_MODULE
+        </isEqual>
+		<isEqual property="table" compareValue="DCMS_BOX_CELL">
+			DCMS_BOX_CELL
+        </isEqual>
+		<isEqual property="table" compareValue="DCMS_BOX_TEMPLATE">
+			DCMS_BOX_TEMPLATE
+        </isEqual>
+		<isEqual property="table" compareValue="CMS_PAGE">
+			CMS_PAGE
+        </isEqual>
+        <![CDATA[t where  t.id in 
+		   ]]>
+		<iterate open="(" close=")" conjunction="," property="ids">
+			#ids[]#
+        </iterate>
+
+	</select>
+
+
+	<select id="MS_GET_BOX_PAGE_FAVORITS_BY_IDS_BY_PAGE" resultMap="BoxFavorit-Result"
+		parameterClass="java.util.Map">
+        <![CDATA[
+		SELECT * FROM 
+		(
+           SELECT ROWNUM AS RN, 
+		   t.ID AS ID,
+		  t.TITLE AS NAME,
+		  '' AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+ 		   t.GMT_CREATE  as GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED  
+		  FROM(
+		  SELECT c.*  FROM  
+		    CMS_PAGE c where  c.id in 
+		   ]]>
+		<iterate open="(" close=")" conjunction="," property="ids">
+			#ids[]#
+	        </iterate>
+	        <![CDATA[
+		 	order by c.GMT_MODIFIED
+		)
+		t WHERE  ROWNUM <= #offset# + #length#
+		)    
+		WHERE   RN > #offset# ]]>
+	</select>
+
+
+	<select id="MS_GET_BOX_PAGE_FAVORITS_BY_IDS_BY_TEMPLATE"
+		resultMap="BoxFavorit-Result2" parameterClass="java.util.Map">
+        <![CDATA[
+		SELECT * FROM 
+		(
+		  SELECT ROWNUM AS RN, 
+          t.ID AS ID,
+		  t.NAME AS NAME,
+		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+		  t.SOURCE AS SOURCE,
+ 		  t.GMT_CREATE  as GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED  
+		  FROM 
+		  (
+			  SELECT * FROM 
+			  ]]>
+		DCMS_BOX_TEMPLATE
+		        <![CDATA[ where  id in 
+				   ]]>
+		<iterate open="(" close=")" conjunction="," property="ids">
+			#ids[]#
+		        </iterate>
+		        <![CDATA[
+				 order by GMT_MODIFIED 
+			) t
+			 WHERE  ROWNUM <= #offset# + #length#
+		)    
+		WHERE   RN > #offset#
+		  ]]>
+	</select>
+	<select id="MS_GET_BOX_MY_FAVORITS_BY_IDS_BY_TEMPLATE"
+		resultMap="BoxFavorit-Result2" parameterClass="java.util.Map">
+        <![CDATA[
+		SELECT * FROM 
+		(
+		  SELECT ROWNUM AS RN, 
+          t.ID AS ID,
+		  t.NAME AS NAME,
+		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+		  t.SOURCE AS SOURCE,
+ 		  t.GMT_CREATE  as GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED  
+		  FROM 
+		  (
+			  SELECT * FROM 
+			  ]]>
+		DCMS_BOX_TEMPLATE
+		        <![CDATA[ where  id in 
+				   ]]>
+		<iterate open="(" close=")" conjunction="," property="ids">
+			#ids[]#
+		        </iterate>
+		<isNotEmpty prepend="and" property="keyword">
+			(T.NAME like '%' || #keyword# || '%' or REGEXP_LIKE(TAG, '(^|[[:space:]])'
+			|| #keyword# || '([[:space:]]|$$)')) 
+	        </isNotEmpty>
+		<isNotEmpty prepend="and" property="catalogIds">
+			T.BOX_CATALOG in
+			<iterate property="catalogIds" open="(" close=")"
+				conjunction=",">
+				#catalogIds[]#
+		         	</iterate>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="status">
+			T.STATUS = #status# 
+	        </isNotEmpty>
+		<isNotEmpty prepend="and" property="userId">
+			T.USER_ID = #userId# 
+	        </isNotEmpty>
+		<isNotEmpty prepend="and" property="tagexp">
+			  <![CDATA[	           
+			    REGEXP_LIKE(TAG, '(^|[[:space:]])' || #tagexp# || '([[:space:]]|$$)') 
+	          ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="resourceType">
+			  <![CDATA[	           
+			    RESOURCE_TYPE = #resourceType# 
+	          ]]>
+		</isNotEmpty>   
+		        <![CDATA[
+				 order by GMT_MODIFIED 
+			) t
+			 WHERE  ROWNUM <= #offset# + #length#
+		)    
+		WHERE   RN > #offset#
+		  ]]>
+	</select>
+
+</sqlMap>

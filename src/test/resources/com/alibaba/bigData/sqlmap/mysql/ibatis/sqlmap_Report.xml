@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Report">
+	<typeAlias alias="ReportDO"
+		type="com.alibaba.bigData.dal.entity.ReportDO" />
+
+	<resultMap class="ReportDO" id="ReportDOResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="all_case" property="allCase" />
+		<result column="success_case" property="successCase" />
+		<result column="dis_all_case" property="disAllCase" />
+		<result column="dis_success_case" property="disSuccessCase" />
+		<result column="scan_all_case" property="scanAllCase" />
+		<result column="scan_success_case" property="scanSuccessCase" />
+		<result column="scan_bug_num" property="scanBugNum" />
+		<result column="unit_all_case" property="unitAllCase" />
+		<result column="unit_success_case" property="unitSuccessCase" />
+		<result column="compare_all_case" property="compAllCase" />
+		<result column="compare_success_case" property="compSuccessCase" />
+		<result column="report_result" property="reportResult" />
+		<result column="report_detail" property="reportDetail" />
+		<result column="run_task_ids" property="runTaskIds" />
+		<result column="trace_ids" property="traceIds" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="removed_part" property="removedPart" />
+	</resultMap>
+
+	<sql id="ReportColumns">
+		select a.id,a.project_id,a.all_case,a.success_case,a.scan_bug_num,a.dis_all_case,a.dis_success_case,a.scan_all_case,a.scan_success_case,a.unit_all_case,a.unit_success_case,a.compare_all_case,a.compare_success_case,a.report_result,a.report_detail,a.run_task_ids,a.trace_ids,a.gmt_create,a.gmt_modify,a.removed_part
+	</sql>
+
+	<sql id="ReportFrom">
+		from bigData_report a
+	</sql>
+
+	<sql id="ReportJoin">
+        a.is_deleted = 0
+	</sql>
+
+	<sql id="ReportQuery">
+        where
+		<include refid="ReportJoin" />
+		<isNotNull property="projectId" prepend="AND">
+            a.project_id=#projectId#
+		</isNotNull>
+		<isNotNull property="allCase" prepend="AND">
+            a.all_case=#allCase#
+		</isNotNull>
+		<isNotNull property="successCase" prepend="AND">
+            a.success_case=#successCase#
+		</isNotNull>
+		<isNotNull property="disAllCase" prepend="AND">
+            a.dis_all_case=#disAllCase#
+		</isNotNull>
+		<isNotNull property="disSuccessCase" prepend="AND">
+            a.dis_success_case=#disSuccessCase#
+		</isNotNull>
+		<isNotNull property="scanAllCase" prepend="AND">
+            a.scan_all_case=#scanAllCase#
+		</isNotNull>
+		<isNotNull property="scanSuccessCase" prepend="AND">
+            a.scan_success_case=#scanSuccessCase#
+		</isNotNull>
+		<isNotNull property="scanBugNum" prepend="AND">
+            a.scan_bug_num=#scanBugNum#
+		</isNotNull>
+		<isNotNull property="unitAllCase" prepend="AND">
+            a.unit_all_case=#unitAllCase#
+		</isNotNull>
+		<isNotNull property="unitSuccessCase" prepend="AND">
+            a.unit_success_case=#unitSuccessCase#
+		</isNotNull>
+		<isNotNull property="compAllCase" prepend="AND">
+            a.compare_all_case=#compAllCase#
+		</isNotNull>
+		<isNotNull property="compSuccessCase" prepend="AND">
+            a.compare_success_case=#compSuccessCase#
+		</isNotNull>
+		<isNotNull property="reportResult" prepend="AND">
+            a.report_result=#reportResult#
+		</isNotNull>
+		<isNotNull property="reportDetail" prepend="AND">
+            a.report_detail=#reportDetail#
+		</isNotNull>
+		<isNotNull property="runTaskIds" prepend="AND">
+            a.run_task_ids=#runTaskIds#
+		</isNotNull>
+		<isNotNull property="traceIds" prepend="AND">
+            a.trace_ids=#traceIds#
+		</isNotNull>
+		<isNotNull property="gmtCreate" prepend="AND">
+            a.gmt_create=#gmtCreate#
+		</isNotNull>
+		<isNotNull property="gmtModify" prepend="AND">
+            a.gmt_modify=#gmtModify#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addReport" parameterClass="ReportDO">
+		insert into bigData_report
+		<dynamic prepend="(">
+			<isNotNull property="projectId" prepend=",">
+                project_id
+    		</isNotNull>
+    		<isNotNull property="allCase" prepend=",">
+                all_case
+    		</isNotNull>
+    		<isNotNull property="successCase" prepend=",">
+                success_case
+    		</isNotNull>
+			<isNotNull property="disAllCase" prepend=",">
+                dis_all_case
+    		</isNotNull>
+    		<isNotNull property="disSuccessCase" prepend=",">
+                dis_success_case
+    		</isNotNull>
+    		<isNotNull property="scanAllCase" prepend=",">
+                scan_all_case
+    		</isNotNull>
+    		<isNotNull property="scanSuccessCase" prepend=",">
+                scan_success_case
+    		</isNotNull>
+			<isNotNull property="scanBugNum" prepend=",">
+                scan_bug_num
+    		</isNotNull>
+    		<isNotNull property="unitAllCase" prepend=",">
+                unit_all_case
+    		</isNotNull>
+    		<isNotNull property="unitSuccessCase" prepend=",">
+                unit_success_case
+    		</isNotNull>
+    		<isNotNull property="compAllCase" prepend=",">
+                compare_all_case
+    		</isNotNull>
+    		<isNotNull property="compSuccessCase" prepend=",">
+                compare_success_case
+    		</isNotNull>
+    		<isNotNull property="reportResult" prepend=",">
+                report_result
+    		</isNotNull>
+    		<isNotNull property="reportDetail" prepend=",">
+                report_detail
+    		</isNotNull>
+    		<isNotNull property="runTaskIds" prepend=",">
+                run_task_ids
+    		</isNotNull>
+    		<isNotNull property="traceIds" prepend=",">
+                trace_ids
+    		</isNotNull>
+    		<isNotNull property="gmtCreate" prepend=",">
+                gmt_create
+    		</isNotNull>
+    		<isNotNull property="gmtModify" prepend=",">
+                gmt_modify
+    		</isNotNull>   		
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="projectId">
+                #projectId#
+    		</isNotNull>
+			<isNotNull prepend="," property="allCase">
+				#allCase#
+			</isNotNull>
+			<isNotNull prepend="," property="successCase">
+				#successCase#
+			</isNotNull>
+			<isNotNull property="disAllCase" prepend=",">
+                #disAllCase#
+    		</isNotNull>
+    		<isNotNull property="disSuccessCase" prepend=",">
+                #disSuccessCase#
+    		</isNotNull>
+    		<isNotNull property="scanAllCase" prepend=",">
+                #scanAllCase#
+    		</isNotNull>
+    		<isNotNull property="scanSuccessCase" prepend=",">
+                #scanSuccessCase#
+    		</isNotNull>
+			<isNotNull property="scanBugNum" prepend=",">
+                #scanBugNum#
+    		</isNotNull>
+    		<isNotNull property="unitAllCase" prepend=",">
+                #unitAllCase#
+    		</isNotNull>
+    		<isNotNull property="unitSuccessCase" prepend=",">
+                #unitSuccessCase#
+    		</isNotNull>
+    		<isNotNull property="compAllCase" prepend=",">
+                #compAllCase#
+    		</isNotNull>
+    		<isNotNull property="compSuccessCase" prepend=",">
+                #compSuccessCase#
+    		</isNotNull>
+			<isNotNull prepend="," property="reportResult">
+				#reportResult#
+			</isNotNull>
+			<isNotNull prepend="," property="reportDetail">
+				#reportDetail#
+			</isNotNull>
+			<isNotNull prepend="," property="runTaskIds">
+				#runTaskIds#
+			</isNotNull>
+			<isNotNull prepend="," property="traceIds">
+				#traceIds#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>	
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryReportById" resultMap="ReportDOResult">
+		<include refid="ReportColumns" />
+		<include refid="ReportFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryReportListByQuery" resultMap="ReportDOResult">
+		<include refid="ReportColumns" />
+		<include refid="ReportFrom" />
+		<include refid="ReportQuery" />
+	</select>
+
+	<update id="updateReport" parameterClass="ReportDO">
+		update bigData_report
+		<dynamic prepend="set">
+			<isNotNull property="projectId" prepend=",">
+                project_id = #projectId#
+    		</isNotNull>
+    		<isNotNull property="allCase" prepend=",">
+                all_case = #allCase#
+    		</isNotNull>
+    		<isNotNull property="successCase" prepend=",">
+                success_case = #successCase#
+    		</isNotNull>
+			<isNotNull property="disAllCase" prepend=",">
+                dis_all_case=#disAllCase#
+    		</isNotNull>
+    		<isNotNull property="disSuccessCase" prepend=",">
+                dis_success_case=#disSuccessCase#
+    		</isNotNull>
+    		<isNotNull property="scanAllCase" prepend=",">
+                scan_all_case=#scanAllCase#
+    		</isNotNull>
+    		<isNotNull property="scanSuccessCase" prepend=",">
+                scan_success_case=#scanSuccessCase#
+    		</isNotNull>
+			<isNotNull property="scanBugNum" prepend=",">
+                scan_bug_num=#scanBugNum#
+    		</isNotNull>
+    		<isNotNull property="unitAllCase" prepend=",">
+                unit_all_case=#unitAllCase#
+    		</isNotNull>
+    		<isNotNull property="unitSuccessCase" prepend=",">
+                unit_success_case=#unitSuccessCase#
+    		</isNotNull>
+    		<isNotNull property="compAllCase" prepend=",">
+                compare_all_case=#compAllCase#
+    		</isNotNull>
+    		<isNotNull property="compSuccessCase" prepend=",">
+                compare_success_case=#compSuccessCase#
+    		</isNotNull>
+    		<isNotNull property="reportResult" prepend=",">
+                report_result = #reportResult#
+    		</isNotNull>
+    		<isNotNull property="reportDetail" prepend=",">
+                report_detail = #reportDetail#
+    		</isNotNull>
+    		<isNotNull property="runTaskIds" prepend=",">
+                run_task_ids = #runTaskIds#
+    		</isNotNull>
+    		<isNotNull property="traceIds" prepend=",">
+                trace_ids = #traceIds#
+    		</isNotNull>
+			<isNotNull property="gmtModify" prepend=",">
+                gmt_modify = #gmtModify#
+    		</isNotNull>
+			<isNotNull property="removedPart" prepend=",">
+                removed_part = #removedPart#
+    		</isNotNull>    		
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="deleteReport" parameterClass="java.lang.Integer">
+		update bigData_report
+		set is_deleted = 1
+		where id = #id#
+	</update>
+</sqlMap>

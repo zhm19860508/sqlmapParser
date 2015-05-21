@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="E2MFileVersion">
+	<typeAlias alias="e2MFileVersion"
+		type="com.alibaba.bigData.dal.entity.E2MFileVersionDO" />
+
+	<resultMap class="e2MFileVersion" id="e2MFileVersioResult">
+		<result column="file_path" property="filePath" />
+		<result column="new_version" property="newVersion" />
+		<result column="old_version" property="oldVersion" />
+	</resultMap>
+
+	<select id="queryCountByFile" resultClass="java.lang.Integer">
+		select count(*) from bigData_e2m_file_version
+			where file_path = #filePath#
+	</select>
+
+	<select id="queryByFilePath" resultMap="e2MFileVersioResult">
+		select * from bigData_e2m_file_version where file_path = #filePath#
+	</select>
+
+	<update id="update" parameterClass="e2MFileVersion">
+		update bigData_e2m_file_version
+			set new_version = #newVersion#, old_version = #oldVersion#
+		where file_path = #filePath#
+	</update>
+
+	<insert id="insert" parameterClass="e2MFileVersion">
+		INSERT INTO bigData_e2m_file_version (file_path, new_version,old_version) VALUES (#filePath#, #newVersion#, #oldVersion#)
+	</insert>
+</sqlMap>

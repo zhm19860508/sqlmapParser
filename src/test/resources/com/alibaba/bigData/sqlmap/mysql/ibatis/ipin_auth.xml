@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="auth" type="com.alibaba.china.ipinshared.dataobject.AuthDO" />
+	<resultMap id="authResult" class="auth">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="email" column="email" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="salt" column="salt" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="md5" column="md5" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="authStatus" column="auth_status" jdbcType="int"
+			javaType="int" />
+	</resultMap>
+
+	<sql id="authColumns">
+		select id,is_deleted,gmt_created,gmt_modified,user_id,email,salt,md5,auth_status
+	</sql>
+
+	<!-- 获取邮箱的认证状态 -->
+	<select id="get_auth_status_by_email" resultMap="authResult">
+		<include refid="authColumns" /> 
+		from
+		ipin_auth
+		where is_deleted = 0 and email = #email#
+		and auth_status=1
+	</select>
+
+	<!-- 获取UserId的认证状态 -->
+	<select id="get_auth_status_by_user_id" resultMap="authResult">
+		<include refid="authColumns" /> 
+		from
+		ipin_auth
+		where is_deleted = 0 and user_id = #userId#
+	</select>
+
+	<!-- 新增认证记录 -->
+	<insert id="add_auth_record" parameterClass="auth">
+		insert into
+		ipin_auth(user_id,email,salt,md5,auth_status,is_deleted,gmt_created,gmt_modified)
+		values(#userId#,#email#,#salt#,#md5#,0,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 修改认证记录 -->
+	<update id="update_auth_record" parameterClass="auth">
+		update ipin_auth set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="userId" prepend=",">
+			user_id =
+			#userId#
+		</isNotNull>
+		<isNotNull property="email" prepend=",">
+			email =
+			#email#
+		</isNotNull>
+		<isNotNull property="salt" prepend=",">
+			salt =
+			#salt#
+		</isNotNull>
+		<isNotNull property="md5" prepend=",">
+			md5 =
+			#md5#
+		</isNotNull>
+		<isNotNull property="authStatus" prepend=",">
+			auth_status =
+			#authStatus#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+</sqlMap>

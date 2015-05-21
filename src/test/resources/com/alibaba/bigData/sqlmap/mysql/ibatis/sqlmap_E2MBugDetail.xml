@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="E2MBugDetail">
+	<typeAlias alias="e2MBugDetail"
+		type="com.alibaba.bigData.dal.entity.E2MBugDetailDO" />
+
+	<resultMap class="e2MBugDetail" id="e2MBugDetailResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_id" property="runId" />
+		<result column="file_path" property="filePath" />
+		<result column="rule_id" property="ruleId" />
+		<result column="has_modify_script" property="hasModifyScript" />
+		<result column="auth" property="auth" />
+		<result column="status" property="status" />
+		<result column="modify_stc_id" property="modifyStcId" />
+		<result column="run_stc_id" property="runStcId" />
+		<result column="log" property="log" />
+		<result column="created_at" property="createdAt" />
+		<result column="updated_at" property="updatedAt" />
+		<result column="locked" property="locked" />
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+			a.id, a.task_id,a.run_id,a.file_path,a.rule_id,a.has_modify_script,a.auth,a.status,a.modify_stc_id,a.log,a.created_at,a.updated_at,a.run_stc_id,a.locked
+	</sql>
+
+	<sql id="From">
+		from $tableName$ a
+	</sql>
+
+	<select id="queryBugOfUserByRunId" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.run_id=#runId#
+	</select>
+
+	<select id="getBugId" resultClass="java.lang.Long">
+		select id
+		<include refid="From" />
+		where a.run_id=#runId# and a.rule_id=#ruleId# and a.file_path=#filePath#
+	</select>
+
+	<select id="queryBugOById" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.id=#bugId#
+	</select>
+
+	<select id="queryCountByStatus" resultClass="java.util.HashMap">
+		SELECT status status, COUNT(*) count FROM $tableName$ where run_id = #runId# AND auth = #userId# and rule_id = #ruleId# group by status;
+	</select>
+
+	<select id="ruleNumCountByRunId" resultClass="java.util.HashMap">
+		SELECT rule_id ruleId, COUNT(*) count FROM $tableName$ where run_id = #runId# AND auth = #userId# group by rule_id;
+	</select>
+
+	<select id="ruleNumCountByRunIdForStatus" resultClass="java.util.HashMap">
+		SELECT rule_id ruleId, COUNT(*) count FROM $tableName$
+			where run_id = #runId# AND auth = #userId# and ( status=#statusAwait# or status=#statusIng# )
+			group by rule_id;
+	</select>
+
+	<select id="querySameRunIdByUserId" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where run_id = #runId# and auth = #userId# and rule_id = #ruleId#
+		<isNotNull property="status">
+			and status = #status#
+		</isNotNull>
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+		;
+	</select>
+
+
+	<select id="queryTableNotFoundLog" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		SELECT log FROM $tableName$ where run_id = #runId# and rule_id=#ruleId#  and auth=#auth# and status=#status# and log like "%Table not found%"
+	</select>
+
+	<select id="queryBugIdAndSvn" resultClass="java.util.HashMap">
+		select file_path,CONCAT(id,";",#runId#) as runParam from $tableName$
+		where run_id = #runId# and auth = #userId#
+		<isNotNull property="ruleId" prepend="AND">
+			rule_id = #ruleId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			status = #status#
+		</isNotNull>
+	</select>
+
+	<select id="queryAllDigest" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where run_id = #runId# and auth = #userId#
+		<isNotNull property="ruleId" prepend="AND">
+            rule_id=#ruleId#
+		</isNotNull>
+		<isNotNull property="statusStr" prepend="AND">
+			status in ($statusStr$)
+		</isNotNull>
+	</select>
+
+	<select id="queryAuthsByRunId" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		SELECT DISTINCT auth FROM $tableName$ where run_id = #runId#;
+	</select>
+
+	<select id="queryNoModifySuccessFirstExeRule" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where run_id = #runId# AND auth = #auth# AND (status='UNMODIFIED' OR status='AWAITMODIFIED' OR status='EXECUTEMODIFIED' OR status='EXECUTEMODIFIEDFAIL') AND (rule_id = '4056' OR rule_id = '4057');
+	</select>
+
+	<select id="queryNoModifySuccessUdfRule" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where run_id = #runId# AND auth = #auth# AND (status='UNMODIFIED' OR status='AWAITMODIFIED' OR status='EXECUTEMODIFIED' OR status='EXECUTEMODIFIEDFAIL') AND rule_id = '4061';
+	</select>
+
+	<select id="checkModifingFile" resultClass="java.lang.Integer">
+		SELECT 1 from (SELECT a.file_path from $tableName$ a WHERE a.run_id = #runId#  and a.auth=#auth#
+		<isNotNull property="ruleId" prepend="AND">
+			a.rule_id=#ruleId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			a.status = #status#
+		</isNotNull>
+		) b ,
+		(SELECT a.file_path from $tableName$ a WHERE a.run_id = #runId# and a.auth=#auth# and (a.status = 'AWAITMODIFIED' or a.status='EXECUTEMODIFIED' or a.locked = 1)) c
+		where b.file_path = c.file_path LIMIT 1
+	</select>
+
+	<select id="checkModifingFileByPath" resultClass="java.lang.Integer">
+		SELECT 1 from $tableName$ a WHERE a.run_id = #runId# and file_path =#filePath# and ( a.locked = 1 or a.status = 'AWAITMODIFIED' or a.status='EXECUTEMODIFIED') LIMIT 1
+	</select>
+
+	<update id="updateStatus" parameterClass="java.util.HashMap">
+		update $tableName$
+		set status = #status#, log = #log#
+		where id = #bugId#
+	</update>
+
+	<update id="updateStatusByPath" parameterClass="java.util.HashMap">
+		update $tableName$
+		set status = #status#, log = #log#
+		where run_id = #runId# AND file_path = #svnPath# AND rule_id = #ruleId#
+	</update>
+
+	<update id="updateStatusByMutiPath" parameterClass="java.util.HashMap">
+		update $tableName$
+		set status = #status#, log = #log#
+		where run_id = #runId# AND rule_id = #ruleId# AND file_path in ($emptySvnPaths$)
+	</update>
+
+	<insert id="insertBug" parameterClass="java.util.HashMap">
+		insert into $tableName$
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="runId">
+				run_id
+			</isNotNull>
+			<isNotNull prepend="," property="filePath">
+				file_path
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				rule_id
+			</isNotNull>
+			<isNotNull prepend="," property="hasModifyScript">
+				has_modify_script
+			</isNotNull>
+			<isNotNull prepend="," property="auth">
+				auth
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				status
+			</isNotNull>
+			,created_at,updated_at
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runId">
+				#runId#
+			</isNotNull>
+			<isNotNull prepend="," property="filePath">
+				#filePath#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				#ruleId#
+			</isNotNull>
+			<isNotNull prepend="," property="hasModifyScript">
+				#hasModifyScript#
+			</isNotNull>
+			<isNotNull prepend="," property="auth">
+				#auth#
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				#status#
+			</isNotNull>
+			,now(),now()
+			)
+		</dynamic>
+		<selectKey resultClass="long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryE2MBugByCondition" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.run_id=#runId# and a.file_path=#filePath# and a.rule_id=#ruleId#
+	</select>
+
+
+	<update id="updataStatusByUserId" parameterClass="java.util.HashMap">
+		UPDATE $tableName$ a,bigdata_e2m_base_rules b set a.status = #status#, a.log = #log#
+		where a.run_id = #runId# and a.auth =#auth# and a.rule_id = b.id and b.has_modify_script = 1
+	</update>
+
+	<select id="queryFiles" parameterClass="java.util.HashMap" resultClass="java.lang.String">
+		SELECT DISTINCT a.file_path from $tableName$ a
+		where a.run_id = #runId# and a.auth =#auth#
+		<isNotNull property="size">
+			limit #size#
+		</isNotNull>
+	</select>
+
+	<update id="updataStatusByFilePath" parameterClass="java.util.HashMap">
+		UPDATE $tableName$ a,bigdata_e2m_base_rules b set a.status = #status#, a.log = #log#
+		where a.run_id = #runId# and a.file_path =#path# and a.rule_id = b.id and b.has_modify_script = 1
+	</update>
+
+	<update id="updateStcIdByPath" parameterClass="java.util.HashMap">
+		UPDATE $tableName$ a,bigdata_e2m_base_rules b set a.modify_stc_id = #stcId#
+		where a.run_id = #runId# and a.file_path =#path# and a.rule_id = b.id and b.has_modify_script = 1
+	</update>
+
+	<select id="queryByPath" parameterClass="java.util.HashMap" resultMap="e2MBugDetailResult">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.run_id = #runId# and a.file_path =#path#
+	</select>
+
+	<update id="lockFileByRunId" parameterClass="java.util.HashMap">
+		UPDATE $tableName$ a set a.locked = #locked# where a.run_id = #runId#
+	</update>
+
+	<select id="queryLockByRunId" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+		SELECT 1 from $tableName$ a where a.run_id = #runId# and (a.locked=1 or  a.status = 'AWAITMODIFIED' or a.status='EXECUTEMODIFIED')  limit 1
+	</select>
+
+</sqlMap>

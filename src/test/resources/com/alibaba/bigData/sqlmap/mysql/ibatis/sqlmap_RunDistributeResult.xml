@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunDistributeResult">
+	<typeAlias alias="distributeTaskResultDO"
+		type="com.alibaba.bigData.dal.entity.DistributeTaskResultDO" />
+
+
+	<resultMap class="DistributeTaskResultDO" id="distributeResultDOResult">
+		<result column="id" property="Id" />
+		<result column="run_id" property="runId" />
+		<result column="result" property="result" />
+		<result column="flag" property="flag" />
+		<result column="run_deloy_script" property="runDeloyScript" />
+		<result column="rule_id" property="ruleId" />
+		<result column="test_column" property="testColumn" />
+		<result column="expect" property="expect" />
+		<result column="test_table" property="testTable" />
+		<result column="partition" property="partition" />
+		<result column="env" property="env" />
+		<result column="packageName" property="packageName" />
+		<result column="type" property="type" />
+		<result column="rule_type" property="ruleType" />
+		<result column="rule_desc" property="ruleDesc" />
+	</resultMap>
+
+
+	<sql id="distributeResultColumns">
+		select
+		*
+	</sql>
+
+	<sql id="distributeResultFrom">
+		from bigData_run_result_distibute
+	</sql>
+
+	<insert id="addDistributeResult" parameterClass="distributeTaskResultDO">
+		insert into bigData_run_result_distibute
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				run_id
+			</isNotNull>
+			<isNotNull prepend="," property="result">
+				result
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag
+			</isNotNull>
+			<isNotNull prepend="," property="runDeloyScript">
+				run_deloy_script
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				rule_id
+			</isNotNull>
+			<isNotNull prepend="," property="testColumn">
+				test_column
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				expect
+			</isNotNull>
+			<isNotNull prepend="," property="testTable">
+				test_table
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition
+			</isNotNull>
+			<isNotNull prepend="," property="env">
+				env
+			</isNotNull>
+			<isNotNull prepend="," property="packageName">
+				packageName
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runId">
+				#runId#
+			</isNotNull>
+			<isNotNull prepend="," property="result">
+				#result#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				#flag#
+			</isNotNull>
+			<isNotNull prepend="," property="runDeloyScript">
+				#runDeloyScript#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleId">
+				#ruleId#
+			</isNotNull>
+			<isNotNull prepend="," property="testColumn">
+				#testColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				#expect#
+			</isNotNull>
+			<isNotNull prepend="," property="testTable">
+				#testTable#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="env">
+				#env#
+			</isNotNull>
+			<isNotNull prepend="," property="packageName">
+				#packageName#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryDistributeTaskResultByRunId" resultMap="distributeResultDOResult" >
+		<!--  <include refid="distributeResultColumns" />
+		<include refid="distributeResultFrom" />
+		where run_id=#id# -->
+		select a.*, b.type, b.rule_type, b.rule_desc 
+		from bigdata_run_result_distibute a, bigdata_job_distribute_rule b 
+		where a.rule_id=b.rule_id 
+		and a.run_id=#id#
+		
+	</select>
+
+	<update id="updateRunResult" parameterClass="distributeTaskResultDO">
+		update bigData_run_result_distibute
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="result">
+				result = #result#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag = #flag#
+			</isNotNull>
+			where run_id = #runId# and test_column=#testColumn#
+			and rule_id=#ruleId#
+		</dynamic>
+	</update>
+	
+	<update id="updatePrivateRunResult" parameterClass="distributeTaskResultDO">
+		update bigData_run_result_distibute
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="result">
+				result = #result#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				flag = #flag#
+			</isNotNull>
+			<isNotNull prepend="," property="flag">
+				expect = #expect#
+			</isNotNull>
+			where run_id = #runId# and rule_id=#ruleId#
+		</dynamic>
+	</update>
+
+</sqlMap>

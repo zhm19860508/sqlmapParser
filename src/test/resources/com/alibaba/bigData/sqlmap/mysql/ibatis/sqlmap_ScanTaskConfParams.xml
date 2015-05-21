@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ScanConfParams">
+	<typeAlias alias="scanConfRuleparams"
+		type="com.alibaba.bigData.dal.entity.HiveScanTaskConfParamsDO" />
+
+
+	<resultMap class="scanConfRuleparams" id="scanConfParamsDO">
+		<result column="taskID" property="taskID" />
+		<result column="script_id" property="scriptId" />
+		<result column="param_id" property="paramId" />
+		<result column="value" property="value" />
+
+
+
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+		a.taskID,a.script_id,a.param_id,a.value
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_conf_params a
+	</sql>
+
+
+
+	<select id="queryParamsByTaskid" resultMap="scanConfParamsDO" parameterClass="java.lang.Integer">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.taskID=#taskID#
+	</select>
+
+	<insert id="insertScanTaskConfParams" parameterClass="scanConfRuleparams">
+		insert into bigData_hiveScan_conf_params
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				taskID
+			</isNotNull>
+			<isNotNull prepend="," property="scriptId">
+				script_id
+			</isNotNull>
+			<isNotNull prepend="," property="paramId">
+				param_id
+			</isNotNull>
+			<isNotNull prepend="," property="value">
+				value
+			</isNotNull>
+				,created_at
+				,updated_at
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				#taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="scriptId">
+				#scriptId#
+			</isNotNull>
+			<isNotNull prepend="," property="paramId">
+				#paramId#
+			</isNotNull>
+			<isNotNull prepend="," property="value">
+				#value#
+			</isNotNull>
+			,now()
+			,now()
+			)
+		</dynamic>
+
+	</insert>
+
+    <update id="updateScanTaskConfParams" parameterClass="scanConfRuleparams">
+		update bigData_hiveScan_conf_params
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskID">
+				taskID=#taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="scriptId">
+				script_id=#scriptId#
+			</isNotNull>
+			<isNotNull prepend="," property="paramId">
+				param_id=#paramId#
+			</isNotNull>
+			<isNotNull prepend="," property="value">
+				value=#value#
+			</isNotNull>
+			,updated_at=now()
+			where taskID = #taskID# and script_id=#scriptId# and param_id=#paramId#
+		</dynamic>
+	</update>
+
+    <select id="queryParamsByTaskidAndScriptid" parameterClass="scanConfRuleparams" resultMap="scanConfParamsDO">
+		<include refid="getAllColumns" />
+         <include refid="From" />
+         where script_id=#scriptId# and taskID=#taskID#
+	</select>
+   <select id="queryParamsByTaskidAndParamid" parameterClass="scanConfRuleparams" resultMap="scanConfParamsDO">
+		<include refid="getAllColumns" />
+         <include refid="From" />
+         where param_id=#paramId# and taskID=#taskID#
+	</select>
+
+
+
+
+
+</sqlMap>

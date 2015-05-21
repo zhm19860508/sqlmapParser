@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="comment"
+		type="com.alibaba.china.ipinshared.dataobject.CommentDO" />
+	<typeAlias alias="query" type="com.alibaba.china.ipinshared.query.CommentQuery" />	
+	<resultMap id="commentResult" class="comment">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="commentType" column="comment_type"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="commentTypeId" column="comment_type_id" jdbcType="int" javaType="java.lang.Long" />		
+		<result property="msg" column="msg"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="targetUserId" column="target_user_id" jdbcType="int"
+			javaType="java.lang.Long" />	
+			
+		<result property="userName" column="user_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+			
+		<result property="targetUserName" column="target_user_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="isHidden" column="is_hidden" jdbcType="int"
+			javaType="int" />
+		<result property="isTop" column="is_top" jdbcType="int"
+			javaType="int" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		
+	</resultMap>
+	
+	<sql id="commentColumns">
+		select id,user_id,msg,comment_type,comment_type_id,target_user_id,target_user_name,user_name,is_hidden,gmt_modified,gmt_created,is_top,is_deleted
+	</sql>
+
+	<!-- 新增评论 -->
+	<insert id="add_new_comment" parameterClass="comment">
+		insert into
+		ipin_comment(user_id,comment_type,comment_type_id,msg,target_user_id,user_name,target_user_name,gmt_modified,gmt_created)
+		values(#userId#,#commentType#,#commentTypeId#,#msg#,#targetUserId#,#userName#,#targetUserName#,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+
+	
+	<!-- 删除评论 -->
+	<update id="del_comment" parameterClass="java.lang.Long">
+		update ipin_comment set is_deleted = 1			
+		where id = #id#
+	</update>
+
+	
+	<!-- 根据query查询评论列表 -->
+	<select id="get_comment_List" resultMap="commentResult"
+		parameterClass="query">
+		<include refid="commentColumns" /> 
+		from  ipin_comment where  is_deleted = 0
+		<isNotNull property="commentTypeId" prepend="AND">
+			comment_type_id =
+			#commentTypeId#
+		</isNotNull>	
+		
+		order by id desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+	
+	<select id="get_comment_count" resultClass="java.lang.Integer"
+		parameterClass="query">
+		select count(*)
+		 from  ipin_comment where  is_deleted = 0
+		<isNotNull property="commentTypeId" prepend="AND">
+			comment_type_id =
+			#commentTypeId#
+		</isNotNull>	
+		
+		
+	</select>
+
+</sqlMap>

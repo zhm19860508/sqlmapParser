@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="OdpsConfig">
+	<typeAlias alias="OdpsConfigDO"
+		type="com.alibaba.bigData.dal.entity.OdpsConfigDO" />
+
+
+	<resultMap class="odpsConfigDO" id="odpsConfigDOResult">
+		<result column="id" property="id" />
+		<result column="access_id" property="accessId" />
+		<result column="access_key" property="accessKey" />
+		<result column="account" property="account" />
+		<result column="account_id" property="accountId" />
+		<result column="project" property="project" />
+		<result column="end_point" property="endPoint" />
+	</resultMap>
+
+	<sql id="odpsColumns">
+		select
+		*
+	</sql>
+
+	<sql id="odpsFrom">
+		from bigData_odps_config
+	</sql>
+
+	<select id="queryAllUserConfig" resultMap="odpsConfigDOResult">
+		<include refid="odpsColumns" />
+		<include refid="odpsFrom" />
+	</select>
+
+	<select id="queryUserConfigByAccount" resultMap="odpsConfigDOResult">
+		<include refid="odpsColumns" />
+		<include refid="odpsFrom" />
+		where account =#account#
+	</select>
+
+	<select id="queryUserConfig" resultMap="odpsConfigDOResult">
+		<include refid="odpsColumns" />
+		<include refid="odpsFrom" />
+		where account_id =#accountId#
+	</select>
+
+	<insert id="addUserConfig" parameterClass="odpsConfigDO">
+		insert into bigData_odps_config
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="accessId">
+				access_id
+			</isNotNull>
+			<isNotNull prepend="," property="accessKey">
+				access_key
+			</isNotNull>
+			<isNotNull prepend="," property="account">
+				account
+			</isNotNull>
+			<isNotNull prepend="," property="accountId">
+				account_id
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				project
+			</isNotNull>
+			<isNotNull prepend="," property="endPoint">
+				end_point
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="accessId">
+				#accessId#
+			</isNotNull>
+			<isNotNull prepend="," property="accessKey">
+				#accessKey#
+			</isNotNull>
+			<isNotNull prepend="," property="account">
+				#account#
+			</isNotNull>
+			<isNotNull prepend="," property="accountId">
+				#accountId#
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				#project#
+			</isNotNull>
+			<isNotNull prepend="," property="endPoint">
+				#endPoint#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateUserConfig" parameterClass="odpsConfigDO">
+		update bigData_odps_config
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="accessId">
+				access_id=#accessId#
+			</isNotNull>
+			<isNotNull prepend="," property="accessKey">
+				access_key=#accessKey#
+			</isNotNull>
+			<isNotNull prepend="," property="account">
+				account=#account#
+			</isNotNull>
+			<isNotNull prepend="," property="accountId">
+				account_id=#accountId#
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				project=#project#
+			</isNotNull>
+			<isNotNull prepend="," property="endPoint">
+				end_point=#endPoint#
+			</isNotNull>
+			where account_id = #accountId#
+		</dynamic>
+	</update>
+</sqlMap>

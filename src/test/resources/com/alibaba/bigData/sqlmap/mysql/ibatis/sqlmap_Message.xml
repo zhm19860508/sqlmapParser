@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Message">
+	<typeAlias alias="messageDO" type="com.alibaba.bigData.dal.entity.MessageDO" />
+	<typeAlias alias="msgQuery" type="com.alibaba.bigData.dal.query.MsgQuery" />
+	<resultMap class="messageDO" id="messageDOResult">
+		<result column="id" property="id" />
+		<result column="msg_title" property="msgTitle" />
+		<result column="msg_content" property="msgContent" />
+		<result column="msg_status" property="msgStatus" />
+		<result column="msg_user" property="msgUser" />
+		<result column="msg_create" property="msgCreate" />
+		<result column="is_deleted" property="isDeleted" />
+	</resultMap>
+	
+	<sql id="msgColumns">
+		select a.id,a.msg_title,a.msg_content,a.msg_status,a.msg_user,a.msg_create,a.is_deleted
+	</sql>
+	
+	<sql id="msgFrom">
+		from bigData_message a
+	</sql>	
+	
+	<insert id="addMessage" parameterClass="messageDO">
+		insert into bigData_message
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="msgTitle">
+				msg_title
+			</isNotNull>
+			<isNotNull prepend="," property="msgContent">
+				msg_content
+			</isNotNull>
+			<isNotNull prepend="," property="msgStatus">
+				msg_status
+			</isNotNull>
+			<isNotNull prepend="," property="msgUser">
+				msg_user
+			</isNotNull>
+			<isNotNull prepend="," property="msgCreate">
+				msg_create
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>			
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="msgTitle">
+				#msgTitle#
+			</isNotNull>
+			<isNotNull prepend="," property="msgContent">
+				#msgContent#
+			</isNotNull>
+			<isNotNull prepend="," property="msgStatus">
+				#msgStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="msgUser">
+				#msgUser#
+			</isNotNull>
+			<isNotNull prepend="," property="msgCreate">
+				#msgCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>			
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	
+	<update id="updateMessage" parameterClass="messageDO">
+		update bigData_message
+		<dynamic prepend="set">
+		<isNotNull property="msgTitle" prepend=",">
+            msg_title=#msgTitle#
+		</isNotNull>
+		<isNotNull property="msgContent" prepend=",">
+            msg_content=#msgContent#
+		</isNotNull>
+		<isNotNull property="msgStatus" prepend=",">
+            msg_status=#msgStatus#
+		</isNotNull>
+		<isNotNull property="msgUser" prepend=",">
+            msg_user=#msgUser#
+		</isNotNull>
+		<isNotNull property="msgCreate" prepend=",">
+            msg_create=#msgCreate#
+		</isNotNull>
+		<isNotNull property="isDeleted" prepend=",">
+            is_deleted=#isDeleted#
+		</isNotNull>		
+			where id = #id#
+		</dynamic>
+	</update>
+	
+	<update id="updateUnreadStatusById" parameterClass="java.lang.Integer">	
+		update bigData_message set msg_status = 1 where id=#id#
+	</update>
+	
+	<update id="updateUnreadStatusByUser" parameterClass="java.lang.String">	
+		update bigData_message set msg_status = 1 where msg_user=#msgUser# and msg_status = 0	
+	</update>	
+	
+	<update id="delAllMsgByUser" parameterClass="java.lang.String">	
+		update bigData_message set is_deleted = 1 where msg_user=#msgUser#
+	</update>	
+	
+	<select id="queryAllMsgByUser" resultMap="messageDOResult">
+		<include refid="msgColumns" />
+		<include refid="msgFrom" />
+		where a.msg_user=#msgUser# and a.is_deleted = 0 order by a.msg_create desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>		
+	</select>
+	
+	<select id="queryUnreadMsgByUser" resultMap="messageDOResult">
+		<include refid="msgColumns" />
+		<include refid="msgFrom" />
+		where a.msg_user=#msgUser# and a.msg_status = 0 and a.is_deleted = 0 order by a.msg_create desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>		
+	</select>	
+	
+	<select id="queryCountAllMsgByUser" resultClass="java.lang.Integer">
+		select count(1) from bigData_message where msg_user=#msgUser# and is_deleted = 0
+	</select>
+	
+	<select id="queryCountMsgByStatus" resultClass="java.lang.Integer">
+		select count(1) from bigData_message where msg_user=#msgUser# and msg_status = #msgStatus# and is_deleted = 0
+	</select>	
+</sqlMap>

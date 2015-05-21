@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxdraft">
+
+	<resultMap id="BoxDraft-Result" class="BoxDraft">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="resourceId" column="RESOURCE_ID" javaType="java.lang.Long" />
+		<result property="resourceType" column="RESOURCE_TYPE"
+			javaType="java.lang.String" />
+		<result property="content" column="CONTENT" javaType="java.lang.String" />
+		<result property="userId" column="USER_ID" javaType="java.lang.String" />
+		<result property="status" column="status" javaType="java.lang.String" />
+		<result property="name" column="NAME" javaType="java.lang.String" />
+		<result property="isLib" column="IS_LIB" javaType="java.lang.String" />
+		<result property="gridType" column="GRID_TYPE" javaType="java.lang.String" />
+		<result property="applyDevice" column="APPLY_DEVICE" javaType="java.lang.String" />
+		<result property="remarks" column="REMARKS" javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="MS_INSERT_BOXDRAFT" parameterClass="BoxDraft">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_DCMS_BOX_DRAFT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_DRAFT
+              (ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_ID  , RESOURCE_TYPE  , CONTENT  , USER_ID, STATUS , NAME,IS_LIB,GRID_TYPE,APPLY_DEVICE,REMARKS)
+            values
+              (#id#, sysdate  , sysdate  , #resourceId#  , #resourceType#,  #content#, #userId#, #status#, #name#,#isLib#,#gridType#,#applyDevice#,#remarks#)
+        ]]>
+	</insert>
+
+	<update id="MS_UPDATE_BOXDRAFT_BY_ID" parameterClass="BoxDraft">
+        <![CDATA[ UPDATE DCMS_BOX_DRAFT 
+        	SET GMT_MODIFIED = sysdate,
+				RESOURCE_TYPE  = #resourceType#,        	    
+				CONTENT  = #content#,
+				USER_ID  = #userId#,
+				IS_LIB  = #isLib# 
+        ]]>
+		<dynamic prepend="">
+			<isNotNull property="resourceId" prepend=",">
+				RESOURCE_ID = #resourceId#
+            </isNotNull>
+            <isNotNull property="gridType" prepend=",">
+				GRID_TYPE = #gridType#
+            </isNotNull>
+            <isNotNull property="applyDevice" prepend=",">
+				APPLY_DEVICE = #applyDevice#
+            </isNotNull>
+             <isNotNull property="status" prepend=",">
+				STATUS = #status#
+            </isNotNull>
+            <isNotNull property="remarks" prepend=",">
+				REMARKS = #remarks#
+            </isNotNull>
+		</dynamic>
+        <![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+	
+	<select id="queryDraftByUserAndType" parameterClass="java.util.Map" resultClass="BoxDraft">
+	    <![CDATA[
+	        select * from (select a.*, rownum num from (
+	        select t.id, t.resource_id resourceId from dcms_box_draft t 
+             where t.resource_type = #resourceType#
+        ]]>
+        <dynamic prepend="and">
+			<isNotEmpty property="name">
+				t.name like '%'|| #name#||'%'
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+               and t.user_id = #userId#
+             order by t.gmt_modified desc
+            ) a where rownum <= #end# ) where num >= #start#
+	    ]]>
+	</select>
+	
+	<select id="queryDraftCountByUserAndType" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    <![CDATA[
+	        select count(*) from dcms_box_draft t 
+             where t.resource_type = #resourceType#
+        ]]>
+        <dynamic prepend="and">
+			<isNotEmpty property="name">
+				t.name like '%'|| #name#||'%'
+            </isNotEmpty>
+		</dynamic>
+        <![CDATA[
+               and t.user_id = #userId#
+	    ]]>
+	</select>
+
+	<select id="MS_GET_BOXDRAFT" parameterClass="long" resultMap="BoxDraft-Result">
+        <![CDATA[
+	      	SELECT * FROM DCMS_BOX_DRAFT where ID = #id#
+	      ]]>
+	</select>
+
+	<select id="MS_QUERY_BOXDRAFT_BY_RESOURCE_ID" parameterClass="java.util.Map"
+		resultMap="BoxDraft-Result">
+        <![CDATA[
+	      	SELECT * FROM DCMS_BOX_DRAFT where RESOURCE_ID = #resourceId# and status = #status#
+	      ]]>
+		<dynamic>
+			<isNotEmpty prepend="and" property="resourceType">
+				RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+			<isNotEmpty prepend="and" property="userId">
+				USER_ID = #userId#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	<select id="MS_QUERY_BOXDRAFT_BY_RESOURCE_IDS" parameterClass="java.util.Map"
+		resultMap="BoxDraft-Result">
+        <![CDATA[
+	      	SELECT * FROM DCMS_BOX_DRAFT where  status = #status#
+	      ]]>
+		<dynamic>
+		<isNotEmpty prepend="and" property="resourceIds">
+			RESOURCE_ID  in 
+			  <iterate open="(" close=")" conjunction="," property="resourceIds">
+				#resourceIds[]#
+			   </iterate>
+		 </isNotEmpty>
+			<isNotEmpty prepend="and" property="resourceType">
+				RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+			<isNotEmpty prepend="and" property="userId">
+				USER_ID = #userId#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+		<select id="MS_QUERY_BOXDRAFT_BY_TYPE_FOR_CHECK" parameterClass="java.util.Map"
+		resultMap="BoxDraft-Result">
+        <![CDATA[
+	      	SELECT * FROM DCMS_BOX_DRAFT where RESOURCE_TYPE = #resourceType# and status = #status#
+	      ]]>
+		<dynamic>
+			<isNotEmpty prepend="and" property="resourceType">
+				RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="status">
+				STATUS = #status#
+            </isNotEmpty>
+		</dynamic>
+		order by id desc
+	</select>
+	
+	<select id="MS_QUERY_BOXDRAFT" parameterClass="java.util.Map"
+		resultMap="BoxDraft-Result">
+        <![CDATA[ 
+		SELECT * FROM (
+		SELECT A.*,ROWNUM RN FROM 
+		(
+			SELECT T.*  FROM DCMS_BOX_DRAFT T 
+ 	      ]]>
+		<dynamic prepend="WHERE">
+			<isNotEmpty  prepend="and"  property="userId">
+				USER_ID = #userId#
+	            </isNotEmpty>
+	            	<isNotEmpty  prepend="and"  property="status">
+				status = #status#
+	            </isNotEmpty>
+	            <isNotEmpty prepend="and"  property="resourceType">
+				RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+		</dynamic>
+        <![CDATA[	           
+			ORDER BY T.GMT_MODIFIED DESC
+             ) A WHERE ROWNUM <= #offset# + #length#
+         ) WHERE RN > #offset#
+         ]]>
+	</select>
+
+	<delete id="MS_DELETE_BOXDRAFT_BY_ID" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_DRAFT where ID = #id#
+        ]]>
+	</delete>
+
+	<update id="MS_UPDATE_BOXDRAFT_STATUS_EXCEPT_USER"
+		parameterClass="java.util.Map">
+        <![CDATA[ UPDATE DCMS_BOX_DRAFT 
+        	SET STATUS = #status#
+        	WHERE RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+        ]]>
+		<dynamic>
+			<isNotEmpty prepend="and" property="exceptUser">
+                <![CDATA[ USER_ID  <> #exceptUser# ]]>
+			</isNotEmpty>
+		</dynamic>
+	</update>
+
+	<select id="MS_QUERY_BOXDRAFT_COUNT" parameterClass="java.util.Map"
+		resultClass="int">
+        <![CDATA[
+	      	SELECT count(*) FROM DCMS_BOX_DRAFT where USER_ID = #userId#
+	      ]]>
+		<dynamic >
+			<isNotEmpty prepend="and"  property="likeName">
+				name like '%' || #likeName#||'%'
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+				RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="status">
+				STATUS = #status#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="MS_QUERY_MAX_DRAFT_NAME_ID" parameterClass="java.util.Map"
+		resultClass="int">
+        <![CDATA[
+	      	SELECT nvl(max(to_number(regexp_replace(name, '[^0-9]+([0-9]*)', '\1'))),0) FROM DCMS_BOX_DRAFT where USER_ID = #userId#
+	      ]]>
+		<dynamic prepend="and">
+			<isNotEmpty property="likeName">
+				name like '%' || #likeName#||'%'
+            </isNotEmpty>
+		</dynamic>
+	</select>	
+
+	<update id="MS_UPDATE_BOXDRAFT_FIELD" parameterClass="BoxDraft">
+        <![CDATA[ UPDATE DCMS_BOX_DRAFT ]]>
+		<dynamic>
+			<isNull property="gmtModified">SET GMT_MODIFIED = GMT_MODIFIED</isNull>
+			<isNotNull property="gmtModified">SET GMT_MODIFIED = SYSDATE</isNotNull>
+			<isNotNull property="name">,NAME = #name#</isNotNull>
+			<isNotNull property="content">,CONTENT = #content#</isNotNull>
+			<isNotNull property="status">,STATUS = #status#</isNotNull>
+			<isNotNull property="isLib">,IS_LIB = #isLib#</isNotNull>
+			<isNotNull property="gridType">,grid_type = #gridType#</isNotNull>
+			<isNotNull property="applyDevice">,APPLY_DEVICE = #applyDevice#</isNotNull>
+			<isNotNull property="remarks">,REMARKS = #remarks#</isNotNull>
+			<isNotNull property="resourceId">,RESOURCE_ID = nvl(RESOURCE_ID, #resourceId#)</isNotNull>
+			 <isNotNull property="status" prepend=",">STATUS = #status#</isNotNull>
+		</dynamic>
+        <![CDATA[  WHERE ID = #id# ]]>
+	</update>
+</sqlMap>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Group">
+
+	<typeAlias alias="groupDO"
+		type="com.alibaba.bigData.dal.entity.GroupDO" />
+
+	<resultMap id="groupResultMap" class="groupDO">
+		<result property="groupId" column="id" />
+		<result property="groupName" column="group_name" />
+		<result property="token" column="token" />
+	</resultMap>
+
+
+	<select id="queryGroupNameById" resultClass="java.lang.String">
+		SELECT group_name FROM bigData_group
+		where id=#groupId#
+	</select>
+
+	<select id="queryGroupTokenById" resultClass="java.lang.String">
+		SELECT token FROM bigData_group
+		where id=#groupId#
+	</select>
+
+	<select id="queryGroupIdByName" resultClass="java.lang.Integer">
+		SELECT id FROM bigData_group
+		where group_name=#groupName#
+	</select>
+
+	<insert id="addTaskGroup" parameterClass="groupDO">
+		INSERT INTO bigData_group(id,group_name,token)
+		VALUES
+		(#groupId#,#groupName#,#token#)
+		<selectKey keyProperty="groupId" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+
+	<select id="getAllTaskGroup" resultMap="groupResultMap">
+		SELECT * FROM bigData_group
+	</select>
+
+	<update id="updateTaskGroup" parameterClass="groupDO">
+		update bigData_group
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="groupName">
+				group_name=#groupName#
+			</isNotNull>
+			<isNotNull prepend="," property="token">
+				token=#token#
+			</isNotNull>
+			where id = #groupId#
+		</dynamic>
+	</update>
+
+</sqlMap>

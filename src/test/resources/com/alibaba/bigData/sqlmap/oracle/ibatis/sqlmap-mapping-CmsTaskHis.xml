@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--==========================================================  -->
+<!--Configuration for ibatis sqlmap mapping.                    -->
+<!--==========================================================  -->
+<!--DO NOT EDIT: This is a generated file that is synchronized  -->
+<!--by meidusa eclipse ibatis plugin tool integration.          -->
+<!--Created Tue Jun 26 15:26:13 CST 2007  -->
+<!--==========================================================  -->
+<sqlMap namespace = "CMS_TASKHIS">
+    <resultMap class="CmsTaskHis" id="CmsTaskHis-result" >
+        <result property = "gmtCreate" column = "GMT_CREATE" javaType="java.sql.Timestamp"/>
+        <result property = "gmtModified" column = "GMT_MODIFIED" javaType="java.sql.Timestamp"/>
+        <result property = "pageId" column = "PAGE_ID" javaType="java.lang.Long"/>
+        <result property = "status" column = "STATUS" javaType="java.lang.String"/>
+        <result property = "timeExpression" column = "TIME_EXPRESSION" javaType="java.lang.String"/>
+        <result property = "id" column = "ID" javaType="java.lang.Long"/>
+        <result property = "gmtPublish" column = "GMT_PUBLISH" javaType="java.sql.Timestamp"/>
+    </resultMap>
+
+	<!--publish used-->
+    <insert id = "INSERT_CMS_TASK" parameterClass = "CmsTaskHis">
+        <![CDATA[
+        INSERT INTO cms_task_his (
+        GMT_CREATE,
+        GMT_MODIFIED,
+        PAGE_ID,
+        STATUS,
+        TIME_EXPRESSION,
+        ID,
+        GMT_PUBLISH
+        )VALUES(
+        #gmtCreate#,
+        #gmtModified#,
+        #pageId#,
+        #status#,
+        #timeExpression#,
+        #id#,
+        #gmtPublish#
+        )
+        ]]>
+    </insert>
+
+    <!--======================delete===================================== -->
+    <delete id = "DELETE_CMS_TASK_BY_PAGE_ID">
+        <![CDATA[
+        DELETE FROM cms_task_his WHERE 
+        PAGE_ID =  #value#
+        ]]>
+    </delete>
+    
+    <select id = "FIND_CMS_TASK_BY_PAGEID" resultMap = "CmsTaskHis-result">
+        <![CDATA[
+        SELECT *
+        FROM cms_task_his WHERE 
+        PAGE_ID =  #value#
+        ]]>
+    </select>
+
+</sqlMap>

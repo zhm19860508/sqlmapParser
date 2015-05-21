@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRole">
+	
+	<resultMap id="CmsRole-result" class="CmsRole"  groupBy="id">		
+		<result property="id"                 javaType="java.lang.Long"       column="ID" />
+		<result property="roleName"           javaType="java.lang.String"     column="ROLE_NAME" />
+		<result property="description"        javaType="java.lang.String"     column="DESCRIPTION" />
+		<result property="gmtCreate"	      javaType="java.sql.Timestamp"	  column="GMT_CREATE" />
+        <result property="gmtModified"	      javaType="java.sql.Timestamp"	  column="GMT_MODIFIED" />
+		<result property="inferiorRoles"      resultMap="cms_CmsRole.CmsInferiorRole-result" />
+	</resultMap>
+	<resultMap id="DCmsRole-result" class="CmsRole"  groupBy="id">		
+		<result property="id"                 javaType="java.lang.Long"       column="ID" />
+		<result property="roleName"           javaType="java.lang.String"     column="ROLE_NAME" />
+		<result property="description"        javaType="java.lang.String"     column="DESCRIPTION" />
+		<result property="gmtCreate"	      javaType="java.sql.Timestamp"	  column="GMT_CREATE" />
+        <result property="gmtModified"	      javaType="java.sql.Timestamp"	  column="GMT_MODIFIED" />
+	</resultMap>
+		<resultMap id="DCmsRole-result-map" class="java.util.HashMap">		
+		<result property="id"                 javaType="java.lang.Long"       column="ID" />
+		<result property="roleName"           javaType="java.lang.String"     column="ROLE_NAME" />
+		<result property="description"        javaType="java.lang.String"     column="DESCRIPTION" />
+		<result property="gmtCreate"	      javaType="java.sql.Timestamp"	  column="GMT_CREATE" />
+        <result property="gmtModified"	      javaType="java.sql.Timestamp"	  column="GMT_MODIFIED" />
+	</resultMap>
+	<resultMap id="CmsUser-result"  class="java.util.HashMap">		
+		<result property="userId" javaType="java.lang.String" column="USER_ID" />
+		<result property="fullName" javaType="java.lang.String" column="FULL_NAME" />
+		<result property="depId" javaType="java.lang.String" column="DEP_ID" />
+		<result property="depName" javaType="java.lang.String" column="DEP_NAME" />
+	</resultMap>
+	<resultMap id="CmsInferiorRole-result" class="CmsInferiorRole" >
+	    <result property="inferiorRoleName" column="INFERIOR_ROLE_NAME" />
+	</resultMap>
+	
+
+	<!-- 创建语句集 -->
+	<insert id="MS_CREATE_ROLE" parameterClass="CmsRole">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_ROLE.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO CMS_ROLE(
+			    ID,
+		        ROLE_NAME,
+		        GMT_CREATE,
+		        GMT_MODIFIED,
+		        DESCRIPTION)
+		    VALUES(
+			    #id#,
+		        #roleName#,
+		        sysdate,
+		        sysdate,
+		        #description#)		
+		]]>		
+	</insert>
+	
+	<insert id="MS_AUTHORIZE_INFERIOR_ROLE" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_INFERIOR_ROLE.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO CMS_INFERIOR_ROLE(
+			    ID,
+		        ROLE_NAME,
+			    INFERIOR_ROLE_NAME,
+		        GMT_CREATE,
+		        GMT_MODIFIED)
+		    VALUES(
+			    #id#,
+		        #roleName#,
+			    #inferiorRoleName#,
+		        sysdate,
+		        sysdate)		
+		]]>	
+	</insert>
+	
+	<!-- 查询语句集 -->
+	<select id="MS_QUERY_ROLE_BY_CONDITION" parameterClass="CmsRole" resultClass="CmsRole">
+		<![CDATA[
+		    SELECT * FROM CMS_ROLE WHERE ROLE_NAME = #roleName#
+		]]>
+	</select>
+	
+	<select id="MS_QUERY_ROLE_BY_ROLEID" parameterClass="java.lang.Long" resultMap="DCmsRole-result-map">
+		<![CDATA[
+		    SELECT ID,ROLE_NAME,DESCRIPTION,GMT_CREATE, GMT_MODIFIED FROM CMS_ROLE WHERE id = #id#
+		]]>
+	</select>
+	
+	<select id="MS_QUERY_ALL_ROLES" resultClass="CmsRole">
+		<![CDATA[
+            SELECT ID AS id, ROLE_NAME AS roleName FROM CMS_ROLE ORDER BY ID DESC
+        ]]>
+	</select>
+	
+	<select id="MS_QUERY_ALL_INFERIOR_ROLES_BY_CONDITION"  parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+		    SELECT INFERIOR_ROLE_NAME FROM CMS_INFERIOR_ROLE WHERE ROLE_NAME = #roleName#
+		]]>
+	</select>
+	
+	<select id="MS_QUERY_ALL_ROLES_WITH_INFERIOR_ROLES" resultMap="CmsRole-result">
+		<![CDATA[
+            SELECT R.ID, R.ROLE_NAME, R.DESCRIPTION, R.GMT_CREATE, R.GMT_MODIFIED, IR.INFERIOR_ROLE_NAME FROM CMS_ROLE R ,			
+			CMS_INFERIOR_ROLE IR WHERE R.ROLE_NAME = IR.ROLE_NAME(+) ORDER BY ID DESC
+        ]]>
+	</select>
+	
+	<select id="MS_COUNT_ALL_ROLES" resultClass="java.lang.Integer">
+		<![CDATA[
+            SELECT count(*) FROM CMS_ROLE
+        ]]>
+	</select>
+
+	<select id="MS_GET_ALL_INFERIOR_ROLENAME_BY_USER"  parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+            SELECT IR.INFERIOR_ROLE_NAME FROM CMS_USER UU, CMS_INFERIOR_ROLE IR WHERE UU.ROLE_NAME = IR.ROLE_NAME AND UU.USER_ID=#operatorid#
+        ]]>
+	</select>
+		
+	<!-- 更新语句集 -->
+	
+	<!-- 删除语句集 -->
+	<delete id="MS_DELETE_INFERIOR_ROLE_BY_CONDITION" parameterClass="java.lang.String">
+        <![CDATA[
+           DELETE FROM CMS_INFERIOR_ROLE WHERE ROLE_NAME = #roleName#
+        ]]>
+    </delete>
+    
+    <select id="DCMS_QUERY_USER_HAS_ROLE" parameterClass="java.util.Map" resultMap="DCmsRole-result">
+		<![CDATA[
+             SELECT R.ID, R.ROLE_NAME, R.GMT_CREATE, R.GMT_MODIFIED, R.DESCRIPTION
+				  FROM CMS_USER_ROLE UR, CMS_ROLE R
+				 WHERE R.ID = UR.ROLE_ID
+				   AND (UR.USER_ID LIKE '%'||#userId#||'%')
+        ]]>
+	</select>
+	    <select id="DCMS-QUERY_ALL_ROLE" parameterClass="java.util.Map"
+		resultMap="DCmsRole-result">
+	     <![CDATA[
+		    SELECT t1.*
+	        FROM (SELECT R.*, ROWNUM AS RNUM FROM CMS_ROLE R 
+	        WHERE   ROWNUM <= #offset# + #length# ORDER BY R.ROLE_NAME DESC ) t1
+            WHERE rnum >#offset# 
+		 ]]>
+
+	</select>
+	
+	<select id="DCMS-COUNT-ALL-ROLE" parameterClass="java.util.Map"
+		resultClass="java.lang.Integer">
+	     <![CDATA[
+            SELECT count(*) FROM CMS_ROLE
+		 ]]>
+	
+	</select>
+	<update id="DCMS-MODIFY-ROLE" parameterClass="java.util.Map">
+	 <![CDATA[
+	 	UPDATE CMS_ROLE
+	   SET ROLE_NAME    = #roleName#,
+	       GMT_MODIFIED = SYSDATE,
+	       DESCRIPTION  = #description#
+	 WHERE ID = #roleId#
+	 
+	  ]]>
+	</update>
+	<delete id="DCMS-DELETE-ROLE-USER" parameterClass="java.util.Map">
+        <![CDATA[
+           DELETE CMS_USER_ROLE UR WHERE UR.ROLE_ID = #roleId# AND UR.USER_ID=#userId#
+        ]]>
+    </delete>
+    <delete id="DCMS-DELETE-ROLE" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE CMS_ROLE WHERE ID  = #roleId# 
+        ]]>
+    </delete>
+    
+    <delete id="DCMS-DELETE-ROLE-USER-BYROLE" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE CMS_USER_ROLE UR WHERE UR.ROLE_ID = #roleId# 
+        ]]>
+    </delete>
+    
+    <delete id="DCMS-DELETE-ROLE-PERMISSION" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE CMS_ROLE_PERMISSION RP WHERE RP.ROLE_ID = #roleId# 
+        ]]>
+    </delete>
+	<insert id="DCMS_ROLE_PERMISSION" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_ROLE_PERMISSION.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		     INSERT INTO CMS_ROLE_PERMISSION
+			  (ID, ROLE_ID, PERM_ID, GMT_CREATE, GMT_MODIFIED)
+			VALUES
+			  (#id#, #roleId#, #permId#, SYSDATE, SYSDATE)	
+		]]>	
+	</insert>
+	<select id="DCMS-SEARCH-ALL-USER" parameterClass="java.util.Map"
+		resultMap="CmsUser-result">
+	     <![CDATA[
+             SELECT USR.USER_ID, USR.FULL_NAME, USR.DEP_ID, '' AS DEP_NAME
+			  FROM CMS_USER USR 
+			 WHERE (USR.FULL_NAME LIKE '%' || #userId# || '%' OR
+			       USR.USER_ID LIKE '%' || #userId# || '%')
+		 ]]>
+	
+	</select>
+	<select id="DCMS-SEARCH-ROLE-HAS-USER" parameterClass="java.util.Map"
+		resultMap="CmsUser-result">
+	     <![CDATA[
+              SELECT DISTINCT USR.USER_ID, USR.FULL_NAME, USR.DEP_ID, '' AS DEP_NAME
+			    FROM CMS_USER USR, CMS_USER_ROLE UR 
+			   WHERE USR.USER_ID = UR.USER_ID
+			   AND UR.ROLE_ID = #roleId#  
+			   AND (USR.FULL_NAME LIKE '%' || #userId# || '%' OR
+			       USR.USER_ID LIKE '%' || #userId# || '%' )
+		 ]]>
+	
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="fans"
+		type="com.alibaba.china.ipinshared.dataobject.FansDO" />
+	<typeAlias alias="fansQuery"
+		type="com.alibaba.china.ipinshared.query.FansQuery" />
+	<resultMap id="fansResult" class="fans">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="fanUserId" column="fan_user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+	</resultMap>
+	<sql id="fansColumns">
+		select
+		ipin_fans.id,ipin_fans.gmt_created,ipin_fans.gmt_modified,ipin_fans.is_deleted,ipin_fans.user_id,ipin_fans.fan_user_id
+	</sql>
+	<sql id="fansQuery">
+		where
+		ipin_fans.is_deleted = #isDeleted#
+		<isNotNull property="userId" prepend="AND">
+			ipin_fans.user_id =
+			#userId#
+		</isNotNull>
+		<isNotNull property="fanUserId" prepend="AND">
+			ipin_fans.fan_user_id =
+			#fanUserId#
+		</isNotNull>
+
+	</sql>
+
+	<!-- 查询粉丝列表 -->
+	<select id="GET_FANS_LIST_BY_QUERY" resultMap="fansResult"
+		parameterClass="fansQuery">
+		<include refid="fansColumns" />
+		from ipin_fans
+		<include refid="fansQuery" />
+		order by gmt_created desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+	<!-- 新增粉丝记录 -->
+	<insert id="ADD_NEW_FAN" parameterClass="fans">
+		insert into ipin_fans
+		(gmt_created,gmt_modified,is_deleted,user_id,fan_user_id) values
+		(now(),now(),0,#userId#,#fanUserId#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 删除粉丝记录 -->
+	<update id="UPDATE_FAN" parameterClass="java.util.HashMap">
+		update ipin_fans set
+		gmt_modified = now(),is_deleted = 1 where user_id = #userId# and
+		fan_user_id = #fanUserId#
+	</update>
+
+
+	<select id="get_fans_list_count" resultClass="java.lang.Integer"
+		parameterClass="fansQuery">
+		select count(*) from ipin_fans
+
+		<include refid="fansQuery" />
+	</select>
+
+</sqlMap>

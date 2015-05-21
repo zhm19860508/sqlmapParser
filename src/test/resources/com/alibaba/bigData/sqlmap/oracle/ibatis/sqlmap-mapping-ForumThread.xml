@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="forumthread">
+    <resultMap id="RM-FORUM-THREAD" class="ForumThread">
+        <result property="threadId"     column="THREAD_ID"      jdbcType="NUMERIC"   javaType="long"/>
+        <result property="threadType"   column="THREAD_TYPE"    jdbcType="VARCHAR"   javaType="string"/>
+        <result property="forumId"      column="FORUM_ID"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="subject"      column="SUBJECT"        jdbcType="VARCHAR"   javaType="string"/>
+        <result property="memberId"     column="MEMBER_ID"      jdbcType="VARCHAR"   javaType="string"/>
+        <result property="nickname"     column="NICKNAME"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="viewCount"    column="VIEW_COUNT"     jdbcType="NUMERIC"   javaType="integer"/>
+        <result property="postCount"    column="POST_COUNT"     jdbcType="NUMERIC"   javaType="integer"/>
+        <result property="awardMoney"   column="AWARD_MONEY"    jdbcType="NUMERIC"   javaType="integer"/>
+        <result property="newsId"       column="NEWS_ID"        jdbcType="NUMERIC"   javaType="long"/>
+        <result property="fromNews"     column="FROM_NEWS"      jdbcType="VARCHAR"   javaType="string"/>
+        <result property="gmtCreate"    column="GMT_CREATE"     jdbcType="TIMESTAMP" javaType="date"/>
+        <result property="lastRplyTime" column="LAST_RPLY_TIME" jdbcType="TIMESTAMP" javaType="date"/>
+        <result property="askStatus"    column="I_ASK_STATUS"   jdbcType="VARCHAR"   javaType="string"/>
+    </resultMap>
+    
+    <resultMap id="RM-FORUM-THREAD-MAIN" class="ForumThreadMain">
+        <result property="id"     column="ID"      jdbcType="NUMERIC"   javaType="long"/>
+        <result property="threadType"   column="THREAD_TYPE"    jdbcType="VARCHAR"   javaType="string"/>
+        <result property="forumId"      column="FORUM_ID"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="boardId"      column="BOARD_ID"       jdbcType="NUMERIC"   javaType="long"/>        
+        <result property="subject"      column="SUBJECT"        jdbcType="VARCHAR"   javaType="string"/>
+        <result property="setLock"      column="SET_LOCK"        jdbcType="VARCHAR"   javaType="string"/>
+        <result property="setPith"      column="SET_PITH"        jdbcType="VARCHAR"   javaType="string"/>
+        <result property="setTop"      column="SET_TOP"        jdbcType="VARCHAR"   javaType="string"/>
+        <result property="needMoney"      column="NEED_MONEY"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="awardMoney"      column="AWARD_MONEY"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="memberId"     column="MEMBER_ID"      jdbcType="VARCHAR"   javaType="string"/>
+        <result property="nickname"     column="NICKNAME"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="ip"     column="IP"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="awakeEmail"     column="AWAKE_EMAIL"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="awakeMsg"     column="AWAKE_MSG"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="awakeAlitalk"     column="AWAKE_ALITALK"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="status"     column="STATUS"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="gmtValidStart"    column="GMT_VALID_START"     jdbcType="TIMESTAMP" javaType="date"/>
+        <result property="attatchPath"     column="ATTATCH_PATH"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="picturePath"     column="PICTURE_PATH"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="length"      column="LENGTH"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="money"      column="MONEY"       jdbcType="NUMERIC"   javaType="long"/>        
+        <result property="viewCount"    column="VIEW_COUNT"     jdbcType="NUMERIC"   javaType="long"/>
+        <result property="postCount"    column="POST_COUNT"     jdbcType="NUMERIC"   javaType="long"/>
+        <result property="lastRplyTime"    column="LAST_RPLY_TIME"     jdbcType="TIMESTAMP" javaType="date"/>
+        <result property="lastMemberId"     column="LAST_MEMBER_ID"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="lastNickname"     column="LAST_NICKNAME"       jdbcType="VARCHAR"   javaType="string"/>
+		<result property="gmtCreate"    column="GMT_CREATE"     jdbcType="TIMESTAMP" javaType="date"/>
+		<result property="gmtModified"    column="GMT_MODIFIED"     jdbcType="TIMESTAMP" javaType="date"/>
+        <result property="childCount"      column="CHILD_COUNT"       jdbcType="NUMERIC"   javaType="long"/>
+        <result property="iaskStatus"    column="I_ASK_STATUS"   jdbcType="VARCHAR"   javaType="string"/>
+        <result property="loginId"    column="LOGIN_ID"   jdbcType="VARCHAR"   javaType="string"/>
+        <result property="memberLevel"    column="MEMBER_LEVEL"   jdbcType="VARCHAR"   javaType="string"/>
+        <result property="newsId"       column="NEWS_ID"        jdbcType="NUMERIC"   javaType="long"/>
+        <result property="fromNews"     column="FROM_NEWS"      jdbcType="VARCHAR"   javaType="string"/>        
+        <result property="setExcellent"    column="SET_EXCELLENT"   jdbcType="VARCHAR"   javaType="string"/>
+        <result property="popularizeSubject"    column="POPULARIZE_SUBJECT"   jdbcType="VARCHAR"   javaType="string"/>
+        <result property="tag"    column="TAG"   jdbcType="VARCHAR"   javaType="string"/>
+    </resultMap>
+    
+      <resultMap id="RM-FORUM-THREAD-TOP" class="ForumThreadTop">
+        <result property="id"     column="ID"      	jdbcType="NUMERIC"   javaType="long"/>
+        <result property="memberId"   column="MEMBER_ID"    jdbcType="VARCHAR"   javaType="string"/>
+        <result property="nickname"      column="NICKNAME"       jdbcType="VARCHAR"   javaType="string"/>
+        <result property="forumId"      column="FORUM_ID"        jdbcType="NUMERIC"   javaType="long"/>
+        <result property="postCount"     column="POST_COUNT"      jdbcType="NUMERIC"   javaType="integer"/>
+        <result property="validDate"     column="VALID_DATE"       jdbcType="TIMESTAMP"   javaType="date"/>
+        <result property="gmtCreate"    column="GMT_CREATE"     jdbcType="TIMESTAMP"   javaType="date"/>        
+    </resultMap>    
+
+    <!-- 查询语句集 -->
+    <select id="MS-QUERY-HOTEST-REPLY-NEWSIDS-BY-FORUMS" parameterClass="map" resultClass="long">
+        <![CDATA[
+            SELECT * FROM (SELECT NEWS_ID FROM SQ_FORUM_THREAD_STAT WHERE STAT_TYPE='HNEWS'
+        ]]>
+        <dynamic prepend="AND">
+            <isNotNull property="forums">
+                <![CDATA[ FORUM_ID IN ]]>
+                <iterate  open="(" close=")" conjunction="," property="forums">
+                    <![CDATA[#forums[]#]]>
+                </iterate>
+            </isNotNull>
+            <isNull property="forums">
+                <![CDATA[ FORUM_ID=0 ]]>
+            </isNull>
+        </dynamic>
+        <![CDATA[
+            ORDER BY POST_COUNT DESC) WHERE rownum <= #endRow#
+        ]]>
+    </select>
+
+    <select id="MS-QUERY-HOTEST-THREADS-BY-FORUMS" parameterClass="map" resultMap="RM-FORUM-THREAD">
+        <![CDATA[
+            SELECT * FROM (SELECT a.*,rownum rn FROM (SELECT * FROM SQ_FORUM_THREAD_STAT WHERE STAT_TYPE='HTHRE'
+        ]]>
+        <dynamic prepend="AND">
+            <isNotNull property="forums">
+                <![CDATA[ FORUM_ID IN ]]>
+                <iterate  open="(" close=")" conjunction="," property="forums">
+                    <![CDATA[#forums[]#]]>
+                </iterate>
+            </isNotNull>
+            <isNull property="forums">
+                <![CDATA[ FORUM_ID=0 ]]>
+            </isNull>
+        </dynamic>
+        <![CDATA[
+            ORDER BY $order$ DESC) a WHERE rownum <= #endRow#) WHERE rn >= #startRow#
+        ]]>
+    </select>
+
+    <select id="MS-QUERY-ALL-THREAD-COUNT" parameterClass="integer" resultClass="integer">
+        <![CDATA[
+            SELECT * FROM (SELECT (THREAD_COUNT+REPLY_COUNT) FROM SQ_FORUM_THREAD_COUNT WHERE FORUM_ID=#value# ORDER BY VALID_DATE DESC) WHERE rownum <= 2
+        ]]>
+    </select>
+    
+    <select id="MS-QUERY-LATEST-THREADS-BY-FORUMS" parameterClass="map" resultMap="RM-FORUM-THREAD-MAIN">
+        <![CDATA[
+            SELECT * FROM (
+				SELECT * FROM SQ_FORUM_THREAD f 
+				WHERE f.FORUM_ID=#forumId# and f.MONEY >0 
+				ORDER BY f.FORUM_ID,f.SET_TOP,f.LAST_RPLY_TIME DESC)
+			WHERE ROWNUM<=#count#
+        ]]>
+    </select>
+    
+    <select id="MS-QUERY-LASTEST-THREADS-BY-REPLY-TIME" parameterClass="map" resultMap="RM-FORUM-THREAD-MAIN">
+        <![CDATA[
+            SELECT * FROM (
+				SELECT * FROM SQ_FORUM_THREAD f 
+				WHERE f.FORUM_ID=#forumId# AND f.LAST_RPLY_TIME>(sysdate-7)
+				ORDER BY f.FORUM_ID,f.SET_TOP,f.LAST_RPLY_TIME DESC)
+			WHERE ROWNUM<=#count#
+        ]]>
+    </select>    
+    
+    <select id="MS-QUERY-TOP-ACTIVE-USERS-BY-FORUMS" parameterClass="map" resultMap="RM-FORUM-THREAD-TOP">
+        <![CDATA[
+        SELECT * FROM(
+            SELECT * FROM SQ_TOP_ACTIVE_USER f 
+				WHERE
+		]]> 
+				<isNotNull property="forums">
+	                <![CDATA[ f.FORUM_ID IN ]]>
+	                <iterate  open="(" close=")" conjunction="," property="forums">
+	                    <![CDATA[#forums[]#]]>
+	                </iterate>
+	            </isNotNull>
+	            <isNull property="forums">
+	                <![CDATA[ f.FORUM_ID=0 ]]>
+	            </isNull>
+		<![CDATA[		
+				AND f.VALID_DATE=(
+					SELECT MAX(t.VALID_DATE) 
+					FROM SQ_TOP_ACTIVE_USER t 
+					WHERE
+		]]> 
+					<isNotNull property="forums">
+		                <![CDATA[ t.FORUM_ID IN ]]>
+		                <iterate  open="(" close=")" conjunction="," property="forums">
+		                    <![CDATA[#forums[]#]]>
+		                </iterate>
+		            </isNotNull>
+		            <isNull property="forums">
+		                <![CDATA[ t.FORUM_ID=0 ]]>
+		            </isNull>
+		<![CDATA[		            					
+				)
+				ORDER BY f.POST_COUNT DESC
+		)WHERE ROWNUM<=#count#
+        ]]>
+    </select>
+</sqlMap>

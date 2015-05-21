@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="companyInfo"
+		type="com.alibaba.china.ipinshared.dataobject.CompanyInfoDO" />
+	<resultMap id="companyInfoResult" class="companyInfo">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="companyName" column="company_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+	</resultMap>
+	<sql id="companyInfoColumns">
+		select id,company_name,is_deleted,gmt_created,gmt_modified
+	</sql>
+	<!-- 获取公司信息 -->
+	<select id="get_company_info" resultMap="companyInfoResult">
+		<include refid="companyInfoColumns" />
+		from
+		ipin_company_info where is_deleted = 0 and id = #id#
+	</select>
+	
+
+	<select id="get_company_List" resultMap="companyInfoResult">
+		<include refid="companyInfoColumns" />
+		 from
+		ipin_company_info where is_deleted = 0
+	</select>
+
+	<!-- 新增公司信息 -->
+	<insert id="add_new_company_info" parameterClass="companyInfo">
+		insert into
+		ipin_company_info(company_name,is_deleted,gmt_created,gmt_modified)
+		values(#companyName#,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+</sqlMap>

@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RequestInfo">
+	<typeAlias alias="RequestInfoDO"
+		type="com.alibaba.bigData.dal.entity.RequestInfoDO" />
+
+	<resultMap class="RequestInfoDO" id="RequestInfoDOResult">
+		<result column="id" property="id" />
+		<result column="request_id" property="requestId" />
+		<result column="project" property="project" />
+		<result column="table_name" property="tableName" />
+		<result column="partition" property="partition" />
+		<result column="desen_time_start" property="desenTimeStart" />
+		<result column="desen_time_end" property="desenTimeEnd" />
+		<result column="import_time_start" property="importTimeStart" />
+		<result column="import_time_end" property="importTimeEnd" />
+		<result column="status_flag" property="statusFlag" />
+		<result column="run_log" property="runLog" />
+		<result column="owner" property="owner" />
+		<result column="export_num" property="exportNum" />
+		<result column="desen_sql" property="desenSql" />
+		<result column="request_id" property="desenseRequestDO" select="DesenseRequest.queryDesenseRequestById"/>
+	</resultMap>
+
+	<sql id="RequestInfoColumns">
+		select a.id,a.request_id,a.project,a.table_name,a.partition,a.desen_time_start,a.desen_time_end,a.import_time_start,a.import_time_end,a.status_flag,a.run_log,a.owner,a.export_num,a.desen_sql
+	</sql>
+
+	<sql id="RequestInfoFrom">
+		from bigData_request_info a
+	</sql>
+
+	<sql id="RequestInfoJoin">
+        1 = 1
+	</sql>
+
+	<sql id="RequestInfoQuery">
+        where
+		<include refid="RequestInfoJoin" />
+		<isNotNull property="requestId" prepend="AND">
+            a.request_id=#requestId#
+		</isNotNull>
+		<isNotNull property="project" prepend="AND">
+            a.project=#project#
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            a.table_name=#tableName#
+		</isNotNull>
+		<isNotNull property="partition" prepend="AND">
+            a.partition=#partition#
+		</isNotNull>
+		<isNotNull property="desenTimeStart" prepend="AND">
+            a.desen_time_start=#desenTimeStart#
+		</isNotNull>
+		<isNotNull property="desenTimeEnd" prepend="AND">
+            a.desen_time_end=#desenTimeEnd#
+		</isNotNull>
+		<isNotNull property="importTimeStart" prepend="AND">
+            a.import_time_start=#importTimeStart#
+		</isNotNull>
+		<isNotNull property="importTimeEnd" prepend="AND">
+            a.import_time_end=#importTimeEnd#
+		</isNotNull>
+		<isNotNull property="statusFlag" prepend="AND">
+            a.status_flag=#statusFlag#
+		</isNotNull>
+		<isNotNull property="runLog" prepend="AND">
+            a.run_log=#runLog#
+		</isNotNull>
+		<isNotNull property="owner" prepend="AND">
+            a.owner=#owner#
+		</isNotNull>
+		<isNotNull property="exportNum" prepend="AND">
+            a.export_num=#exportNum#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addRequestInfo" parameterClass="RequestInfoDO">
+		insert into bigData_request_info
+		<dynamic prepend="(">
+			<isNotNull property="requestId" prepend="AND">
+                request_id
+    		</isNotNull>
+			<isNotNull prepend="," property="project">
+				project
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				partition
+			</isNotNull>
+			<isNotNull prepend="," property="desenTimeStart">
+				desen_time_start
+			</isNotNull>
+			<isNotNull prepend="," property="desenTimeEnd">
+				desen_time_end
+			</isNotNull>
+			<isNotNull prepend="," property="importTimeStart">
+				import_time_start
+			</isNotNull>
+			<isNotNull prepend="," property="importTimeEnd">
+				import_time_end
+			</isNotNull>
+			<isNotNull prepend="," property="statusFlag">
+				status_flag
+			</isNotNull>
+			<isNotNull prepend="," property="runLog" >
+            	run_log
+		    </isNotNull>
+			<isNotNull prepend="," property="owner">
+				owner
+			</isNotNull>
+			<isNotNull prepend="," property="exportNum">
+				export_num
+			</isNotNull>
+			<isNotNull prepend="," property="desenSql">
+				desen_sql
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="requestId">
+                #requestId#
+    		</isNotNull>
+			<isNotNull prepend="," property="project">
+				#project#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="partition">
+				#partition#
+			</isNotNull>
+			<isNotNull prepend="," property="desenTimeStart">
+				#desenTimeStart#
+			</isNotNull>
+			<isNotNull prepend="," property="desenTimeEnd">
+				#desenTimeEnd#
+			</isNotNull>
+			<isNotNull prepend="," property="importTimeStart">
+				#importTimeStart#
+			</isNotNull>
+			<isNotNull prepend="," property="importTimeEnd">
+				#importTimeEnd#
+			</isNotNull>
+			<isNotNull prepend="," property="statusFlag">
+				#statusFlag#
+			</isNotNull>
+			<isNotNull prepend="," property="runLog" >
+            	#runLog#
+			</isNotNull>
+			<isNotNull prepend="," property="owner">
+				#owner#
+			</isNotNull>
+			<isNotNull prepend="," property="exportNum">
+				#exportNum#
+			</isNotNull>
+			<isNotNull prepend="," property="desenSql">
+				#desenSql#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryRequestInfoById" resultMap="RequestInfoDOResult">
+		<include refid="RequestInfoColumns" />
+		<include refid="RequestInfoFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryRequestInfoByRequestId" resultMap="RequestInfoDOResult">
+		<include refid="RequestInfoColumns" />
+		<include refid="RequestInfoFrom" />
+		where a.request_id=#requestId#
+	</select>
+
+	<select id="queryInfoStatusByRequestId" resultClass="java.util.HashMap">
+		select a.status_flag,count(1) as count from bigData_request_info a
+		where a.request_id = #requestId# GROUP BY a.status_flag
+	</select>
+
+	<!-- 此处不能修改export_num字段的值，多线程情况下可能值产生混乱，需要修改export_num字段的值单独调用updateExportNum -->
+	<update id="updateRequestInfo" parameterClass="RequestInfoDO">
+		update bigData_request_info
+		<dynamic prepend="set">
+		<isNotNull property="requestId" prepend=",">
+            request_id=#requestId#
+		</isNotNull>
+		<isNotNull property="project" prepend=",">
+            project=#project#
+		</isNotNull>
+		<isNotNull property="tableName" prepend=",">
+            table_name=#tableName#
+		</isNotNull>
+		<isNotNull property="partition" prepend=",">
+            partition=#partition#
+		</isNotNull>
+		<isNotNull property="desenTimeStart" prepend=",">
+            desen_time_start=#desenTimeStart#
+		</isNotNull>
+		<isNotNull property="desenTimeEnd" prepend=",">
+            desen_time_end=#desenTimeEnd#
+		</isNotNull>
+		<isNotNull property="importTimeStart" prepend=",">
+            import_time_start=#importTimeStart#
+		</isNotNull>
+		<isNotNull property="importTimeEnd" prepend=",">
+            import_time_end=#importTimeEnd#
+		</isNotNull>
+		<isNotNull property="statusFlag" prepend=",">
+            status_flag=#statusFlag#
+		</isNotNull>
+		<isNotNull property="runLog" prepend=",">
+            run_log=#runLog#
+		</isNotNull>
+		<isNotNull property="owner" prepend=",">
+            owner=#owner#
+		</isNotNull>
+		<isNotNull property="desenSql" prepend=",">
+            desen_sql=#desenSql#
+		</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<delete id="delRequestInfoByRequestId" parameterClass="java.lang.String">
+		delete from bigData_request_info where request_id = #requestId#
+	</delete>
+
+	<delete id="delRequestInfoById" parameterClass="java.lang.Integer">
+		delete from bigData_request_info where id = #id#
+	</delete>
+
+	<select id="getRequestInfoDOsById" parameterClass="java.lang.String" resultMap="RequestInfoDOResult">
+		select * from bigData_request_info	where request_id=#requestId#
+	</select>
+
+	<select id="queryTableNotApproByRequestId" resultClass="java.lang.Integer">
+		select count(1) from bigData_request_info where request_id = #requestId# and status_flag in ('WAIT_APPRO','APPRO_FAIL')
+	</select>
+
+	<select id="queryTableApproByRequestId" resultClass="java.lang.Integer">
+		select count(1) from bigData_request_info where request_id = #requestId# and status_flag ='APPRO_SUCC'
+	</select>
+
+	<select id="queryAccessTable" resultMap="RequestInfoDOResult">
+		select * from bigData_request_info where request_id = #requestId# and owner = #owner#
+	</select>
+
+	<select id="queryOwnerByRequestId" resultClass="java.lang.String">
+		select distinct owner from bigData_request_info where request_id = #requestId# and status_flag in ('WAIT_APPRO','APPRO_FAIL')
+	</select>
+
+	<select id="queryCntByTableStatus" resultClass="java.lang.Integer">
+		select count(1) from bigData_request_info where request_id = #requestId# and status_flag = #statusFlag#
+	</select>
+
+	<select id="queryRequestInfoCntByRequestId" resultClass="java.lang.Integer">
+		select count(1)
+		from bigData_request_info a
+		where a.request_id=#requestId#
+	</select>
+
+	<update id="updateExportNum">
+		update bigData_request_info a set a.export_num = a.export_num +1 where a.id = #id#
+	</update>
+
+	<select id="queryRunningRequestInfo" resultMap="RequestInfoDOResult">
+		<include refid="RequestInfoColumns" />
+		<include refid="RequestInfoFrom" />
+		where a.status_flag in ('EXPORTING','DESENSING') limit 1
+	</select>
+
+
+</sqlMap>

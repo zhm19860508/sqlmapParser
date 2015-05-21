@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxPlugin">
+
+	<resultMap id="BoxPlugin-Result" class="BoxPlugin">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="DATATIME" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="DATATIME" />
+		<result property="name" column="NAME" javaType="java.lang.String" />
+		<result property="categoryId" column="CATEGORY_ID" javaType="java.lang.String" />
+		<result property="code" column="CODE" javaType="java.lang.String" />
+		<result property="applyDevice" column="APPLY_DEVICE" javaType="java.lang.String" />
+		<result property="creator" column="CREATOR" javaType="java.lang.String" />
+		<result property="modifier" column="MODIFIER" javaType="java.lang.String" />
+		<result property="isDeleted" column="IS_DELETED" javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="MS_INSERT_DCMS_BOX_PLUGIN" parameterClass="BoxPlugin">
+        <![CDATA[
+            insert into dcms_box_plugin
+              (CODE,name,GMT_CREATE  , GMT_MODIFIED  ,CATEGORY_ID, APPLY_DEVICE,CREATOR,MODIFIER,IS_DELETED)
+            values
+              (#code#,#name#,sysdate(),sysdate(),#categoryId#,#applyDevice#,#creator#,#modifier#,#isDeleted#)
+        ]]>
+        <selectKey resultClass="long" type="post" keyProperty="id">
+          select last_insert_id() as id
+      </selectKey>
+	</insert>
+	<update id="MS_UPDATE_DCMS_BOX_PLUGIN" parameterClass="BoxPlugin">
+        <![CDATA[ UPDATE dcms_box_plugin 
+        	SET GMT_MODIFIED = sysdate() 
+        ]]>
+		<isNotNull property="code" prepend=",">
+			CODE = #code#
+		</isNotNull>
+		<isNotNull property="name" prepend=",">
+			NAME = #name#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend=",">
+			CATEGORY_ID = #categoryId#
+		</isNotNull>
+		<isNotNull property="applyDevice" prepend=",">
+			APPLY_DEVICE = #applyDevice#
+		</isNotNull>
+		<isNotNull property="creator" prepend=",">
+			CREATOR = #creator#
+		</isNotNull>
+		<isNotNull property="modifier" prepend=",">
+			MODIFIER = #modifier#
+		</isNotNull>
+		<isNotNull property="isDeleted" prepend=",">
+			IS_DELETED = #isDeleted#
+		</isNotNull>
+        <![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+	<!-- 模糊查询 -->
+	<select id="MS_GET_DCMS_BOX_PLUGINS" parameterClass="java.util.Map" resultMap="BoxPlugin-Result">
+        <![CDATA[
+           SELECT t.ID,
+		   	t.CODE ,
+		  	t.NAME,
+		  	t.CATEGORY_ID ,
+		  	T.APPLY_DEVICE,
+		  	T.CREATOR,
+		  	T.MODIFIER,
+		  	T.IS_DELETED,
+		  	t.GMT_CREATE AS GMT_CREATE ,
+			t.GMT_MODIFIED AS GMT_MODIFIED 
+		 		 FROM dcms_box_plugin t 
+			where t.IS_DELETED ='0'
+	    ]]>  
+	    <isNotEmpty prepend="and" property="name">
+			T.NAME = #name#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="code">
+			t.code = #code#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="categoryId">
+			t.CATEGORY_ID = #categoryId#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="creator">
+			t.CREATOR = #creator#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="applyDevice">
+			t.APPLY_DEVICE = #applyDevice#
+		</isNotEmpty>
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+	</select>
+		<!-- 模糊查询 -->
+	<select id="MS_GET_DCMS_BOX_PLUGIN" parameterClass="java.lang.Long" resultMap="BoxPlugin-Result">
+        <![CDATA[
+           SELECT  t.* 
+		 		 FROM dcms_box_plugin t 
+			where ID= #id#
+	    ]]>  
+	 
+      
+	</select>
+	<update id="MS_DELETE_DCMS_BOX_PLUGIN" parameterClass="java.util.Map">
+        <![CDATA[
+            UPDATE dcms_box_plugin 
+        	SET GMT_MODIFIED = sysdate() ,IS_DELETED='1',MODIFIER=#modifier# where ID = #id#
+        ]]>
+	</update> 
+	<delete id="MS_DELETE_DCMS_BOX_PLUGIN_REAL" parameterClass="java.lang.Long">
+        <![CDATA[
+            delete from dcms_box_plugin   where ID = #id#
+        ]]>
+	</delete> 		
+</sqlMap>

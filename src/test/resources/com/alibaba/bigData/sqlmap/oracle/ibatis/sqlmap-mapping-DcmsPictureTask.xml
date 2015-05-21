@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.dcmspicturetask">
+    
+    <resultMap id="DcmsPictureTask-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsPictureTask">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>        
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" javaType="java.lang.String" />     
+        <result property="resourceId" column="RESOURCE_ID" javaType="java.lang.Long" />     
+        <result property="outerTaskId" column="OUTER_TASK_ID" javaType="java.lang.String"/>
+        <result property="url" column="URL" javaType="java.lang.String"/>
+        <result property="data" column="DATAS" javaType="java.lang.String"/>
+        <result property="status" column="STATUS" javaType="java.lang.String"/>
+        <result property="finishTime" column="FINISH_TIME" javaType="java.util.Date"/> 
+        <result property="webUrl" column="WEB_URL" javaType="java.lang.String"/>
+    </resultMap>
+    
+	 <select id="MS_SELECT_PICTURETASK_BY_OUTERTASKID" parameterClass="java.lang.String" resultMap="DcmsPictureTask-Result" resultClass="DcmsPictureTask">
+	 <![CDATA[
+		SELECT
+		   ID,
+		   RESOURCE_TYPE,
+		   RESOURCE_ID,
+		   OUTER_TASK_ID,
+		   URL,
+		   STATUS,
+		   FINISH_TIME,
+		   DATAS,
+		   USER_ID,
+		   WEB_URL,
+		   GMT_CREATE,
+		   GMT_MODIFIED
+		FROM
+		   DCMS_PICTURE_TASK
+		WHERE OUTER_TASK_ID =  #outerTaskId# AND STATUS <> 'success'
+ 	 ]]> 
+ 	 </select>    
+    
+    <insert id="MS_INSERT_PICTURETASK" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsPictureTask">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_PICTURE_TASK.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_PICTURE_TASK
+              (ID, GMT_CREATE  , GMT_MODIFIED , RESOURCE_TYPE,  RESOURCE_ID , OUTER_TASK_ID , URL, STATUS,   FINISH_TIME, DATAS, USER_ID, WEB_URL)
+            values
+              (#id#, sysdate , sysdate, #resourceType# ,#resourceId#  , #outerTaskId#  , #url#  , nvl(#status#,'create'), #finishTime#, #data#, #userId#, #webUrl#)
+        ]]>
+    </insert>
+    
+     <update id="MS_UPDATE_PICTURETASK" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsPictureTask">
+        <![CDATA[ UPDATE DCMS_PICTURE_TASK 
+        	SET GMT_MODIFIED = sysdate
+        ]]>
+        <isNotEmpty property="status" prepend=",">
+            STATUS = #status#
+        </isNotEmpty>        
+        <isNotEmpty property="url" prepend=",">
+            URL = #url#
+        </isNotEmpty>
+        <isNotEmpty property="data" prepend=",">
+            DATAS = #data#
+        </isNotEmpty>
+        <isNotEmpty property="finishTime" prepend=",">
+            FINISH_TIME = #finishTime#
+        </isNotEmpty>
+        <![CDATA[ WHERE ID =  #id# ]]>
+    </update> 
+    
+    <update id="MS_UPDATE_PICTURE_URL">
+        <isEqual property="resourceType" compareValue="module">
+	        <![CDATA[ 
+	           UPDATE DCMS_BOX_MODULE 	SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null
+	        ]]>
+        </isEqual>
+        <isEqual property="resourceType" compareValue="template">
+	        <![CDATA[ 
+	           UPDATE DCMS_BOX_TEMPLATE SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null
+	        ]]>
+        </isEqual>
+        <isEqual property="resourceType" compareValue="cell">
+	        <![CDATA[ 
+	           UPDATE DCMS_BOX_CELL SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null
+	        ]]>
+        </isEqual> 
+        <isEqual property="resourceType" compareValue="pl_template">
+	        <![CDATA[ 
+	           UPDATE dcms_box_personal_lib SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null and RESOURCE_TYPE = #resourceType#
+	        ]]>
+        </isEqual>
+             <isEqual property="resourceType" compareValue="pl_layout">
+	        <![CDATA[ 
+	           UPDATE dcms_box_personal_lib SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null and RESOURCE_TYPE = #resourceType#
+	        ]]>
+        </isEqual>
+         <isEqual property="resourceType" compareValue="pl_module">
+	        <![CDATA[ 
+	              UPDATE DCMS_BOX_MODULE 	SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null
+	        ]]>
+        </isEqual>
+        <isEqual property="resourceType" compareValue="pl_cell">
+	        <![CDATA[ 
+	           UPDATE dcms_box_personal_lib SET GMT_MODIFIED = sysdate, THUMBNAIL = #pictureUrl# WHERE ID = #resourceId# and THUMBNAIL is null and RESOURCE_TYPE = #resourceType#
+	        ]]>
+        </isEqual>
+    </update>       
+</sqlMap>

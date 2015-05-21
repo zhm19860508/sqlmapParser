@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Build">
+	<typeAlias alias="buildTaskDO"
+		type="com.alibaba.bigData.dal.entity.BuildTaskDO" />
+
+
+	<resultMap class="BuildTaskDO" id="buildTaskDOResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="task_type" property="taskType" />
+		<result column="user_name" property="userName" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="task_name" property="taskName" />
+		<result column="channel_name" property="channelName" />
+	</resultMap>
+	
+	
+	<sql id="buildTaskColumns">
+		select
+		a.id,a.task_id,a.task_type,a.user_name,a.machine_ip,a.deploy_script,a.task_name,a.channel_name
+	</sql>
+
+	<sql id="buildTaskFrom">
+		from bigData_build_task a
+	</sql>
+
+	<insert id="addBuildTask" parameterClass="buildTaskDO">
+		insert into bigData_build_task
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				task_type
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				user_name
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				machine_ip
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				deploy_script
+			</isNotNull>
+			<isNotNull prepend="," property="taskName">
+				task_name
+			</isNotNull>
+			<isNotNull prepend="," property="channelName">
+				channel_name
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				#taskType#
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				#userName#
+			</isNotNull>
+			<isNotNull prepend="," property="machineIp">
+				#machineIp#
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				#deployScript#
+			</isNotNull>
+			<isNotNull prepend="," property="taskName">
+				#taskName#
+			</isNotNull>
+			<isNotNull prepend="," property="channelName">
+				#channelName#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryBuildTaskByBuildId" resultMap="buildTaskDOResult">
+		<include refid="buildTaskColumns" />
+		<include refid="buildTaskFrom" />
+		where a.id=#id#
+	</select>
+
+	
+
+</sqlMap>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RequestLog">
+	<typeAlias alias="RequestLogDO"
+		type="com.alibaba.bigData.dal.entity.RequestLogDO" />
+
+	<resultMap class="RequestLogDO" id="RequestLogDOResult">
+		<result column="id" property="id" />
+		<result column="request_id" property="requestId" />
+		<result column="time" property="time" />
+		<result column="user" property="user" />
+		<result column="content" property="content" />
+	</resultMap>
+
+	<sql id="RequestLogColumns">
+		select a.id,a.request_id,a.time,a.user,a.content
+	</sql>
+
+	<sql id="RequestLogFrom">
+		from bigData_request_log a
+	</sql>
+
+	<sql id="RequestLogJoin">
+        1 = 1
+	</sql>
+
+	<sql id="RequestLogQuery">
+        where
+		<include refid="RequestLogJoin" />
+		<isNotNull property="requestId" prepend="AND">
+            a.request_id=#requestId#
+		</isNotNull>
+		<isNotNull property="time" prepend="AND">
+            a.time=#time#
+		</isNotNull>
+		<isNotNull property="user" prepend="AND">
+            a.user=#user#
+		</isNotNull>
+		<isNotNull property="content" prepend="AND">
+            a.content=#content#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addRequestLog" parameterClass="RequestLogDO">
+		insert into bigData_request_log
+		<dynamic prepend="(">
+			<isNotNull property="requestId" prepend="AND">
+                request_id
+    		</isNotNull>
+			<isNotNull prepend="," property="time">
+				time
+			</isNotNull>
+			<isNotNull prepend="," property="user">
+				user
+			</isNotNull>
+			<isNotNull prepend="," property="content">
+				content
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="requestId">
+                #requestId#
+    		</isNotNull>
+			<isNotNull prepend="," property="time">
+				#time#
+			</isNotNull>
+			<isNotNull prepend="," property="user">
+				#user#
+			</isNotNull>
+			<isNotNull prepend="," property="content">
+				#content#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryRequestLogById" resultMap="RequestLogDOResult">
+		<include refid="RequestLogColumns" />
+		<include refid="RequestLogFrom" />
+		where a.id=#id#
+	</select>
+	
+	<select id="queryDesenseLogsByRequestId" resultMap="RequestLogDOResult">
+		<include refid="RequestLogColumns" />
+		<include refid="RequestLogFrom" />
+		where a.request_id=#requestId# 
+		order by a.time desc
+	</select>	
+
+	<update id="updateRequestLog" parameterClass="RequestLogDO">
+		update bigData_request_log
+		<dynamic prepend="set">
+		<isNotNull property="requestId" prepend=",">
+            request_id=#requestId#
+		</isNotNull>
+		<isNotNull property="time" prepend=",">
+            time=#time#
+		</isNotNull>
+		<isNotNull property="user" prepend=",">
+            user=#user#
+		</isNotNull>
+		<isNotNull property="content" prepend=",">
+            content=#content#
+		</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+</sqlMap>

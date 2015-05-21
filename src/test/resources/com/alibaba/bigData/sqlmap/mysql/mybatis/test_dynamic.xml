@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoshengsha.mapper.UserMapper"><!--注意：此处的命名空间是UserMapper的全限定类名 -->
+
+	<select id="findActiveBlogWithTitleLike" resultType="Blog">
+		SELECT * FROM BLOG
+		WHERE state = ‘ACTIVE’
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+	</select>
+
+	<select id="findActiveBlogLike2" resultType="Blog">
+		SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+		<if test="author != null and author.name != null">
+			AND author_name like #{author.name}
+		</if>
+	</select>
+
+	<select id="findActiveBlogLike" resultType="Blog">
+		SELECT * FROM BLOG WHERE state = ‘ACTIVE’
+		<choose>
+			<when test="title != null">
+				AND title like #{title}
+			</when>
+			<when test="author != null and author.name != null">
+				AND author_name like #{author.name}
+			</when>
+			<otherwise>
+				AND featured = 1
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findActiveBlogLike3" resultType="Blog">
+		SELECT * FROM BLOG
+		WHERE
+		<if test="state != null">
+			state = #{state}
+		</if>
+		<if test="title != null">
+			AND title like #{title}
+		</if>
+		<if test="author != null and author.name != null">
+			AND author_name like #{author.name}
+		</if>
+	</select>
+	<select id="findActiveBlogLike4" resultType="Blog">
+		SELECT * FROM BLOG
+		<where>
+			<if test="state != null">
+				state = #{state}
+			</if>
+			<if test="title != null">
+				AND title like #{title}
+			</if>
+			<if test="author != null and author.name != null">
+				AND author_name like #{author.name}
+			</if>
+		</where>
+	</select>
+
+	<update id="updateAuthorIfNecessary">
+		update Author
+		<set>
+			<if test="username != null">username=#{username},</if>
+			<if test="password != null">password=#{password},</if>
+			<if test="email != null">email=#{email},</if>
+			<if test="bio != null">bio=#{bio}</if>
+		</set>
+		where id=#{id}
+	</update>
+
+	<select id="selectPostIn" resultType="domain.blog.Post">
+		SELECT *
+		FROM POST P
+		WHERE ID in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="selectBlogsLike" resultType="Blog">
+		<bind name="pattern" value="'%' + _parameter.getTitle() + '%'" />
+		SELECT * FROM BLOG
+		WHERE title LIKE #{pattern}
+	</select>
+
+	<insert id="insert2">
+		<selectKey keyProperty="id" resultType="int" order="BEFORE">
+			<if test="_databaseId == 'oracle'">
+				select seq_users.nextval from dual
+			</if>
+			<if test="_databaseId == 'db2'">
+				select nextval for seq_users from sysibm.sysdummy1"
+			</if>
+		</selectKey>
+		insert into users values (#{id}, #{name})
+	</insert>
+
+</mapper>

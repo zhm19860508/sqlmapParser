@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RequestUser">
+	<sql id="RequestUserColumns">
+		select a.id,a.request_id,a.user
+	</sql>
+
+	<sql id="RequestUserFrom">
+		from bigData_request_user a
+	</sql>
+
+	<sql id="RequestUserJoin">
+        1 = 1
+	</sql>
+
+
+
+
+	<insert id="addRequestUser">
+		insert into bigData_request_user
+		<dynamic prepend="(">
+			<isNotNull property="id" prepend="AND">
+                id
+    		</isNotNull>			
+			<isNotNull prepend="," property="requestId">
+                request_id
+    		</isNotNull>
+			<isNotNull prepend="," property="user">
+				user
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="id">
+                #id#
+    		</isNotNull>		
+			<isNotNull prepend="," property="requestId">
+                #requestId#
+    		</isNotNull>
+			<isNotNull prepend="," property="user">
+				#user#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryRequestUserById" resultClass="java.lang.String">
+		select a.user
+		from bigData_request_user a
+		where a.request_id = #requestId#
+	</select>
+	
+	<select id="queryRequestIdByUser" resultClass="java.lang.String">
+		select a.request_id
+		from bigData_request_user a
+		where a.user = #user#
+	</select>
+	
+	<select id="hasAccessByRequestId" resultClass="java.lang.Integer">
+		select count(1)
+		from bigData_request_user a
+		where a.request_id = #requestId#
+		and a.user = #user#
+	</select>		
+	
+	<delete id="delRequestUserByRequestId" parameterClass="java.lang.Integer">
+		delete from bigData_request_user where request_id = #requestId#
+	</delete>
+
+	<delete id="delRequestUser">
+		delete from bigData_request_user where request_id = #requestId# and user = #user#
+	</delete>
+
+</sqlMap>

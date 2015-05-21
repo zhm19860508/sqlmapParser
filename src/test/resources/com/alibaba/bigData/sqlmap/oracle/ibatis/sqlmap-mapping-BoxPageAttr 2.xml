@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxPageAttr">
+
+	<resultMap id="BoxPageAttr-Result"
+	class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPageAttr">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="html" column="CONTENT" javaType="java.lang.String" />
+		<result property="json" column="ATTRIBUTES" javaType="java.lang.String" />
+		<result property="code" column="CODE" javaType="java.lang.String" />
+		<result property="cate" column="CATE" javaType="java.lang.String" />
+		<result property="extField" column="EXT_FIELD" javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="MS_INSERT_BOX_PAGE_ATTR" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPageAttr">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_DCMS_BOX_PROTOTYPE.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_PROTOTYPE
+              (ID, CODE,CATE,GMT_CREATE  , GMT_MODIFIED  ,ATTRIBUTES, CONTENT,EXT_FIELD)
+            values
+              (#id#, #code#,#cate#,sysdate,sysdate,#json#,#html#,#extField#)
+        ]]>
+	</insert>
+	<update id="MS_UPDATE_BOX_PAGE_ATTR" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxPageAttr">
+        <![CDATA[ UPDATE DCMS_BOX_PROTOTYPE 
+        	SET GMT_MODIFIED = sysdate 
+        ]]>
+
+		<isNotNull property="code" prepend=",">
+			CODE = #code#
+		</isNotNull>
+		<isNotNull property="html" prepend=",">
+			CONTENT = #html#
+		</isNotNull>
+		<isNotNull property="cate" prepend=",">
+			CATE = #cate#
+		</isNotNull>
+		<isNotNull property="json" prepend=",">
+			ATTRIBUTES = #json#
+		</isNotNull>
+		<isNotNull property="extField" prepend=",">
+			EXT_FIELD = #extField#
+		</isNotNull>
+        <![CDATA[ WHERE ID =  #id# ]]>
+	</update>
+	<!-- 模糊查询 -->
+	<select id="MS_GET_BOX_PAGE_ATTR" parameterClass="java.util.Map" resultMap="BoxPageAttr-Result">
+        <![CDATA[
+           SELECT t.ID,
+		   	t.CODE ,
+		  	t.ATTRIBUTES,
+		  	t.CONTENT ,
+		  	T.CATE,
+		  	T.EXT_FIELD,
+		  	t.GMT_CREATE AS GMT_CREATE ,
+			t.GMT_MODIFIED AS GMT_MODIFIED 
+		 		 FROM DCMS_BOX_PROTOTYPE t 
+			where 1=1
+	    ]]>
+	    
+	    <isNotEmpty prepend="and" property="cate">
+			T.CATE = #cate#
+		</isNotEmpty>
+
+		<isNotEmpty prepend="and" property="code">
+			t.code = #code#
+		</isNotEmpty>
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+	</select>
+
+	<select id="MS_GET_BOX_PAGE_ATTR_BY_CODE" parameterClass="java.lang.String"
+		resultMap="BoxPageAttr-Result">
+        <![CDATA[
+           SELECT t.ID,
+		   	t.CODE ,
+		  	t.ATTRIBUTES,
+		  	t.CONTENT ,
+		  	T.CATE,
+		  	t.EXT_FIELD,
+		  	t.GMT_CREATE AS GMT_CREATE ,
+			t.GMT_MODIFIED AS GMT_MODIFIED 
+		 		 FROM DCMS_BOX_PROTOTYPE t 
+			where t.code =#code#
+	    ]]>
+
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+	</select>
+
+	<select id="MS_GET_BOX_PAGE_ATTR_BY_ID" parameterClass="long"
+		 resultMap="BoxPageAttr-Result">
+         <![CDATA[
+           SELECT t.ID ,
+		   	t.CODE ,
+		  	t.ATTRIBUTES ,
+		  	t.CONTENT ,
+		  	T.CATE,
+		  	T.EXT_FIELD,
+		  	t.GMT_CREATE AS GMT_CREATE ,
+			t.GMT_MODIFIED AS GMT_MODIFIED 
+		 		 FROM DCMS_BOX_PROTOTYPE t 
+			where t.id=#id#
+	    ]]>
+	</select>
+
+	<delete id="MS_DELETE_BOX_PAGE_ATTR" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_PROTOTYPE where ID = #id#
+        ]]>
+	</delete>
+	<delete id="MS_DELETE_BOX_PAGE_ATTR_BY_NAME" parameterClass="String">
+        <![CDATA[
+            DELETE from DCMS_BOX_PROTOTYPE where CODE = #name#
+        ]]>
+	</delete>
+	
+	<select id="MS_GET_BOX_PAGE_ATTR_BY_CAT_AND_CODE" parameterClass="java.util.Map"
+		resultMap="BoxPageAttr-Result">
+        <![CDATA[
+           SELECT t.ID,
+		   	t.CODE ,
+		  	t.ATTRIBUTES,
+		  	t.CONTENT ,
+		  	T.CATE,
+		  	t.EXT_FIELD,
+		  	t.GMT_CREATE AS GMT_CREATE ,
+			t.GMT_MODIFIED AS GMT_MODIFIED 
+		 		 FROM DCMS_BOX_PROTOTYPE t 
+			where t.code =#code# and T.CATE=#cate#
+	    ]]>
+
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+	</select>	
+</sqlMap>

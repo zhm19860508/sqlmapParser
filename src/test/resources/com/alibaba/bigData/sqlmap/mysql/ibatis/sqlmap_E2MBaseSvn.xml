@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="E2MsvnBase">
+	<typeAlias alias="e2msvnBase"
+		type="com.alibaba.bigData.dal.entity.E2MBaseSvnDO" />
+
+	<resultMap class="e2msvnBase" id="svnBaseResult">
+		<result column="id" property="id" />
+		<result column="svn" property="svn" />
+		<result column="origin_svn" property="originSvn" />
+		<result column="line" property="line" />
+		<result column="status" property="status" />
+		<result column="is_init" property="isInit" />
+		<result column="project" property="project" />
+		<result column="account" property="account" />
+
+	</resultMap>
+
+	<sql id="allColumns">
+		select
+		a.id,a.svn,a.origin_svn,a.line,status,is_init,project,account
+	</sql>
+
+	<sql id="From">
+		from bigData_e2m_svn_base a
+	</sql>
+
+	<sql id="effstatus">
+        a.status = 1
+	</sql>
+
+
+
+
+	<select id="getAllSvn" resultMap="svnBaseResult" >
+		<include refid="allColumns" />
+		<include refid="From" />
+		 where
+       <include refid="effstatus" />
+	</select>
+
+	<update id="setInitStatus" parameterClass="java.lang.String">
+		update bigData_e2m_svn_base
+		set		is_init=1
+			,updated_at=now()
+			where svn=#svn#
+	</update>
+
+	<update id="setRunningStatus" parameterClass="java.lang.String">
+		update bigData_e2m_svn_base
+		set		is_init=9
+			,updated_at=now()
+			where svn=#svn#
+	</update>
+
+   <update id="ResetInitStatus" parameterClass="java.lang.String">
+		update bigData_e2m_svn_base
+		set		is_init=0
+			,updated_at=now()
+			where svn=#svn#
+	</update>
+
+
+</sqlMap>

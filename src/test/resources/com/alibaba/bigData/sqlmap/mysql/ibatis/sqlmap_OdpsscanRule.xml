@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="OdpsscanRuleDAO">
+
+	<typeAlias alias="odpsscanRuleDO"
+		type="com.alibaba.bigData.dal.entity.OdpsscanRuleDO" />
+	<typeAlias alias="odpsscanRuleQuery"
+		type="com.alibaba.bigData.dal.query.OdpsscanRuleQuery" />
+
+	<resultMap id="odpsscanRuleResultAll" class="odpsscanRuleDO">
+		<result property="ruleId" column="rule_id" javaType="Integer"
+			jdbcType="int" />
+		<result property="ruleName" column="rule_name" />
+		<result property="rank" column="rank" javaType="Integer"
+			jdbcType="int" />
+		<result property="resourceId" column="resource_id" javaType="Integer"
+			jdbcType="int" />
+		<result property="params" column="params" />
+		<result property="detail" column="detail" />
+		<result property="authorId" column="author_id" />
+		<result property="status" column="status" javaType="Integer"
+			jdbcType="int" />
+		<result property="replaceParamStatus" column="replace_param_status"
+			javaType="Integer" jdbcType="int" />
+		<result property="nodeType" column="node_type" javaType="Integer"
+			jdbcType="int" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+	</resultMap>
+
+	<select id="selectRule" parameterClass="Integer"
+		resultMap="odpsscanRuleResultAll">
+		select
+		rule_id,rule_name,rank,resource_id,params,detail,author_id,status,replace_param_status,node_type,created_at,updated_at
+		from `bigdata_odpsscan_rule`
+		where `rule_id` = #ruleId# limit 1
+	</select>
+
+	<select id="selectRuleByResourceId" parameterClass="Integer"
+		resultMap="odpsscanRuleResultAll">
+		select
+		rule_id,rule_name,rank,resource_id,params,detail,author_id,status,replace_param_status,node_type,created_at,updated_at
+		from `bigdata_odpsscan_rule`
+		where `resource_id` = #resourceId# and status=0 limit 1
+	</select>
+
+	<select id="selectRules" parameterClass="odpsscanRuleQuery"
+		resultMap="odpsscanRuleResultAll">
+		select
+		rule_id,rule_name,rank,resource_id,params,detail,author_id,status,replace_param_status,node_type,created_at,updated_at
+		from `bigdata_odpsscan_rule`
+		<dynamic prepend="where">
+			status = 0
+			<isNotEmpty property="ruleName">and `rule_name` like '%$ruleName$%'</isNotEmpty>
+			<isNotEmpty property="authorId">and author_id =#authorId#</isNotEmpty>
+		</dynamic>
+		order by `created_at` desc
+		<isNotEmpty prepend=" " property="size">
+			limit #start#,#size#
+		</isNotEmpty>
+	</select>
+
+	<select id="selectRulesCount" parameterClass="odpsscanRuleQuery"
+		resultClass="Integer">
+		select count(0)
+		from `bigdata_odpsscan_rule`
+		<dynamic prepend="where">
+			status = 0
+			<isNotEmpty property="ruleName">and `rule_name` like '%$ruleName$%'</isNotEmpty>
+			<isNotEmpty property="authorId">and author_id =#authorId#</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<insert id="insert" parameterClass="odpsscanRuleDO">
+      insert into `bigdata_odpsscan_rule` set
+		<dynamic prepend=" ">
+			<isNotEmpty prepend="," property="ruleName">
+				`created_at`=now(),`updated_at`=now(),`rule_name`=#ruleName#</isNotEmpty>
+			<isNotEmpty prepend="," property="rank"> `rank`=#rank#</isNotEmpty>
+			<isNotEmpty prepend="," property="resourceId"> `resource_id`=#resourceId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="params"> `params`=#params#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="detail"> `detail`=#detail#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="authorId"> `author_id`=#authorId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="nodeType"> `node_type`=#nodeType#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="replaceParamStatus"> `replace_param_status`=#replaceParamStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status"> `status`=#status#
+			</isNotEmpty>
+		</dynamic>
+       <selectKey resultClass="Integer" keyProperty="ruleId">
+			SELECT LAST_INSERT_ID()
+       </selectKey>
+	</insert>
+
+	<update id="update" parameterClass="odpsscanRuleDO">
+      update `bigdata_odpsscan_rule` set
+		<dynamic prepend=" ">
+			<isNotEmpty prepend="," property="ruleName">`rule_name`=#ruleName#</isNotEmpty>
+			<isNotEmpty prepend="," property="rank"> `rank`=#rank#</isNotEmpty>
+			<isNotEmpty prepend="," property="resourceId"> `resource_id`=#resourceId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="params"> `params`=#params#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="detail"> `detail`=#detail#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="authorId"> `author_id`=#authorId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="nodeType"> `node_type`=#nodeType#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="replaceParamStatus"> `replace_param_status`=#replaceParamStatus#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status"> `status`=#status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="updatedAt"> `updated_at`=#updatedAt#
+			</isNotEmpty>
+		</dynamic>
+		where `rule_id` = #ruleId#
+	</update>
+
+</sqlMap>

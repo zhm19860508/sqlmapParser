@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--==========================================================  -->
+<!--Configuration for ibatis sqlmap mapping.                    -->
+<!--==========================================================  -->
+<!--DO NOT EDIT: This is a generated file that is synchronized  -->
+<!--by meidusa eclipse ibatis plugin tool integration.          -->
+<!--Created Tue Jun 26 15:26:13 CST 2007  -->
+<!--==========================================================  -->
+<sqlMap namespace = "CMS_TASK_FLAG">
+    <typeAlias alias = "TA_CMS_TASK_FlAG" type = "com.alibaba.china.cmshollywood.cms.dal.dataobject.CmsTaskFlagDO"/>
+    <resultMap id = "RM_CMS_TASK_FLAG" class = "TA_CMS_TASK_FlAG">
+        <result property = "lastPublishGmt" column = "LAST_PUBLISH_GMT" jdbcType="TIMESTAMP" javaType="date"/>
+        <result property = "flag" column = "FLAG" jdbcType = "VARCHAR"/>
+        <result property = "id" column = "ID" jdbcType = "DECIMAL"/>
+    </resultMap>
+	<!--publish used-->
+    <insert id = "INSERT_CMS_TASK_FLAG" parameterClass = "TA_CMS_TASK_FLAG">
+    	<selectKey resultClass="java.lang.Long" keyProperty="id">
+            <![CDATA[
+				select seq_cms_task_flag.nextval from dual
+			]]>
+        </selectKey>
+        <![CDATA[
+        INSERT INTO CMS_TASK_FLAG (
+        LAST_PUBLISH_GMT,
+        FLAG,
+        ID
+        )VALUES(
+        #lastPublishGmt:DATE#,
+        #flag:VARCHAR:NULL#,
+        #id:DECIMAL#
+        )
+        ]]>
+    </insert>
+    <!--=====================================update=============== -->
+	<!--publish used-->
+    <update id = "UPDATE_CMS_TASK_FLAG">
+        <![CDATA[
+        UPDATE CMS_TASK_FLAG SET FLAG=#flag#
+        ]]>
+        <dynamic prepend = "">
+                <isNotNull property = "lastPublishGmt" prepend = ",">LAST_PUBLISH_GMT = #lastPublishGmt#</isNotNull>
+        </dynamic>
+    </update>
+	
+    <!--=============================select===============================  -->
+    <select id = "SELECT_CMS_TASK_FLAG" resultMap = "RM_CMS_TASK_FLAG">
+        <![CDATA[
+        SELECT * FROM CMS_TASK_FLAG 
+        ]]>
+    </select>
+</sqlMap>

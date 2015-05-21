@@ -1,0 +1,98 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.onlinePage">
+	<resultMap id="OnlinePage-result" class="OnlinePage">
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="versionId"     javaType="java.lang.Long"       column="VERSION_ID" />
+		<result property="pageId"		 javaType="java.lang.Long"		 column="PAGE_ID" />
+	    <result property="specificUrl"	 javaType="java.lang.String"     column="SPECIFIC_URL" />	
+	    <result property="domainPathId"	 javaType="java.lang.Long"		 column="DOMAIN_PATH_ID" />
+	    <result property="pageType"      javaType="java.lang.String"	 column="PAGE_TYPE" />	
+	    <result property="userId"		 javaType="java.lang.String"	 column="USER_ID" />
+		<result property="domain"        javaType="java.lang.String"     column="DOMAIN" />
+		<result property="pageContent"   javaType="java.lang.String"     column="PAGE_CONTENT" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />	        
+	</resultMap>
+
+	<select id="queryPageByDomainPathAndUrl" resultMap="OnlinePage-result" resultClass="OnlinePage" parameterClass="map">
+	    <![CDATA[
+	    select
+			  ONLINE_PAGE.ID,
+			  ONLINE_PAGE.GMT_MODIFIED,
+			  ONLINE_PAGE.GMT_CREATE,
+			  ONLINE_PAGE.PAGE_CONTENT,
+			  ONLINE_PAGE.VERSION_ID,
+			  ONLINE_PAGE.PAGE_ID,
+			  ONLINE_PAGE.SPECIFIC_URL,
+			  ONLINE_PAGE.DOMAIN_PATH_ID,
+			  ONLINE_PAGE.PAGE_TYPE,
+			  ONLINE_PAGE.DOMAIN,
+			  ONLINE_PAGE.USER_ID
+		from
+		  	  ONLINE_PAGE 
+		where SPECIFIC_URL = #specificUrl# and DOMAIN_PATH_ID =#domainPathId#
+		]]>
+	</select>
+	
+	<select id="queryPageByPageId" resultMap="OnlinePage-result" resultClass="OnlinePage" parameterClass="map">
+	    <![CDATA[
+	    select *
+		from
+		  	  ONLINE_PAGE 
+		where PAGE_ID = #pageId#
+		]]>
+	</select>
+	<!-- 创建页面 -->
+	<insert id="addOnlinePage" parameterClass="OnlinePage">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_ONLINE_PAGE.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO ONLINE_PAGE(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        VERSION_ID,
+		        PAGE_ID,
+		        SPECIFIC_URL,
+		        PAGE_TYPE,
+		        USER_ID,
+		        DOMAIN,
+		        PAGE_CONTENT,
+		        DOMAIN_PATH_ID
+		        )
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #versionId#,
+		        #pageId#,
+		        #specificUrl#,
+		        #pageType#,
+		        #userId#,
+		        #domain#,
+		        #pageContent#,
+		        #domainPathId#
+		        )		
+		]]>		
+	</insert>
+    <update id="updateOnlinePage" parameterClass="OnlinePage"><![CDATA[
+        update
+                ONLINE_PAGE
+        set
+                GMT_MODIFIED=SYSDATE,
+                VERSION_ID = #versionId#,
+                PAGE_ID =  #pageId#,
+                SPECIFIC_URL = #specificUrl#,
+                PAGE_TYPE=#pageType#,
+                USER_ID = #userId#,
+                DOMAIN = #domain#,
+                PAGE_CONTENT=#pageContent#,
+                DOMAIN_PATH_ID=#domainPathId#           
+        where
+                ID = #id#
+    ]]></update>
+</sqlMap>

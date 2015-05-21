@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="follows"
+		type="com.alibaba.china.ipinshared.dataobject.FollowsDO" />
+	<typeAlias alias="FollowsQuery"
+		type="com.alibaba.china.ipinshared.query.FollowsQuery" />
+	<resultMap id="followsResult" class="follows">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="followUserId" column="follow_user_id"
+			jdbcType="int" javaType="java.lang.Long" />
+	</resultMap>
+	<sql id="followsColumns">
+		select
+		ipin_follows.id,ipin_follows.gmt_created,ipin_follows.gmt_modified,ipin_follows.is_deleted,ipin_follows.user_id,ipin_follows.follow_user_id
+	</sql>
+	<sql id="followsQuery">
+		where
+		ipin_follows.is_deleted = #isDeleted#
+		<isNotNull property="userId" prepend="AND">
+			ipin_follows.user_id =
+			#userId#
+		</isNotNull>
+		<isNotNull property="followUserId" prepend="AND">
+			ipin_follows.follow_user_id =
+			#followUserId#
+		</isNotNull>
+	</sql>
+
+	<!-- 查询关注人列表 -->
+	<select id="GET_FOLLOWS_LIST_BY_QUERY" resultMap="followsResult"
+		parameterClass="followsQuery">
+		<include refid="followsColumns" />
+		from ipin_follows
+		<include refid="followsQuery" />
+		order by gmt_created desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+	<!-- 新增关注记录 -->
+	<insert id="ADD_NEW_FOLLOW" parameterClass="follows">
+		insert into ipin_follows
+		(gmt_created,gmt_modified,is_deleted,user_id,follow_user_id) values
+		(now(),now(),0,#userId#,#followUserId#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 删除关注记录 -->
+	<update id="UPDATE_FOLLOW" parameterClass="java.util.HashMap">
+		update ipin_follows
+		set
+		gmt_modified = now(),is_deleted = 1 where user_id = #userId# and
+		follow_user_id = #followUserId#
+	</update>
+
+	<select id="get_follows_list_count" resultClass="java.lang.Integer"
+		parameterClass="followsQuery">
+		select count(*) from ipin_follows
+		<include refid="followsQuery" />
+	</select>
+
+</sqlMap>

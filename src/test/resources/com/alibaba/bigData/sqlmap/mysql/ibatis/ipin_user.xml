@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="user"
+		type="com.alibaba.china.ipinshared.dataobject.UserDO" />
+	<resultMap id="userResult" class="user">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="userId" column="user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="notPush" column="not_push" jdbcType="int"
+			javaType="int" />
+		<result property="companyId" column="company_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="alipayQrUrl" column="alipay_qr_url" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="follows" column="follows" jdbcType="int"
+			javaType="int" nullValue="0" />
+		<result property="fans" column="fans" jdbcType="int" javaType="int"
+			nullValue="0" />
+		<result property="isSyncAddress" column="is_sync_address"
+			jdbcType="int" javaType="int" />
+		<result property="savedMoney" column="saved_money" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="isAgreed" column="is_agreed" jdbcType="int"
+			javaType="int" />
+		<result property="certNo" column="cert_no" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="certName" column="cert_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+	</resultMap>
+
+	<sql id="userColumns">
+		select
+		id,user_id,not_push,company_id,alipay_qr_url,is_deleted,gmt_created,gmt_modified,follows,fans,is_sync_address,saved_money,is_agreed,cert_no,cert_name
+	</sql>
+
+
+	<!-- 根据userID查询用户同意协议的状态。心渡，2014-9-25 -->
+	<select id="get_agreement_status_by_userId" resultClass="int"
+		parameterClass="java.lang.Long">
+		select is_agreed from ipin_user where user_id =
+		#userId# and is_deleted = 0
+	</select>
+
+	<!-- 根据用户userID查询用户 -->
+	<select id="get_user_by_userId" resultMap="userResult"
+		parameterClass="java.lang.Long">
+		<include refid="userColumns" />
+		from ipin_user where user_id = #userId#
+	</select>
+
+	<!-- 新增用户 -->
+	<insert id="add_new_user" parameterClass="user">
+		insert into
+		ipin_user(user_id,not_push,is_deleted,gmt_created,gmt_modified,follows,fans)
+		values(#userId#,#notPush#,0,now(),now(),0,0)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<insert id="add_new_alipayQr" parameterClass="user">
+		insert into
+		ipin_user(user_id,not_push,is_deleted,gmt_created,gmt_modified,alipay_qr_url)
+		values(#userId#,0,0,now(),now(),#alipayQrUrl#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<insert id="add_new_company" parameterClass="user">
+		insert into
+		ipin_user(user_id,not_push,is_deleted,gmt_created,gmt_modified,company_id)
+		values(#userId#,0,0,now(),now(),#companyId#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新用户信息 -->
+	<update id="update_user" parameterClass="user">
+		update ipin_user set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="notPush" prepend=",">
+			not_push =
+			#notPush#
+		</isNotNull>
+		<isNotNull property="companyId" prepend=",">
+			company_id =
+			#companyId#
+		</isNotNull>
+		<isNotNull property="alipayQrUrl" prepend=",">
+			alipay_qr_url =
+			#alipayQrUrl#
+		</isNotNull>
+		<isNotNull property="follows" prepend=",">
+			follows = #follows#
+		</isNotNull>
+		<isNotNull property="fans" prepend=",">
+			fans = #fans#
+		</isNotNull>
+		<isNotNull property="isSyncAddress" prepend=",">
+			is_sync_address
+			= #isSyncAddress#
+		</isNotNull>
+		<isNotNull property="savedMoney" prepend=",">
+			saved_money
+			=
+			#savedMoney#
+		</isNotNull>
+		<isNotNull property="isAgreed" prepend=",">
+			is_agreed
+			=
+			#isAgreed#
+		</isNotNull>
+		<isNotNull property="certNo" prepend=",">
+			cert_no
+			=
+			#certNo#
+		</isNotNull>
+		<isNotNull property="certName" prepend=",">
+			cert_name
+			=
+			#certName#
+		</isNotNull>
+		where user_id = #userId#
+	</update>
+</sqlMap>

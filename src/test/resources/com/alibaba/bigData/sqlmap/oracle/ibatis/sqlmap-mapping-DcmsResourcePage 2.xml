@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsResourcePage" > 
+  <typeAlias alias="dcmsResourcePageDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsResourcePageDO" />
+
+  <sql id="dcmsResourcePage_do_select" >
+	  select id as id,
+			gmt_create as gmtCreate,
+			gmt_modified as gmtModified,
+			creator as creator,
+			modifier as modifier,
+			place_id as placeId,
+			place_type as placeType,
+			resource_id as resourceId FROM dcms_resource_page t 
+  </sql>
+
+  <sql id="dcmsResourcePage_doQueryParams" >
+    <dynamic prepend=" where " >
+   		<isNotEmpty property="id" prepend="and">
+			id=#id#
+		</isNotEmpty>
+		<isNotEmpty property="placeId" prepend="and">
+			place_id=#placeId#
+		</isNotEmpty>
+		<isNotEmpty property="placeType" prepend="and">
+			place_type = #placeType#
+		</isNotEmpty>
+		<isNotEmpty property="resourceId" prepend="and">
+			resource_id=#resourceId#
+		</isNotEmpty> 
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsResourcePageDO" > 
+  	insert into dcms_resource_page(gmt_create,gmt_modified,creator,modifier,place_id,place_type,resource_id)
+		values(now(),now(),#creator#,#modifier#,#placeId#,#placeType#,#resourceId#) 
+        <selectKey resultClass="long" type="post" keyProperty="id">
+			select last_insert_id() as id
+		</selectKey>
+  </insert>
+
+  <update id="update" parameterClass="dcmsResourcePageDO" >
+    UPDATE dcms_resource_page set GMT_MODIFIED = now() 
+    <dynamic prepend="" >
+      <isNotEmpty property="modifier" prepend="," > 
+        modifier = #modifier# 
+      </isNotEmpty>
+      <isNotEmpty property="placeId" prepend="," > 
+        place_id = #placeId# 
+      </isNotEmpty>
+      <isNotEmpty property="placeType" prepend="," > 
+        place_type = #placeType# 
+      </isNotEmpty>
+      <isNotEmpty property="resourceId" prepend="," > 
+        resource_id = #resourceId# 
+      </isNotEmpty>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultClass="dcmsResourcePageDO" >
+    <include refid="dcmsResourcePage_do_select" />
+    <![CDATA[
+      WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RESOURCE_PAGE WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <delete id="deleteByPlace" parameterClass="java.util.Map" >
+    <![CDATA[
+     DELETE FROM DCMS_RESOURCE_PAGE WHERE place_id = #placeId# and place_type = #placeType# 
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsResourcePageDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(1) FROM DCMS_RESOURCE_PAGE t 
+    <include refid="dcmsResourcePage_doQueryParams" /> 
+  </select>
+
+  <select id="findListByDO" resultClass="dcmsResourcePageDO" parameterClass="dcmsResourcePageDO" > 
+    <include refid="dcmsResourcePage_do_select" /> 
+    <include refid="dcmsResourcePage_doQueryParams" />
+  </select>
+  
+  <select id="findListByPlaceIds" resultClass="dcmsResourcePageDO" parameterClass="java.util.Map" > 
+    <include refid="dcmsResourcePage_do_select" /> 
+    <dynamic prepend="WHERE" >
+      <isNotEmpty property="placeIds" prepend="AND" >
+         place_id in
+			<iterate property="placeIds" open="(" close=")" conjunction=",">
+				#placeIds[]#
+			</iterate>
+	  </isNotEmpty>
+      <isNotEmpty property="placeType" prepend="AND" > 
+        place_type = #placeType# 
+      </isNotEmpty>
+    </dynamic>
+  </select>
+  
+</sqlMap>

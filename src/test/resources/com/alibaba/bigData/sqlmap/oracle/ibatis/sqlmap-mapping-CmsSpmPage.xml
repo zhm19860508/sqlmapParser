@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms.spmpage">
+	<typeAlias alias="spmPage" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.CmsSpmPage"/>
+	<resultMap id="spmPageResult" class="spmPage">		
+		<result property="id"                 column="ID" />
+		<result property="gmtCreate"          column="GMT_CREATE" />
+        <result property="gmtModified"   	  column="GMT_MODIFIED" />
+        <result property="spmb"               column="SPMB" />
+        <result property="pageId"             column="PAGE_ID" />
+	</resultMap>
+	
+	<insert id="insertSpmPage" parameterClass="spmPage">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_SPM_PAGE.NEXTVAL AS ID FROM DUAL
+		</selectKey>	
+        <![CDATA[
+            insert into CMS_SPM_PAGE
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , SPMB  , PAGE_ID )
+            values
+              (sysdate  , sysdate  , #id#  , #spmb#  , #pageId# )
+        ]]>
+	</insert>	
+	
+   <select id="querySpmPageByPageId" parameterClass="long" resultMap="spmPageResult">
+        <![CDATA[
+            SELECT * FROM CMS_SPM_PAGE WHERE PAGE_ID = #pageId# 
+        ]]>
+    </select>
+   <select id="querySpmPageBySpmb" parameterClass="String" resultMap="spmPageResult">
+        <![CDATA[
+            SELECT * FROM CMS_SPM_PAGE WHERE spmb = #spmb# 
+        ]]>
+    </select>
+	<delete id="deleteSpmPageByPageId" parameterClass="long"><![CDATA[
+        delete from
+                CMS_SPM_PAGE
+         where
+                PAGE_ID = #pageId#
+    ]]></delete>
+</sqlMap>

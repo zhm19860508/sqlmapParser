@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.RuleOperLog">
+	
+	<resultMap id="RuleOperLog-result" class="RuleOperLog">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="ruleId"    	 javaType="java.lang.Long"       column="RULE_ID" />
+		<result property="action"        javaType="java.lang.String"     column="ACTION" />
+		<result property="operator"      javaType="java.lang.String"     column="OPERATOR" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+
+	<!-- 创建语句集 -->
+	<insert id="createRuleOperLog" parameterClass="RuleOperLog">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_RULE_OPER_LOG.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO DCMS_RULE_OPER_LOG(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        RULE_ID,
+		        ACTION,
+		        OPERATOR)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #ruleId#,
+		        #action#,
+		        #operator#)		
+		]]>		
+	</insert>
+    
+	<select id="getAllRuleOperLogs" resultMap="RuleOperLog-result">
+		SELECT  ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        RULE_ID,
+		        ACTION,
+		        OPERATOR 
+		FROM DCMS_RULE_OPER_LOG ORDER BY ID DESC
+    </select>
+    
+	<select id="countRuleOperLog" resultClass="java.lang.Integer">
+		<![CDATA[
+            SELECT count(*) FROM DCMS_RULE_OPER_LOG
+        ]]>
+	</select>
+	
+	<select id="getRuleOperLogsByRid" resultMap="RuleOperLog-result" parameterClass="java.lang.Long">
+		<![CDATA[
+		SELECT * FROM(
+		SELECT  ROW_NUMBER() OVER(ORDER BY ID DESC) as RN,
+				ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        RULE_ID,
+		        ACTION,
+		        OPERATOR
+        FROM DCMS_RULE_OPER_LOG WHERE RULE_ID = #ruleId#
+        ) WHERE RN <= 10
+		]]>
+    </select>
+</sqlMap>

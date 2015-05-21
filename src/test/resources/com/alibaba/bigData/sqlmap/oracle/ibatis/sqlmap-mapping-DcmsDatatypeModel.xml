@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsDatatypeModel" >
+
+  <typeAlias alias="dcmsDatatypeModelDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsDatatypeModelDO" />
+
+  <resultMap id="dcmsDatatypeModelDOResultMap" class="dcmsDatatypeModelDO" >
+    <result property="id" column="ID" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="code" column="CODE" />
+    <result property="pkFieldName" column="PK_FIELD_NAME" />
+    <result property="createUser" column="CREATE_USER" />
+    <result property="modifyUser" column="MODIFY_USER" />
+  </resultMap>
+
+  <sql id="dcmsDatatypeModel_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CODE, a1.PK_FIELD_NAME, a1.CREATE_USER,
+      a1.MODIFY_USER
+  </sql>
+
+  <sql id="dcmsDatatypeModel_do_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CODE, a1.PK_FIELD_NAME, a1.CREATE_USER,
+      a1.MODIFY_USER
+  </sql>
+
+  <sql id="dcmsDatatypeModel_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="code" prepend="AND" >
+        <![CDATA[
+        CODE = #code#
+        ]]>
+      </isNotNull>
+      <isNotNull property="pkFieldName" prepend="AND" >
+        <![CDATA[
+        PK_FIELD_NAME = #pkFieldName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="dcmsDatatypeModel_doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="code" prepend="AND" >
+        <![CDATA[
+        CODE = #code#
+        ]]>
+      </isNotNull>
+      <isNotNull property="pkFieldName" prepend="AND" >
+        <![CDATA[
+        PK_FIELD_NAME = #pkFieldName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsDatatypeModelDO" >
+    <selectKey resultClass="java.lang.Long" keyProperty="id">
+         SELECT SEQ_DCMS_DATATYPE_MODEL.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    INSERT INTO DCMS_DATATYPE_MODEL( ID, GMT_CREATE, GMT_MODIFIED, CODE, PK_FIELD_NAME, CREATE_USER,
+      MODIFY_USER)
+     VALUES ( #id#, #gmtCreate#, #gmtModified#, #code#, #pkFieldName#, #createUser#,
+      #modifyUser#)
+  </insert>
+
+  <update id="update" parameterClass="dcmsDatatypeModelDO" >
+    UPDATE DCMS_DATATYPE_MODEL
+    <dynamic prepend="SET" >
+      <!--
+      <isNotNull property="id" prepend="," >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      -->
+      <isNotNull property="gmtCreate" prepend="," >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="," >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="code" prepend="," >
+        <![CDATA[
+        CODE = #code#
+        ]]>
+      </isNotNull>
+      <isNotNull property="pkFieldName" prepend="," >
+        <![CDATA[
+        PK_FIELD_NAME = #pkFieldName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="," >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="," >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="dcmsDatatypeModelDOResultMap" >
+     SELECT
+    <include refid="dcmsDatatypeModel_do_columns" />
+    <![CDATA[
+     FROM DCMS_DATATYPE_MODEL a1 WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_DATATYPE_MODEL WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsDatatypeModelDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM DCMS_DATATYPE_MODEL
+    <include refid="dcmsDatatypeModel_doQueryParams" />
+  </select>
+
+  <select id="findListByDO" resultMap="dcmsDatatypeModelDOResultMap" parameterClass="dcmsDatatypeModelDO" >
+     SELECT
+    <include refid="dcmsDatatypeModel_do_columns" />
+     FROM DCMS_DATATYPE_MODEL a1
+    <include refid="dcmsDatatypeModel_doQueryParams" />
+  </select>
+</sqlMap>

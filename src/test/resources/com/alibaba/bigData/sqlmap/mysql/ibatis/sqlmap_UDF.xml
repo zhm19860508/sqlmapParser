@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="UDF">
+	<typeAlias alias="UDFDO"
+		type="com.alibaba.bigData.dal.entity.UDFDO" />
+
+	<resultMap class="UDFDO" id="UDFDOResult">
+		<result column="id" property="id" />
+		<result column="udf_name" property="udfName" />
+		<result column="desensefunc_name" property="desensefuncName" />
+		<result column="class_name" property="className" />
+		<result column="udf_description" property="udfDesc" />
+		<result column="need_column_name" property="needcolumnName" />
+		<result column="need_param" property="needParam" />
+		<result column="udf_param" property="udfParam" />
+		<result column="param_description" property="udfParamDesc" />
+		<result column="udf_param_type" property="udfParamType" />
+		<result column="need_seed" property="needSeed" />
+		<result column="udf_example" property="udfExample" />
+		<result column="is_delete" property="isDelete"/>
+	</resultMap>
+
+	<sql id="UDFColumns">
+		select a.id,a.udf_name,a.desensefunc_name,a.class_name,a.udf_description,a.need_column_name,a.need_param,a.udf_param,a.param_description,a.udf_param_type,a.need_seed,a.udf_example,a.is_delete
+	</sql>
+
+	<sql id="UDFFrom">
+		from bigData_udf a
+	</sql>
+
+	<sql id="UDFJoin">
+        1 = 1
+	</sql>
+
+	<sql id="UDFQuery">
+        where
+		<include refid="UDFJoin" />
+		<isNotNull property="udfName" prepend="AND">
+            a.udf_name=#udfName#
+		</isNotNull>
+		<isNotNull property="desensefuncName" prepend="AND">
+            a.desensefunc_name=#desensefuncName#
+		</isNotNull>
+		<isNotNull property="className" prepend="AND">
+            a.class_name=#className#
+		</isNotNull>
+		<isNotNull property="udfDesc" prepend="AND">
+            a.udf_description=#udfDesc#
+		</isNotNull>
+		<isNotNull property="needcolumnName" prepend="AND">
+            a.need_column_name=#needcolumnName#
+		</isNotNull>
+		<isNotNull property="needParam" prepend="AND">
+            a.need_param=#needParam#
+		</isNotNull>
+		<isNotNull property="udfParam" prepend="AND">
+            a.udf_param=#udfParam#
+		</isNotNull>
+		<isNotNull property="udfParamDesc" prepend="AND">
+            a.param_description=#udfParamDesc#
+		</isNotNull>
+		<isNotNull property="udfParamType" prepend="AND">
+            a.udf_param_type=#udfParamType#
+		</isNotNull>
+		<isNotNull property="needSeed" prepend="AND">
+            a.need_seed=#needSeed#
+		</isNotNull>
+		<isNotNull property="udfExample" prepend="AND">
+            a.udf_example=#udfExample#
+		</isNotNull>
+		<isNotNull property="isDelete" prepend="AND">
+            a.is_delete=#isDelete#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addUDF" parameterClass="UDFDO">
+		insert into bigData_udf
+		<dynamic prepend="(">
+			<isNotNull property="udfName" prepend="AND">
+                udf_name
+    		</isNotNull>
+    		<isNotNull prepend="," property="desensefuncName">
+				desensefunc_name
+			</isNotNull>
+			<isNotNull prepend="," property="className">
+				class_name
+			</isNotNull>
+			<isNotNull prepend="," property="udfDesc">
+				udf_description
+			</isNotNull>
+			<isNotNull prepend="," property="udfParam">
+				udf_param
+			</isNotNull>
+			<isNotNull prepend="," property="needcolumnName">
+				need_column_name
+			</isNotNull>
+			<isNotNull prepend="," property="needParam">
+				need_param
+			</isNotNull>
+			<isNotNull prepend="," property="udfParamDesc">
+				param_description
+			</isNotNull>
+			<isNotNull prepend="," property="udfParamType">
+				udf_param_type
+			</isNotNull>
+			<isNotNull prepend="," property="needSeed">
+				need_seed
+			</isNotNull>
+			<isNotNull prepend="," property="udfExample">
+				udf_example
+			</isNotNull>
+			<isNotNull prepend="," property="isDelete">
+				is_delete
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="udfName">
+                #udfName#
+    		</isNotNull>
+    		<isNotNull prepend="," property="desensefuncName">
+                #desensefuncName#
+    		</isNotNull>
+    		<isNotNull prepend="," property="className">
+                #className#
+    		</isNotNull>
+			<isNotNull prepend="," property="udfDesc">
+				#udfDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="needcolumnName">
+				#needcolumnName#
+			</isNotNull>
+			<isNotNull prepend="," property="needParam">
+				#needParam#
+			</isNotNull>
+			<isNotNull prepend="," property="udfParam">
+				#udfParam#
+			</isNotNull>
+			<isNotNull prepend="," property="udfParamDesc">
+				#udfParamDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="udfParamType">
+				#udfParamType#
+			</isNotNull>
+			<isNotNull prepend="," property="needSeed">
+				#needSeed#
+			</isNotNull>
+			<isNotNull prepend="," property="udfExample">
+				#udfExample#
+			</isNotNull>
+			<isNotNull prepend="," property="isDelete">
+				#isDelete#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryUDFById" resultMap="UDFDOResult">
+		<include refid="UDFColumns" />
+		<include refid="UDFFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryUDF" resultMap="UDFDOResult">
+		<include refid="UDFColumns" />
+		<include refid="UDFFrom" />
+	</select>
+
+	<select id="queryUDFByType" resultMap="UDFDOResult">
+		SELECT DISTINCT a.* from bigData_udf a ,bigData_udf_type b
+			where a.id = b.udf_id
+			and b.udf_type= #udfType#
+			and a.is_delete = 0
+			and (a.udf_param_type like '%$fieldType$%'
+			OR a.udf_param_type = 'all')
+			order by b.is_default desc
+	</select>
+
+	<select id="queryUDFByUDFName" resultMap="UDFDOResult">
+		<include refid="UDFColumns" />
+		<include refid="UDFFrom" />
+		where a.udf_name=#UDFName#
+	</select>
+
+	<update id="updateUDF" parameterClass="UDFDO">
+		update bigData_udf
+		<dynamic prepend="set">
+		<isNotNull property="udfName" prepend=",">
+            udf_name=#udfName#
+		</isNotNull>
+		<isNotNull property="desensefuncName" prepend=",">
+            desensefunc_name=#desensefuncName#
+		</isNotNull>
+		<isNotNull property="className" prepend=",">
+            class_name=#className#
+		</isNotNull>
+		<isNotNull property="udfDesc" prepend=",">
+            udf_description=#udfDesc#
+		</isNotNull>
+		<isNotNull property="needcolumnName" prepend=",">
+            need_column_name=#needcolumnName#
+		</isNotNull>
+		<isNotNull property="needParam" prepend=",">
+            need_param=#needParam#
+		</isNotNull>
+		<isNotNull property="udfParam" prepend=",">
+            udf_param=#udfParam#
+		</isNotNull>
+		<isNotNull property="udfParamDesc" prepend=",">
+            param_description=#udfParamDesc#
+		</isNotNull>
+		<isNotNull property="udfParamType" prepend=",">
+            udf_param_type=#udfParamType#
+		</isNotNull>
+		<isNotNull property="udfExample" prepend=",">
+            udf_example=#udfExample#
+		</isNotNull>
+		<isNotNull property="needSeed" prepend=",">
+            need_seed=#needSeed#
+		</isNotNull>
+		<isNotNull property="isDelete" prepend=",">
+            is_delete=#isDelete#
+		</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+</sqlMap>

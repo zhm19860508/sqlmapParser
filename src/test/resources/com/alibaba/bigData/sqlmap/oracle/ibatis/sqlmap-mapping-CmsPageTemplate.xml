@@ -1,0 +1,340 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsPageTemplate">
+	<resultMap class="CmsPageTemplate" id="CmsPageTemplate-result">
+		<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="startId" javaType="java.lang.Long" column="START_ID" />
+		<result property="endId" javaType="java.lang.Long" column="END_ID" />
+		<result property="startType" javaType="java.lang.Boolean"
+			column="START_TYPE" />
+		<result property="startCode" javaType="java.lang.String"
+			column="START_CODE" />
+		<result property="endCode" javaType="java.lang.String" column="END_CODE" />
+	</resultMap>
+
+	<resultMap class="CmsPage" id="CmsPage-result">
+		<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="catalogId" javaType="java.lang.Long" column="CATALOG_ID" />
+		<result property="title" javaType="java.lang.String" column="TITLE" />
+		<result property="keywords" javaType="java.lang.String" column="KEYWORDS" />
+		<result property="header" javaType="java.lang.String" column="HEADER" />
+		<result property="style" javaType="java.lang.String" column="STYLE" />
+		<result property="description" javaType="java.lang.String"
+			column="DESCRIPTION" />
+		<result property="status" javaType="java.lang.String" column="STATUS" />
+		<result property="specificUrl" javaType="java.lang.String"
+			column="SPECIFIC_URL" />
+		<result property="domainPathId" javaType="java.lang.Long"
+			column="DOMAIN_PATH_ID" />
+		<result property="footer" javaType="java.lang.String" column="FOOTER" />
+		<result property="intervalTime" javaType="java.lang.String"
+			column="INTERVAL_TIME" />
+		<result property="pageType" javaType="java.lang.String" column="PAGE_TYPE" />
+		<result property="tag" javaType="java.lang.String" column="TAG" />
+		<result property="applyDevice" column="APPLY_DEVICE" javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="MS-INSERT-CMSPAGETEMPLATE" parameterClass="CmsPageTemplate">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_PAGE_TEMPLATE.NEXTVAL AS id FROM DUAL
+		</selectKey>
+		<![CDATA[
+            insert into CMS_PAGE_TEMPLATE
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , START_ID  , END_ID  , START_TYPE	,	START_CODE	,	END_CODE)
+            values
+              (SYSDATE  , SYSDATE  , #id#  , #startId#  , #endId#  , #startType#  , #startCode# ,#endCode#)
+        ]]>
+	</insert>
+
+	<select id="MS-SELECT-TEMPLATE-BY-PAGE" parameterClass="java.lang.Long"
+		resultMap="CmsPageTemplate-result">
+    	<![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_TEMPLATE WHERE START_ID = #pageId# AND START_TYPE = 0 ORDER BY GMT_MODIFIED, GMT_CREATE
+        ]]>
+	</select>
+
+	<select id="MS-SELECT-PAGE-BY-TEMPLATE" parameterClass="java.lang.Long"
+		resultMap="CmsPageTemplate-result">
+    	<![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_TEMPLATE WHERE END_ID = #templateId# AND START_TYPE = 0 ORDER BY GMT_MODIFIED, GMT_CREATE
+        ]]>
+	</select>
+
+	<select id="MS-SELECT-PAGE-BY-TEMPLATE-CASCADE" parameterClass="java.lang.Long"
+		resultMap="CmsPageTemplate-result">
+    	<![CDATA[
+			SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM
+			CMS_PAGE_TEMPLATE WHERE START_TYPE = 0 AND END_ID IN
+			(
+				SELECT DISTINCT START_ID FROM CMS_PAGE_TEMPLATE START WITH END_ID = #templateId# CONNECT BY NOCYCLE PRIOR START_ID = END_ID 
+			)
+			ORDER BY GMT_MODIFIED DESC, ID DESC           
+        ]]>
+	</select>
+	
+<!-- 涉及数据库量级：160000
+	 每日调用量级：10000 -->
+
+	<select id="MS-PAGINATE-SELECT-PAGE-BY-TEMPLATE-CASCADE"
+		parameterClass="java.util.Map" resultMap="CmsPage-result">
+    	<![CDATA[
+    	SELECT * FROM
+      	(
+        	SELECT GMT_CREATE, GMT_MODIFIED, ID, CATALOG_ID, TITLE, KEYWORDS, HEADER, STYLE, DESCRIPTION, 
+        	STATUS, SPECIFIC_URL, DOMAIN_PATH_ID, FOOTER, INTERVAL_TIME, PAGE_TYPE, TAG, APPLY_DEVICE , ROWNUM RN FROM 
+        	(
+        		SELECT B.GMT_CREATE, B.GMT_MODIFIED,B.ID, B.CATALOG_ID, B.TITLE, B.KEYWORDS, B.HEADER, B.STYLE, B.DESCRIPTION, 
+          		B.STATUS, B.SPECIFIC_URL, B.DOMAIN_PATH_ID, B.FOOTER, B.INTERVAL_TIME, B.PAGE_TYPE, B.TAG,B.APPLY_DEVICE FROM
+        		CMS_PAGE B WHERE B.ID IN
+          		(
+            		select start_id from (SELECT START_ID,start_code from CMS_PAGE_TEMPLATE T START WITH T.END_ID = #templateId# CONNECT BY NOCYCLE PRIOR START_ID = END_ID) tb where tb.start_code is null            		
+          		)
+		]]>
+		<isGreaterThan prepend="AND" property="catalogId"
+			compareValue="0">
+			B.CATALOG_ID = #catalogId#
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="specificUrl">
+			B.SPECIFIC_URL like
+			'%'||#specificUrl#||'%'
+		</isNotEmpty>
+
+		<isNotEmpty prepend="AND" property="title">
+			instr(B.title, #title#)>0
+		</isNotEmpty>
+		<isGreaterThan prepend="AND" property="domainId"
+			compareValue="0">
+			B.DOMAIN_PATH_ID in (SELECT ID FROM CMS_DOMAIN_PATH WHERE DOMAIN_ID=#domainId#)
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="pageType">
+			B.PAGE_TYPE = #pageType#
+		</isNotEmpty>
+		<isNotEmpty property="applyDevice" prepend="">
+			<isNotEqual prepend="and" property="applyDevice"
+				compareValue="all">
+				(B.APPLY_DEVICE = #applyDevice# or B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isNotEqual>
+			<isEqual prepend="and" property="applyDevice" compareValue="all">
+				(B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isEqual>
+		</isNotEmpty>
+				
+		<![CDATA[
+				ORDER BY B.ID DESC
+			)
+			WHERE ROWNUM <= #offset# + #length#
+		)
+		WHERE RN > #offset#	           
+        ]]>
+	</select>
+	
+<!-- 涉及数据库量级：160000
+	 每日调用量级：10000 -->
+
+	<select id="MS-COUNT-PAGE-BY-TEMPLATE-CASCADE" parameterClass="java.util.Map"
+		resultClass="java.lang.Long">
+    	<![CDATA[
+			SELECT COUNT(*) FROM
+      			CMS_PAGE B WHERE B.ID IN 
+      			(
+        			SELECT START_ID FROM CMS_PAGE_TEMPLATE T START WITH T.END_ID = #templateId# CONNECT BY NOCYCLE PRIOR START_ID = END_ID 
+      			)
+        ]]>
+		<isGreaterThan prepend="AND" property="catalogId"
+			compareValue="0">
+			B.CATALOG_ID = #catalogId#
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="specificUrl">
+			B.SPECIFIC_URL like
+			'%'||#specificUrl#||'%'
+		</isNotEmpty>
+
+		<isNotEmpty prepend="AND" property="title">
+			instr(B.title, #title#)>0
+		</isNotEmpty>
+		<isGreaterThan prepend="AND" property="domainId"
+			compareValue="0">
+			B.DOMAIN_PATH_ID in (SELECT ID FROM CMS_DOMAIN_PATH WHERE DOMAIN_ID=#domainId#)
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="pageType">
+			B.PAGE_TYPE = #pageType#
+		</isNotEmpty>
+		<isNotEmpty property="applyDevice" prepend="">
+			<isNotEqual prepend="and" property="applyDevice"
+				compareValue="all">
+				(B.APPLY_DEVICE = #applyDevice# or B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isNotEqual>
+			<isEqual prepend="and" property="applyDevice" compareValue="all">
+				(B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isEqual>
+		</isNotEmpty>
+
+	</select>
+
+	<select id="MS-COUNT-PAGE-BY-TEMPLATE" parameterClass="java.util.Map"
+		resultClass="java.lang.Long">
+    	<![CDATA[
+			SELECT COUNT(*) FROM CMS_PAGE_TEMPLATE A, CMS_PAGE B WHERE A.END_ID = #templateId# AND START_TYPE = 0 AND A.START_ID = B.ID
+		]]>
+		<isGreaterThan prepend="AND" property="catalogId"
+			compareValue="0">
+			B.CATALOG_ID = #catalogId#
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="specificUrl">
+			B.SPECIFIC_URL like
+			'%'||#specificUrl#||'%'
+		</isNotEmpty>
+
+		<isNotEmpty prepend="AND" property="title">
+			instr(B.title, #title#)>0
+		</isNotEmpty>
+		<isGreaterThan prepend="AND" property="domainId"
+			compareValue="0">
+			B.DOMAIN_PATH_ID in (SELECT ID FROM CMS_DOMAIN_PATH WHERE DOMAIN_ID=#domainId#)
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="pageType">
+			B.PAGE_TYPE = #pageType#
+		</isNotEmpty>
+		<isNotEmpty property="applyDevice" prepend="">
+			<isNotEqual prepend="and" property="applyDevice"
+				compareValue="all">
+				(B.APPLY_DEVICE = #applyDevice# or B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isNotEqual>
+			<isEqual prepend="and" property="applyDevice" compareValue="all">
+				(B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isEqual>
+		</isNotEmpty>
+	</select>
+
+	<select id="MS-PAGINATE-SELECT-PAGE-BY-TEMPLATE" parameterClass="java.util.Map"
+		resultMap="CmsPage-result">
+    	<![CDATA[
+			SELECT * FROM
+    		(
+    			SELECT GMT_CREATE, GMT_MODIFIED, ID, CATALOG_ID, TITLE, KEYWORDS, HEADER, STYLE, DESCRIPTION, 
+    			STATUS, SPECIFIC_URL, DOMAIN_PATH_ID, FOOTER, INTERVAL_TIME, PAGE_TYPE, TAG, APPLY_DEVICE , ROWNUM RN FROM
+    			(
+    				SELECT B.GMT_CREATE, B.GMT_MODIFIED, B.ID, B.CATALOG_ID, B.TITLE, B.KEYWORDS, B.HEADER, B.STYLE, B.DESCRIPTION, 
+    				B.STATUS, B.SPECIFIC_URL, B.DOMAIN_PATH_ID, B.FOOTER, B.INTERVAL_TIME, B.PAGE_TYPE, B.TAG,B.APPLY_DEVICE
+    				FROM CMS_PAGE_TEMPLATE A, CMS_PAGE B WHERE A.END_ID = #templateId# AND A.START_TYPE = 0 AND A.START_ID = B.ID 
+    	]]>
+		<isGreaterThan prepend="AND" property="catalogId"
+			compareValue="0">
+			B.CATALOG_ID = #catalogId#
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="specificUrl">
+			B.SPECIFIC_URL like '%'||#specificUrl#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="title">
+			instr(B.title, #title#)>0
+		</isNotEmpty>
+		<isGreaterThan prepend="AND" property="domainId"
+			compareValue="0">
+			B.DOMAIN_PATH_ID in (SELECT ID FROM CMS_DOMAIN_PATH WHERE DOMAIN_ID=#domainId#)
+		</isGreaterThan>
+		<isNotEmpty prepend="AND" property="pageType">
+			B.PAGE_TYPE = #pageType#
+		</isNotEmpty>
+		<isNotEmpty property="applyDevice" prepend="">
+			<isNotEqual prepend="and" property="applyDevice"
+				compareValue="all">
+				(B.APPLY_DEVICE = #applyDevice# or B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isNotEqual>
+			<isEqual prepend="and" property="applyDevice" compareValue="all">
+				(B.APPLY_DEVICE ='all' or B.APPLY_DEVICE is null)
+			</isEqual>
+		</isNotEmpty>
+    	<![CDATA[
+    			ORDER BY B.ID DESC		
+    			)		
+				WHERE ROWNUM <= #offset# + #length#
+			)
+			WHERE RN > #offset#	             
+        ]]>
+	</select>
+
+	<select id="MS-SELECT-TEMPLATE-BY-TEMPLATE-CASCADE"
+		parameterClass="java.util.Map" resultMap="CmsPageTemplate-result">
+    <![CDATA[
+            SELECT distinct GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_TEMPLATE START WITH
+            ]]>
+		<dynamic prepend="">
+			<isEqual property="flag" compareValue="true">
+				START_ID =
+			</isEqual>
+			<isEqual property="flag" compareValue="false">
+				END_ID =
+			</isEqual>
+			#templateId# AND START_TYPE = 1 CONNECT BY NOCYCLE PRIOR
+			<isEqual property="flag" compareValue="true">
+				END_ID = START_ID
+			</isEqual>
+			<isEqual property="flag" compareValue="false">
+				START_ID = END_ID
+			</isEqual>
+			AND START_TYPE = 1
+		</dynamic>
+            <![CDATA[
+            ORDER BY GMT_MODIFIED DESC, ID DESC
+            ]]>
+	</select>
+
+	<select id="MS-SELECT-CYCLE-TEMPLATE-BY-TEMPLATE-CASCADE"
+		parameterClass="java.lang.Long" resultMap="CmsPageTemplate-result">
+    <![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM
+			(
+				SELECT distinct GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE ,
+				 CONNECT_BY_ISCYCLE CYCLED FROM CMS_PAGE_TEMPLATE START WITH START_ID = #templateId#  AND START_TYPE = 1 CONNECT BY NOCYCLE PRIOR END_ID = START_ID AND START_TYPE = 1 ORDER BY GMT_MODIFIED DESC, ID DESC )
+            		WHERE CYCLED = 1
+            ]]>
+	</select>
+
+	<select id="MS-SELECT-TEMPLATE-BY-TEMPLATE" parameterClass="java.util.Map"
+		resultMap="CmsPageTemplate-result">
+     <![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID,START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_TEMPLATE WHERE START_TYPE = 1 AND
+             ]]>
+		<dynamic prepend="">
+			<isEqual property="flag" compareValue="true">
+				START_ID =
+			</isEqual>
+			<isEqual property="flag" compareValue="false">
+				END_ID =
+			</isEqual>
+			#templateId#
+		</dynamic>
+	<![CDATA[            
+            ORDER BY GMT_MODIFIED DESC, ID DESC
+            ]]>
+	</select>
+
+	<delete id="MS-DELETE-BY-ID" parameterClass="java.lang.Long">         
+		<![CDATA[
+            DELETE FROM CMS_PAGE_TEMPLATE WHERE ID = #Id#
+        ]]>
+	</delete>
+
+	<delete id="MS-DELETE-TEMPLATE-BY-STARTID" parameterClass="java.lang.Long">         
+		<![CDATA[
+            DELETE FROM CMS_PAGE_TEMPLATE WHERE START_ID = #Id# AND START_TYPE = 1
+        ]]>
+	</delete>
+
+	<select id="MS-SELECT-ALL-TEMPLATE-STARTID" resultClass="java.lang.Long">
+    <![CDATA[
+            SELECT DISTINCT(START_ID) FROM	CMS_PAGE_TEMPLATE WHERE START_TYPE = 1
+            ]]>
+	</select>
+
+</sqlMap>

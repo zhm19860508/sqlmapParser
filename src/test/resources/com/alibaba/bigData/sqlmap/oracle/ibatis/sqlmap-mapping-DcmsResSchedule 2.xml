@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsResSchedule" >
+
+  <typeAlias alias="dcmsResScheduleDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsResScheduleDO" />
+
+  <resultMap id="dcmsResScheduleDOResultMap" class="dcmsResScheduleDO" >
+    <result property="id" column="ID" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="resPosId" column="RES_POS_ID" />
+    <result property="startDate" column="START_DATE" />
+    <result property="createUser" column="CREATE_USER" />
+    <result property="modifyUser" column="MODIFY_USER" />
+    <result property="status" column="STATUS" />
+    <result property="isDeleted" column="IS_DELETED" />
+    <result property="note" column="NOTE" />
+    <result property="datasourceId" column="DATASOURCE_ID" />
+    <result property="type" column="TYPE" />
+    <result property="canMerge" column="CAN_MERGE" />
+    <result property="siteId" column="SITE_ID" />
+    <result property="invokeName" column="INVOKE_NAME" />
+  </resultMap>
+
+  <sql id="dcmsResSchedule_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.RES_POS_ID, a1.START_DATE,
+      a1.CREATE_USER, a1.MODIFY_USER, a1.STATUS, a1.IS_DELETED,a1.NOTE, a1.DATASOURCE_ID, a1.TYPE, a1.CAN_MERGE, a1.SITE_ID,
+      a1.INVOKE_NAME
+  </sql>
+
+  <sql id="dcmsResSchedule_do_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.RES_POS_ID, a1.START_DATE,
+      a1.CREATE_USER, a1.MODIFY_USER, a1.STATUS, a1.IS_DELETED,
+      a1.NOTE, a1.DATASOURCE_ID, a1.TYPE, a1.CAN_MERGE, a1.SITE_ID,
+      a1.INVOKE_NAME
+  </sql>
+
+  <sql id="dcmsResSchedule_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="resPosId" prepend="AND" >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="startDate" prepend="AND" >
+        <![CDATA[
+        START_DATE = #startDate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="AND" >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="dcmsResSchedule_doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="resPosId" prepend="AND" >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="startDate" prepend="AND" >
+        <![CDATA[
+        START_DATE = #startDate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="AND" >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="AND" >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="dcmsResSchedule_doQueryParams4Date" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="resPosId" prepend="AND" >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="startDate" prepend="AND" >
+        <![CDATA[
+        START_DATE <= SYSDATE
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="AND" >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="AND" >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="siteId" prepend="AND" >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="AND" >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsResScheduleDO" >
+    <selectKey resultClass="java.lang.Long" keyProperty="id">
+         SELECT SEQ_DCMS_RES_SCHEDULE.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    INSERT INTO DCMS_RES_SCHEDULE( ID, GMT_CREATE, GMT_MODIFIED, RES_POS_ID, START_DATE,
+      CREATE_USER, MODIFY_USER, STATUS, IS_DELETED,
+      NOTE, DATASOURCE_ID, TYPE, CAN_MERGE, SITE_ID,INVOKE_NAME)
+     VALUES ( #id#, #gmtCreate#, #gmtModified#, #resPosId#, #startDate#,
+      #createUser#, #modifyUser#, #status#, #isDeleted#,
+      #note#, #datasourceId#, #type#, #canMerge#, #siteId#,#invokeName#)
+  </insert>
+
+  <update id="update" parameterClass="dcmsResScheduleDO" >
+    UPDATE DCMS_RES_SCHEDULE set GMT_MODIFIED = sysdate
+    <dynamic prepend="" >
+      <isNotNull property="resPosId" prepend="," >
+        <![CDATA[
+        RES_POS_ID = #resPosId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="startDate" prepend="," >
+        <![CDATA[
+        START_DATE = #startDate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="," >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="," >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="isDeleted" prepend="," >
+        <![CDATA[
+        IS_DELETED = #isDeleted#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="," >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+      <isNotNull property="datasourceId" prepend="," >
+        <![CDATA[
+        DATASOURCE_ID = #datasourceId#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="," >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <!--
+      <isNotNull property="siteId" prepend="," >
+        <![CDATA[
+        SITE_ID = #siteId#
+        ]]>
+      </isNotNull>
+      -->
+      <isNotNull property="canMerge" prepend="," >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="," >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="dcmsResScheduleDOResultMap" >
+     SELECT
+    <include refid="dcmsResSchedule_do_columns" />
+    <![CDATA[
+     FROM DCMS_RES_SCHEDULE a1 WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RES_SCHEDULE WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsResScheduleDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM DCMS_RES_SCHEDULE
+    <include refid="dcmsResSchedule_doQueryParams" />
+  </select>
+
+  <select id="findListByDO" resultMap="dcmsResScheduleDOResultMap" parameterClass="dcmsResScheduleDO" >
+     SELECT
+    <include refid="dcmsResSchedule_do_columns" />
+     FROM DCMS_RES_SCHEDULE a1
+    <include refid="dcmsResSchedule_doQueryParams" />
+   ORDER BY START_DATE ASC
+  </select>
+
+  <select id="findListByDO4Date" resultMap="dcmsResScheduleDOResultMap" parameterClass="dcmsResScheduleDO" >
+     SELECT
+    <include refid="dcmsResSchedule_do_columns" />
+     FROM DCMS_RES_SCHEDULE a1
+    <include refid="dcmsResSchedule_doQueryParams4Date" />
+     ORDER BY START_DATE DESC
+  </select>
+</sqlMap>

@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRsc">
+
+	<resultMap class="CmsRsc" id="CmsRsc-result">
+		<result property="id" 			javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_MODIFIED" />
+		<result property="relaId" 		javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="RELA_ID" />
+		<result property="rscType" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="RSC_TYPE" />
+		<result property="code" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="CODE" />
+	</resultMap>
+
+
+
+	<insert id="MS_INSERT_CMS_RSC" parameterClass="CmsRsc">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_RSC.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_RSC
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  RELA_ID  , RSC_TYPE , CODE )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #relaId#  , #rscType# , #code#)
+        ]]>
+	</insert>
+
+	<select id="MS_SELECT_CMS_RSC_BY_RELA_ID" parameterClass="java.util.Map"
+		resultMap="CmsRsc-result">
+        <![CDATA[
+            SELECT * FROM CMS_RSC WHERE RELA_ID = #relaId# and RSC_TYPE = #rscType#
+        ]]>
+	</select>
+	
+	<select id="MS_QUERY_CMS_RSC_BY_CODE" parameterClass="java.util.Map"
+		resultMap="CmsRsc-result">
+        <![CDATA[
+            SELECT * FROM CMS_RSC WHERE CODE  in (
+          ]]>
+		<iterate property="codes" conjunction=",">
+						#codes[]#
+		</iterate>
+		<![CDATA[		
+					)  and RSC_TYPE = #rscType#
+        ]]>
+	</select>
+	
+	<select id="MS_SELECT_CMS_RSC_BY_IDS" parameterClass="java.util.Map"
+		resultMap="CmsRsc-result">
+        <![CDATA[
+            SELECT * FROM CMS_RSC WHERE ID  in (
+          ]]>
+		<iterate property="ids" conjunction=",">
+						#ids[]#
+		</iterate>
+		<![CDATA[		
+					)  and RSC_TYPE = #rscType#
+        ]]>
+	</select>
+
+
+	<select id="MS_SELECT_BY_IDS" parameterClass="java.util.Map"
+		resultMap="CmsRsc-result">
+         <![CDATA[
+            SELECT * FROM CMS_RSC WHERE ID  in (
+          ]]>
+		<iterate property="ids" conjunction=",">
+						#ids[]#
+		</iterate>
+		<![CDATA[		
+					)
+        ]]>
+	</select>
+	
+</sqlMap>

@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.snapshotsContent">
+	<resultMap id="SnapshotsContent-result" class="SnapshotsContent">		
+		<result property="versionId"     javaType="java.lang.Long"       column="VERSION_ID" />
+		<result property="content"       javaType="java.lang.String"     column="CONTENT" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+	<!-- 创建页面位置 -->
+	<insert id="MS_INSERT_SNAPSHOTS_CONTENT" parameterClass="SnapshotsContent">
+		<![CDATA[
+		    INSERT INTO DCMS_SNAPSHOTS_CONTENT(
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        CONTENT,	        
+		        VERSION_ID)
+		    VALUES(
+		        #gmtCreate#,
+		        #gmtCreate#,
+		        #content#,
+		        #versionId#)		
+		]]>		 
+	</insert>
+	
+	<select id="MS_GET_SNAPSHOTS_CONTENT" parameterClass="long"  resultMap="SnapshotsContent-result" resultClass="SnapshotsContent">
+	      <![CDATA[
+	      	SELECT * FROM DCMS_SNAPSHOTS_CONTENT where version_id = #versionId#
+	      ]]> 
+	</select>		
+	
+	
+	<update id = "MS_UPDATE_SNAPSHOTS_CONTENT" parameterClass="SnapshotsContent">
+        <![CDATA[ UPDATE DCMS_SNAPSHOTS_CONTENT SET GMT_MODIFIED = #gmtModified# ]]>
+        <dynamic prepend = "">
+                <isNotNull property = "versionId" prepend = ",">VERSION_ID = #versionId#</isNotNull>
+        		<isNotNull property = "content" prepend = ",">CONTENT = #content#</isNotNull>
+        </dynamic>
+        <![CDATA[ WHERE VERSION_ID =  #versionId# ]]>
+	</update>
+	
+	<delete id="MS_DELETE_SNAPSHOTS_CONTENT" parameterClass="Collection">
+        <![CDATA[
+            DELETE from DCMS_SNAPSHOTS_CONTENT where VERSION_ID in
+        ]]>
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>          
+    </delete>   
+</sqlMap>

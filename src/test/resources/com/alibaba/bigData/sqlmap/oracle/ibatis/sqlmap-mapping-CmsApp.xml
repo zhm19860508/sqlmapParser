@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsApp">
+
+	<resultMap class="CmsApp" id="CmsApp-result">
+		<result property="id" 			javaType="java.lang.Long" column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+		<result property="retryCount" 	javaType="java.lang.Long" column="RETRY_COUNT" />
+		<result property="appKey" 		javaType="java.lang.String" column="APP_KEY" />
+		<result property="securityKey" 	javaType="java.lang.String" column="SECURITY_KEY" />
+		<result property="updateInterval" javaType="java.lang.String" column="UPDATE_INTERVAL" />
+		<result property="preHost" 		javaType="java.lang.String" column="PRE_HOST" />
+		<result property="appName" 		javaType="java.lang.String" column="APP_NAME" />
+	</resultMap>
+
+	<select id="MS_SELECT_CMS_APP_BY_APPKEY" parameterClass="java.lang.String"
+		resultMap="CmsApp-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP WHERE APP_KEY = #appKey# 
+        ]]>
+	</select>
+
+	<insert id="MS_INSERT_CMS_APP" parameterClass="CmsApp">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_APP.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_APP
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  RETRY_COUNT  , APP_KEY  , SECURITY_KEY  , UPDATE_INTERVAL  , PRE_HOST, APP_NAME )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #retryCount#  , #appKey#  , #securityKey#  , #updateInterval#  , #preHost#, #appName#)
+        ]]>
+	</insert>
+
+
+	<update id="MS_UPDATE_CMS_APP" parameterClass="CmsApp">
+        <![CDATA[
+            update
+                    CMS_APP
+            set
+                    GMT_MODIFIED = sysdate , 
+                    RETRY_COUNT = #retryCount# , 
+                    SECURITY_KEY = #securityKey# , 
+                    UPDATE_INTERVAL = #updateInterval# , 
+                    PRE_HOST = #preHost# , 
+                    APP_NAME = #appName# 
+		  where  
+                APP_KEY = #appKey#
+        ]]>
+	</update>
+
+	<delete id="MS_DELATE_CMS_APP" parameterClass="java.lang.String">
+        <![CDATA[
+            delete FROM CMS_APP WHERE APP_KEY = #appKey# 
+        ]]>
+	</delete>
+
+
+	<select id="MS_SEARCH_APP" parameterClass="java.util.Map"
+		resultMap="CmsApp-result">
+        <![CDATA[
+		    SELECT  *
+	        FROM (
+	                SELECT r.*,ROWNUM rnum FROM (
+	                	select p.* from CMS_APP p 
+	     ]]>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE
+				'%'||#appKey#||'%'
+			</isNotEmpty>
+		</dynamic>
+		  <![CDATA[
+				 order by p.GMT_MODIFIED desc
+		            )r WHERE ROWNUM <= #offset# + #length#
+	            )WHERE rnum >#offset#
+		  ]]>
+	</select>
+
+
+	<select id="MS_SEARCH_APP_COUNT" parameterClass="java.util.Map"
+		resultClass="java.lang.Long">
+         <![CDATA[
+	                	select count(*) from CMS_APP p
+	     ]]>
+		<dynamic prepend="where">
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE
+				'%'||#appKey#||'%'
+			</isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="MS_SELECT_CMS_APP_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsApp-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP WHERE ID = #id# 
+        ]]>
+	</select>
+</sqlMap>

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.department">
+	<resultMap id="Department-result" class="Department">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="depId"          javaType="java.lang.String"    column="DEP_ID" />
+		<result property="depName"       javaType="java.lang.String"     column="DEP_NAME" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<insert id="MS_INSERT_DEPARTMENT" parameterClass="Department">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_DEPARTMENT.NEXTVAL AS ID FROM DUAL
+		</selectKey>	
+        <![CDATA[
+            insert into CMS_DEPARTMENT
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , DEP_ID  , DEP_NAME  )
+            values
+              (sysdate  , sysdate  , #id#  , #depId#  , #depName#  )
+        ]]>
+	</insert>
+	
+	<select id="MS_GET_BY_DEPARTMENT_ID" resultClass="Department" parameterClass="java.lang.String"
+		resultMap="Department-result">
+        <![CDATA[ 
+        SELECT 
+               ID,
+               GMT_MODIFIED,
+               GMT_CREATE,
+               DEP_ID,
+               DEP_NAME
+        FROM 
+        	  CMS_DEPARTMENT
+        WHERE        
+              DEP_ID = #depId# 
+        ]]>
+	</select>	
+	
+	<update id="MS_UPDATE_DEPARTMENT_NAME" parameterClass="Department">
+		update CMS_DEPARTMENT set DEP_NAME = #depName#, GMT_MODIFIED = sysdate where DEP_ID=#depId#
+	</update>	
+	
+	<delete id="MS_DELETE_BY_DEPARTMENT_ID" parameterClass="java.lang.String">
+        <![CDATA[
+            delete from CMS_DEPARTMENT where DEP_ID = #depId# 
+        ]]>
+	</delete>
+</sqlMap>

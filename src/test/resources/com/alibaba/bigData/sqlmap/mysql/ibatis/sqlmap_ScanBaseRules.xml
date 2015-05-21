@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ScanBaseRules">
+	<typeAlias alias="scanBaseRules"
+		type="com.alibaba.bigData.dal.entity.HiveScanBaseRulesDO" />
+
+
+	<resultMap class="scanBaseRules" id="scanBaseRulesDO">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="status" property="status" />
+		<result column="is_default" property="isDefault" />
+		<result column="has_params" property="hasParams" />
+		<result column="is_public" property="isPublic" />
+		<result column="description" property="description" />
+		<result column="line" property="line" />
+
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+		a.id,a.name,a.status,a.is_default,a.has_params,a.is_public,a.description,a.line
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_baseRules a
+	</sql>
+
+	<select id="queryBaseRulesByIds" resultMap="scanBaseRulesDO">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		 where id in ($ids$)
+	</select>
+
+	<select id="queryAllScanBaseRules" resultMap="scanBaseRulesDO" >
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.status=1 and a.is_public=1
+	</select>
+
+  	<select id="getBaseRulesByLine" resultMap="scanBaseRulesDO" parameterClass="java.lang.String">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		 where a.status=1  and a.is_public=0 and  a.line like '%$prodline$%'
+	</select>
+
+</sqlMap>

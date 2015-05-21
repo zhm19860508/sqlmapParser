@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--==========================================================  -->
+<!--Configuration for ibatis sqlmap mapping.                    -->
+<!--==========================================================  -->
+<!--DO NOT EDIT: This is a generated file that is synchronized  -->
+<!--by meidusa eclipse ibatis plugin tool integration.          -->
+<!--Created Tue Jun 26 15:26:13 CST 2007  -->
+<!--==========================================================  -->
+<sqlMap namespace = "CMS_TASK">
+    <typeAlias alias = "TA_CMS_TASK" type = "com.alibaba.china.cmshollywood.cms.dal.dataobject.CmsTask"/>
+    <resultMap id = "RM_CMS_TASK" class = "TA_CMS_TASK">
+        <result property = "gmtCreate" column = "GMT_CREATE" jdbcType="TIMESTAMP" javaType="date"/>
+        <result property = "gmtModified" column = "GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="date"/>
+        <result property = "pageId" column = "PAGE_ID" jdbcType = "DECIMAL"/>
+        <result property = "status" column = "STATUS" jdbcType = "VARCHAR"/>
+        <result property = "timeExpression" column = "TIME_EXPRESSION" jdbcType = "VARCHAR"/>
+        <result property = "id" column = "ID" jdbcType = "DECIMAL"/>
+        <result property = "gmtPublish" column = "GMT_PUBLISH" jdbcType="TIMESTAMP" javaType="date"/>
+    </resultMap>
+	<!--publish used-->
+    <insert id = "INSERT_CMS_TASK" parameterClass = "TA_CMS_TASK">
+    	<selectKey resultClass="java.lang.Long" keyProperty="id">
+            <![CDATA[
+				select seq_cms_task.nextval from dual
+			]]>
+        </selectKey>
+        <![CDATA[
+        INSERT INTO cms_task (
+        GMT_CREATE,
+        GMT_MODIFIED,
+        PAGE_ID,
+        STATUS,
+        TIME_EXPRESSION,
+        ID,
+        GMT_PUBLISH
+        )VALUES(
+        sysdate,
+        sysdate,
+        #pageId:DECIMAL#,
+        #status:VARCHAR:NULL#,
+        #timeExpression:VARCHAR:NULL#,
+        #id:DECIMAL#,
+        #gmtPublish:TIMESTAMP#
+        )
+        ]]>
+    </insert>
+    <insert id = "INSERT_CMS_TASK2" parameterClass = "TA_CMS_TASK">
+        <![CDATA[
+        INSERT INTO cms_task (
+        GMT_CREATE,
+        GMT_MODIFIED,
+        PAGE_ID,
+        STATUS,
+        TIME_EXPRESSION,
+        ID,
+        GMT_PUBLISH
+        )VALUES(
+        #gmtCreate:TIMESTAMP#,
+        #gmtModified:TIMESTAMP#,
+        #pageId:DECIMAL#,
+        #status:VARCHAR:NULL#,
+        #timeExpression:VARCHAR:NULL#,
+        #id:DECIMAL#,
+        #gmtPublish:DATE#
+        )
+        ]]>
+    </insert>
+    <!--=====================================update=============== -->
+	<!--publish used-->
+    <update id = "UPDATE_CMS_TASK_BY_KEY">
+        <![CDATA[
+        UPDATE cms_task SET  gmt_modified = sysdate
+        ]]>
+        <dynamic prepend = "">
+            <isPropertyAvailable property = "pageId" prepend = ",">
+                <isNotNull property = "pageId">PAGE_ID = #pageId#</isNotNull>
+                <isNull property = "pageId">PAGE_ID = null</isNull>
+            </isPropertyAvailable>
+            <isPropertyAvailable property = "status" prepend = ",">
+                <isNotNull property = "status">STATUS = #status#</isNotNull>
+                <isNull property = "status">STATUS = null</isNull>
+            </isPropertyAvailable>
+            <isPropertyAvailable property = "timeExpression" prepend = ",">
+                <isNotNull property = "timeExpression">TIME_EXPRESSION = #timeExpression#</isNotNull>
+                <isNull property = "timeExpression">TIME_EXPRESSION = null</isNull>
+            </isPropertyAvailable>
+            <isPropertyAvailable property = "gmtPublish" prepend = ",">
+                <isNotNull property = "gmtPublish">GMT_PUBLISH = #gmtPublish#</isNotNull>
+                <isNull property = "gmtPublish">GMT_PUBLISH = null</isNull>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[
+        WHERE 
+        ID =  #id#
+        ]]>
+    </update>
+    <!--======================delete===================================== -->
+    <delete id = "DELETE_CMS_TASK_BY_KEY">
+        <![CDATA[
+        DELETE FROM cms_task WHERE 
+        ID =  #value#
+        ]]>
+    </delete>
+    <!--=============================select===============================  -->
+    <!--publish used-->
+	<select id = "FIND_CMS_TASK_BY_KEY" resultMap = "RM_CMS_TASK">
+        <![CDATA[
+        SELECT *
+        FROM cms_task WHERE 
+        ID =  #value#
+        ]]>
+    </select>
+    
+    <select id = "FIND_CMS_TASK_BY_PAGEID" resultMap = "RM_CMS_TASK">
+        <![CDATA[
+        SELECT *
+        FROM cms_task WHERE 
+        PAGE_ID =  #value#
+        ]]>
+    </select>
+    
+    <select id = "QUERY_ALL_CMS_TASK" resultMap = "RM_CMS_TASK">
+        <![CDATA[
+        SELECT *
+        FROM cms_task
+        ]]>
+    </select>
+	 <select id = "QUERY_CMS_TASK_BETWEEN_START_END" resultMap = "RM_CMS_TASK" parameterClass="map">
+        <![CDATA[
+        SELECT * FROM cms_task WHERE GMT_PUBLISH >=#startime#  AND  GMT_PUBLISH <=#endTime# AND status=#status#
+        ]]>
+    </select>
+	<select id = "QUERY_CMS_TASK_BETWEEN_START_END_2" resultMap = "RM_CMS_TASK" parameterClass="map">
+        <![CDATA[
+        SELECT * FROM cms_task WHERE GMT_PUBLISH >=#startime#  AND  GMT_PUBLISH <=#endTime# AND status=#status# AND TIME_EXPRESSION=#timeExpression#
+        ]]>
+    </select>
+    <select id = "QUERY_CMS_TASK_BY_STATUS" resultMap = "RM_CMS_TASK">
+        <![CDATA[
+        SELECT GMT_CREATE,GMT_MODIFIED,PAGE_ID,STATUS,TIME_EXPRESSION,ID,GMT_PUBLISH FROM cms_task where status = #value#
+        ]]>
+    </select>
+</sqlMap>

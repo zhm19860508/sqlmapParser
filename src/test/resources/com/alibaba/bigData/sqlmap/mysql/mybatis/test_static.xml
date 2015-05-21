@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.luoshengsha.mapper.UserMapper"><!--注意：此处的命名空间是UserMapper的全限定类名 -->
+
+	<!-- 保存 -->
+	<insert id="save" parameterType="user">
+		insert into
+		user(id,name,password) values(#{id},#{name},#{password})
+	</insert>
+
+	<!-- 更新 -->
+	<update id="update" parameterType="user">
+		update user set
+		name=#{name},password=#{password} where id=#{id}
+	</update>
+
+	<!-- 查找 -->
+	<select id="find" parameterType="string" resultType="user">
+		select *
+		from user where id=#{id}
+	</select>
+
+	<!-- 删除 -->
+	<delete id="delete" parameterType="string">
+		delete from user where
+		id=#{id}
+	</delete>
+	
+</mapper>

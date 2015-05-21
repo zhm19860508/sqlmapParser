@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+"http://www.ibatis.com/dtd/sql-map-2.dtd">
+	<sqlMap namespace="dcms.animation">
+		<typeAlias alias="boxAnimation" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxAnimation" />
+		<resultMap id="BoxAnimation-result" class="boxAnimation">
+			<result property="id" javaType="java.lang.Long" column="ID" />
+			<result property="animationName" javaType="java.lang.String" column="ANIMATION_NAME" />
+			<result property="userId" javaType="java.lang.String" column="USER_ID" />
+			<result property="userName" javaType="java.lang.String" column="USER_NAME" />
+			<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+			<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+		</resultMap>
+		<select id="MS_SELECT_BY_ANIMATION"  resultClass="boxAnimation"	parameterClass="java.lang.Long" resultMap="BoxAnimation-result">
+			<![CDATA[
+			select id, gmt_create, gmt_modified, animation_name, user_id, user_name from dcms_box_animation where id= #id#
+			]]>
+		</select>
+		<insert id="MS_INSERT_ANIMATION" parameterClass="boxAnimation">
+			<selectKey resultClass="java.lang.Long" keyProperty="id">
+				SELECT SEQ_DCMS_BOX_ANIMATION.NEXTVAL AS ID FROM DUAL
+			</selectKey>
+			<![CDATA[
+			insert into dcms_box_animation
+			(id, gmt_create, gmt_modified, animation_name, user_id, user_name)
+			values
+			(#id#, sysdate, sysdate, #animationName#, #userId#, #userName#)
+			]]>
+		</insert>
+		<delete id="MS_DELETE_ANIMATION" parameterClass="long">
+			<![CDATA[
+			DELETE from dcms_box_animation where id = #id#
+			]]>
+		</delete>
+		<update id="MS_UPDATE_ANIMATION" parameterClass="boxAnimation">
+			<![CDATA[ UPDATE dcms_box_animation
+			SET GMT_MODIFIED = sysdate
+			]]>
+				<isNotNull property="animationName" prepend=",">
+					animation_name = #animationName#
+				</isNotNull>
+				<isNotNull property="userId" prepend=",">
+					user_id = #userId#
+				</isNotNull>
+				<isNotNull property="userName" prepend=",">
+					user_name = #userName#
+				</isNotNull>
+				<![CDATA[ WHERE ID =  #id# ]]>
+		</update>
+		<select id="MS_GETANIMATION_PAGE" resultMap="BoxAnimation-result"
+		parameterClass="java.util.HashMap">
+			<![CDATA[
+			SELECT * FROM (
+			select ROWNUM AS RN, t.* from  (SELECT  id, gmt_create, gmt_modified, animation_name, user_id, user_name from dcms_box_animation C
+			WHERE 1=1
+			]]>
+				<isNotEmpty prepend="and" property="keywords">
+					c.animation_name like  #keywords#||'%' or c.id like #keywords#||'%' or c.user_name like #keywords#||'%'
+				</isNotEmpty>
+				<![CDATA[
+				order by c.id   desc  ]]>
+					<![CDATA[
+					)
+					t WHERE  ROWNUM <= #offset# + #length#
+					)
+					WHERE   RN > #offset# ]]>
+		</select>
+		<select id="MS_GET_ANIMATION_COUNT" resultClass="java.lang.Long" parameterClass="java.util.HashMap">
+			<![CDATA[
+			select count(*)  from dcms_box_animation C
+			WHERE  1=1
+			]]>
+				<isNotEmpty prepend="and" property="keywords">
+					c.animation_name like #keywords#||'%' or c.id like #keywords#||'%' or c.user_name like #keywords#||'%'
+				</isNotEmpty>
+		</select>
+	</sqlMap>

@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="order" type="com.alibaba.china.ipinshared.dataobject.OrderDO" />
+	<typeAlias alias="orderQuery" type="com.alibaba.china.ipinshared.query.OrderQuery" />
+	<resultMap id="orderResult" class="order">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="ownerUserId" column="owner_user_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="ownerLoginName" column="owner_login_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="offerUrl" column="offer_url" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="handOutAddress" column="hand_out_address" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="remark" column="remark" jdbcType="text"
+			javaType="java.lang.String" />
+		<result property="categoryId" column="category_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="miniNum" column="mini_num" jdbcType="java.lang.Long"
+			javaType="java.lang.Long" />
+		<result property="status" column="status" jdbcType="int"
+			javaType="int" />
+		<result property="title" column="title" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="picUrl" column="pic_url" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="originalPrice" column="original_price" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="pingPrice" column="ping_price" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="ownerName" column="owner_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="ownerTel" column="owner_tel" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="maxNum" column="max_num" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="addressId" column="address_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="receiverInfoId" column="receiver_info_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="geohash" column="geohash" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="endTime" column="end_time" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+	</resultMap>
+	<sql id="orderColumns">
+		select id,is_deleted,gmt_created,gmt_modified,owner_user_id,owner_login_name,offer_url,hand_out_address,remark,category_id,mini_num,status,title,pic_url,original_price,
+		ping_price,owner_name,owner_tel,max_num,address_id,receiver_info_id,geohash,end_time
+	</sql>
+	
+	<sql id="orderAllColumns">
+		select ipin_order.id,ipin_order.is_deleted,ipin_order.gmt_created,ipin_order.gmt_modified,ipin_order.owner_user_id,ipin_order.owner_login_name,ipin_order.offer_url,ipin_order.hand_out_address,ipin_order.remark,ipin_order.category_id,ipin_order.mini_num,ipin_order.status,ipin_order.title,ipin_order.pic_url,ipin_order.original_price,
+		ipin_order.ping_price,ipin_order.owner_name,ipin_order.owner_tel,ipin_order.max_num,ipin_order.address_id,ipin_order.receiver_info_id,ipin_order.geohash,end_time
+	</sql>
+
+	<!-- 新增团 -->
+	<insert id="add_new_order" parameterClass="order">
+        insert into  ipin_order (is_deleted,gmt_created,gmt_modified,owner_user_id,owner_login_name,offer_url,hand_out_address,remark,title,category_id,mini_num,status,pic_url,original_price,ping_price,owner_name,owner_tel,max_num,address_id,receiver_info_id,geohash,end_time)
+        values (0,now(),now(),#ownerUserId#,#ownerLoginName#,#offerUrl#,#handOutAddress#,#remark#,#title#,#categoryId#,#miniNum#,0,#picUrl#,#originalPrice#,#pingPrice#,#ownerName#,#ownerTel#,#maxNum#,#addressId#,#receiverInfoId#,#geohash#,#endTime#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新团 -->
+	<update id="update_order" parameterClass="order">
+		update ipin_order set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="ownerUserId" prepend=",">
+			owner_user_id =
+			#ownerUserId#
+		</isNotNull>
+		<isNotNull property="offerUrl" prepend=",">
+			offer_url =
+			#offerUrl#
+		</isNotNull>
+		<isNotNull property="handOutAddress" prepend=",">
+			hand_out_address =
+			#handOutAddress#
+		</isNotNull>
+
+		<isNotNull property="remark" prepend=",">
+			remark =
+			#remark#
+		</isNotNull>
+		<isNotNull property="title" prepend=",">
+			title =
+			#title#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend=",">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		<isNotNull property="miniNum" prepend=",">
+			mini_num =
+			#miniNum#
+		</isNotNull>
+		<isNotNull property="status" prepend=",">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="picUrl" prepend=",">
+			pic_url =
+			#picUrl#
+		</isNotNull>
+		<isNotNull property="originalPrice" prepend=",">
+			original_price =
+			#originalPrice#
+		</isNotNull>
+		<isNotNull property="pingPrice" prepend=",">
+			ping_price =
+			#pingPrice#
+		</isNotNull>
+		<isNotNull property="ownerName" prepend=",">
+			owner_name =
+			#ownerName#
+		</isNotNull>
+		<isNotNull property="ownerTel" prepend=",">
+			owner_tel =
+			#ownerTel#
+		</isNotNull>
+		<isNotNull property="maxNum" prepend=",">
+			max_num =
+			#maxNum#
+		</isNotNull>
+		<isNotNull property="addressId" prepend=",">
+			address_id =
+			#addressId#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend=",">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		<isNotNull property="geohash" prepend=",">
+			geohash =
+			#geohash#
+		</isNotNull>
+		<isNotNull property="endTime" prepend=",">
+			end_time =
+			#endTime#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+
+	<!-- 根据团id查询团 -->
+	<select id="get_order_by_id" resultMap="orderResult"
+		parameterClass="java.lang.Long">
+        <include refid="orderColumns" /> 
+         from  ipin_order where id = #id#
+    </select>
+
+	<!-- 根据团owner查询团 -->
+	<!-- 
+	<select id="get_order_by_owner" resultMap="orderResult"
+		parameterClass="map">
+		<include refid="orderColumns" /> 
+		from  ipin_order where owner_user_id = #ownerUserId# and is_deleted = 0 and status = #status# order by gmt_created desc
+	</select>
+ 	-->
+	<!-- 根据团owner,分页查询团 -->
+	<select id="get_order_by_owner_paging" resultMap="orderResult"
+		parameterClass="map">
+		<include refid="orderColumns" /> 
+		from  ipin_order where owner_user_id = #ownerUserId# and is_deleted = 0 and status = #status# order by gmt_created desc limit #offset#,#pageSize#
+	</select>
+
+	<!-- 根据categoryID查询团 -->
+	<!-- 
+	<select id="get_order_by_categoryId" resultMap="orderResult"
+		parameterClass="map">
+		<include refid="orderColumns" /> 
+		 from  ipin_order where category_id = #categoryId# and is_deleted = 0 and status = #status# order by gmt_created desc
+	</select>
+ 	-->
+ 	
+	<!-- 根据categoryID,分页查询团 -->
+	<select id="get_order_by_categoryId_paging" resultMap="orderResult"
+		parameterClass="map">
+		<include refid="orderColumns" /> 
+		from  ipin_order where category_id = #categoryId# and is_deleted = 0 and status = #status# order by gmt_created desc limit #offset#,#pageSize#
+	</select>
+
+	<!-- 根据status,分页查询团 -->
+	<select id="get_order_by_status_paging" resultMap="orderResult"
+		parameterClass="map">
+		<include refid="orderColumns" /> 
+		 from  ipin_order where  is_deleted = 0 and status = #status# order by gmt_created desc limit #offset#,#pageSize#
+	</select>
+
+
+
+	<!-- 根据query查询团促销用 -->
+	<select id="get_order_by_query_for_promotion" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderColumns" /> 
+		from  ipin_order where  is_deleted = 0
+		<isNotNull property="ownerUserId" prepend="AND">
+			owner_user_id =
+			#ownerUserId#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id =
+			#id#
+		</isNotNull>
+		<isNull property="categoryId" prepend="AND" >
+			category_id !=
+			1
+		</isNull>
+		
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="addressId" prepend="AND">
+			address_id =
+			#addressId#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend="AND">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		order by id desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+	
+	
+	<!-- 根据query查询团 -->
+	<select id="get_order_by_query" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderColumns" /> 
+		from  ipin_order where  is_deleted = 0
+		<isNotNull property="ownerUserId" prepend="AND">
+			owner_user_id =
+			#ownerUserId#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id =
+			#id#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="addressId" prepend="AND">
+			address_id =
+			#addressId#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend="AND">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		order by id desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+	<select id="get_order_history" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderColumns" /> 
+		 from  ipin_order where  is_deleted = 0
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND">
+			gmt_created >=
+			#startTime#
+		</isNotNull>
+		order by gmt_created desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+	
+	<select id="get_order_history_count" resultClass="java.lang.Integer"
+		parameterClass="orderQuery">
+		select count(*)
+		 from  ipin_order where  is_deleted = 0
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND">
+			gmt_created >=
+			#startTime#
+		</isNotNull>
+		
+	</select>
+<!-- 
+	<select id="get_order_nojoin" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderColumns" /> 
+		from  ipin_order    left join ipin_order_join  ON ipin_order.id=ipin_order_join.order_id where ipin_order_join.order_id is null and ipin_order.is_deleted = 0
+		<isNotNull property="status" prepend="AND">
+			ipin_order.status =
+			#status#
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND">
+			ipin_order.gmt_created >=
+			#startTime#
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+		<![CDATA[
+			ipin_order.gmt_created <
+			#endTime#
+		]]>
+
+		</isNotNull>
+		order by ipin_order.gmt_created asc
+	</select>
+ -->
+	<select id="get_order_hasjoin" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderAllColumns" /> 
+		 from  ipin_order where is_deleted = 0
+		<isNotNull property="status" prepend="AND">
+			ipin_order.status =
+			#status#
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND">
+			ipin_order.end_time >=
+			#startTime#
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+		<![CDATA[
+			ipin_order.end_time <
+			#endTime#
+		]]>
+		</isNotNull>
+		order by ipin_order.gmt_created asc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+		
+	</select>
+
+
+	<select id="get_order_hasjoin_count" resultClass="java.lang.Integer"
+		parameterClass="orderQuery">
+		
+		 select  count(*)  from ipin_order where is_deleted = 0
+		<isNotNull property="status" prepend="AND">
+			ipin_order.status =
+			#status#
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND">
+			ipin_order.gmt_created >=
+			#startTime#
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+
+		<![CDATA[
+			ipin_order.gmt_created <
+			#endTime#
+		]]>
+
+		</isNotNull>
+		
+		
+	</select>
+	
+	<select id="get_order_count_by_query" resultClass="java.lang.Integer"
+		parameterClass="orderQuery">
+		select count(*) from ipin_order  where is_deleted = 0
+		<isNotNull property="ownerUserId" prepend="AND">
+			owner_user_id =
+			#ownerUserId#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id =
+			#id#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="addressId" prepend="AND">
+			address_id =
+			#addressId#
+		</isNotNull>
+	</select>
+
+	<!-- 根据geohash模糊查询，取实际geohash的前3位，精度100公里左右 -->
+	<select id="get_order_by_geoquery" resultMap="orderResult"
+		parameterClass="orderQuery">
+		<include refid="orderColumns" /> 
+		 from  ipin_order where  is_deleted = 0
+		<isNotNull property="ownerUserId" prepend="AND">
+			owner_user_id =
+			#ownerUserId#
+		</isNotNull>
+		<isNotNull property="id" prepend="AND">
+			id =
+			#id#
+		</isNotNull>
+		<isNotNull property="categoryId" prepend="AND">
+			category_id =
+			#categoryId#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+			status =
+			#status#
+		</isNotNull>
+		<isNotNull property="addressId" prepend="AND">
+			address_id =
+			#addressId#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend="AND">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+			and geohash like #geoHashCode# order by geohash desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+</sqlMap>

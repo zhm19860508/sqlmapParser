@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsschemamain">
+    <typeAlias alias="dsSchemaMain" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsSchemaMain"/>
+    <!--
+      - ===============================================
+      - DS_SCHEMA_MAIN表映射到DataSourceSchemaMain类
+      - ===============================================
+     -->
+    <resultMap id="dsSchemaMainResult" class="dsSchemaMain">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="singleRow" column="SINGLE_ROW"/>
+    </resultMap>
+    
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertDsSchemaMain" parameterClass="dsSchemaMain">
+		<selectKey resultClass="int" keyProperty="id" >
+			SELECT SEQ_DS_SCHEMA_MAIN.NEXTVAL AS id FROM DUAL
+		</selectKey>
+	    insert into DS_SCHEMA_MAIN (
+		    ID,
+		    NAME,
+		    DESCRIPTION,
+		    SINGLE_ROW
+        ) values (
+            #id#,
+            #name#,
+            #description#,
+            #singleRow#             
+        )
+    </insert>
+    
+    <!--
+      - ===============================================
+      - 根据id查询
+      - ===============================================
+     -->
+    <select id="getDsSchemaMainById" resultMap="dsSchemaMainResult" parameterClass="int"><![CDATA[
+        select  ID,
+                NAME,
+                DESCRIPTION,
+                SINGLE_ROW
+        from
+                DS_SCHEMA_MAIN
+        where
+                ID = #id#
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 根据组合条件查询schemaMain
+      - ===============================================
+     -->
+  <select id="queryDsSchemaMain" resultMap="dsSchemaMainResult" parameterClass="java.util.Map" >
+      select    ID,
+                NAME,
+                DESCRIPTION,
+                SINGLE_ROW
+      from 
+      			DS_SCHEMA_MAIN
+      <dynamic prepend="where" >
+      <isNotEmpty prepend="and" property="name" >
+        NAME like  '%'||#name#||'%'
+      </isNotEmpty>
+      <!-- 根据名称精确查询 -->
+      <isNotEmpty prepend="and" property="exactName" >
+        NAME =  #exactName#
+      </isNotEmpty>
+      <isNotEmpty prepend="and" property="dsId" >
+        id in ( select ds_schema_id from DS_DATA_SOURCE where id = #dsId# )
+      </isNotEmpty>
+      </dynamic>
+  </select>
+  
+    <!--
+      - ===============================================
+      - 获取所有
+      - ===============================================
+     -->
+    <select id="getAllDsSchemaMain" resultMap="dsSchemaMainResult" ><![CDATA[
+        select
+                ID,
+                NAME,
+                DESCRIPTION,
+                SINGLE_ROW
+        from
+                DS_SCHEMA_MAIN
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 修改
+      - ===============================================
+     -->
+    <update id="updateDsSchemaMain" parameterClass="dsSchemaMain"><![CDATA[
+        update
+                DS_SCHEMA_MAIN
+        set
+                NAME = #name#,
+                DESCRIPTION = #description#,
+                SINGLE_ROW = #singleRow#     
+        where
+                ID = #id#
+    ]]></update>
+    
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteDsSchemaMain" parameterClass="int"><![CDATA[
+        delete from
+                DS_SCHEMA_MAIN
+         where
+                ID = #id#
+    ]]></delete>
+</sqlMap>

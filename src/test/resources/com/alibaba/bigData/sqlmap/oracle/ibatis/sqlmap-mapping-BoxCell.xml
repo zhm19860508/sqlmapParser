@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxcell">
+
+    <resultMap id="BoxCell-Result-Base" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String"/>
+        <result property="tag" column="TAG" javaType="java.lang.String"/>
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/>
+        <result property="width" column="WIDTH" javaType="java.lang.Double"/>
+        <result property="height" column="HEIGHT" javaType="java.lang.Double"/>
+        <result property="isOrigin" column="IS_ORIGIN" javaType="java.lang.String"/>
+        <result property="autoFit" column="AUTO_FIT" javaType="java.lang.String"/>
+        <result property="originId" column="ORIGIN_ID" javaType="java.lang.Long"/>
+        <result property="boxCatalog" column="BOX_CATALOG" javaType="java.lang.Long"/>
+        <result property="name" column="NAME" javaType="java.lang.String"/>
+        <result property="className" column="CLASS_NAME" javaType="java.lang.String"/>
+        <result property="autoGenPic" column="AUTO_GEN_PIC" javaType="java.lang.String"/>
+    </resultMap>
+
+    <resultMap id="BoxCell-Result" extends="BoxCell-Result-Base" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <result property="content" column="CONTENT" javaType="java.lang.String"/>
+    </resultMap>
+
+    <resultMap id="BoxModuleVO-Result" extends="BoxCell-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <result property="source" column="SOURCE" javaType="java.lang.String"/>
+        <result property="ued" column="UED" javaType="java.lang.String"/>
+        <result property="frontend" column="FRONTEND" javaType="java.lang.String"/>
+    </resultMap>
+    <resultMap class="java.util.HashMap" id="CountByCat-Result">
+         <result property="boxCatalog" column="BOX_CATALOG" javaType="java.lang.Long"/>
+         <result property="count" column="count" javaType="java.lang.Integer"/>
+    </resultMap>
+
+    <resultMap id="BoxContent-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="rid" column="RESOURCE_ID" javaType="java.lang.Long"/>
+
+        <result property="content" column="CONTENT" javaType="java.lang.String"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <insert id="MS_INSERT_BOXCELL" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CELL.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CELL
+              (ID, name,CLASS_NAME,GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  , TAG  ,  USER_ID, WIDTH,HEIGHT,IS_ORIGIN,AUTO_FIT,ORIGIN_ID,BOX_CATALOG,AUTO_GEN_PIC)
+            values
+              (#id#, #name#,#className#,sysdate  , sysdate  , #thumbnail#  , #tag#, #userId#,#width#,#height#,#isOrigin#,#autoFit#,#originId#,#boxCatalog#,#autoGenPic#)
+        ]]>
+    </insert>
+    <insert id="MS_INSERT_BOXCELL_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CONTENT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CONTENT
+              (ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_TYPE  , RESOURCE_ID, CONTENT )
+            values
+              (#id#, sysdate  , sysdate  , 'cell' ,#rid# , #content#)
+        ]]>
+    </insert>
+    <select id="MS_GET_CLASS_SEQUENCE" resultClass="java.lang.Long">
+        SELECT SEQ_DCMS_BOX_CLASS_NAME.NEXTVAL AS ID FROM DUAL
+    </select>
+
+    <update id="MS_UPDATE_BOXCELL" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <![CDATA[ UPDATE DCMS_BOX_CELL
+        	SET GMT_MODIFIED = sysdate,
+  				HEIGHT = #height#
+        ]]>
+         <isNotNull property="width" prepend=",">
+            WIDTH = #width#
+        </isNotNull>
+         <isNotNull property="tag" prepend=",">
+            TAG = #tag#
+        </isNotNull>
+
+        <isNotNull property="thumbnail" prepend=",">
+            THUMBNAIL = #thumbnail#
+        </isNotNull>
+        <isNotNull property="userId" prepend=",">
+            USER_ID = nvl(USER_ID, #userId#)
+        </isNotNull>
+        <isNotNull property="autoFit" prepend=",">
+            AUTO_FIT = #autoFit#
+        </isNotNull>
+        <isNotNull property="name" prepend=",">
+            NAME = #name#
+        </isNotNull>
+        <isNotNull property="boxCatalog" prepend=",">
+            BOX_CATALOG = #boxCatalog#
+        </isNotNull>
+                <isNotNull property="autoGenPic" prepend=",">
+            AUTO_GEN_PIC = #autoGenPic#
+        </isNotNull>
+        <![CDATA[ WHERE ID =  #id# ]]>
+    </update>
+
+    <update id="MS_UPDATE_BOXCELL_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">
+        <![CDATA[ UPDATE DCMS_BOX_CONTENT
+        	SET GMT_MODIFIED = sysdate
+        ]]>
+        <dynamic prepend="">
+            <isNotNull property="content" prepend=",">
+                CONTENT = #content#
+            </isNotNull>
+        </dynamic>
+
+        <![CDATA[ WHERE resource_id =  #id# and resource_type='cell']]>
+    </update>
+
+    <select id="MS_GET_BOXCELL" resultMap="BoxCell-Result" parameterClass="java.util.HashMap">
+        <![CDATA[
+           SELECT t.ID AS ID,
+		   t.NAME AS NAME,
+		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+   		  t.CLASS_NAME AS CLASS_NAME ,
+		  t.BOX_CATALOG AS BOX_CATALOG ,
+		  t.HEIGHT AS HEIGHT ,
+  		  t.WIDTH AS WIDTH ,
+		  t.IS_ORIGIN AS IS_ORIGIN ,
+		  t.AUTO_FIT AS AUTO_FIT ,
+		  t.ORIGIN_ID AS ORIGIN_ID ,
+		  t.TAG AS  CONTENT,
+		  t.auto_gen_pic,
+		 to_char( t.GMT_CREATE ,'yyyy-MM-dd hh:mm:ss') AS GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED
+		  FROM DCMS_BOX_CELL t
+
+		   where 1=1
+	    ]]>
+
+
+        <isNotEmpty prepend="and" property="isOrigin">
+            t.is_origin = #isOrigin#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="originId">
+            t.origin_id = #originId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="tag">
+            t.tag like '%'||#tag#||'%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="className">
+            t.class_name = #className#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="userId">
+            t.user_id = #userId#
+        </isNotEmpty>
+        <![CDATA[
+		 order by t.GMT_MODIFIED  ]]>
+        <isEqual property="orderType" compareValue="desc">
+            desc
+        </isEqual>
+        <isEqual property="orderType" compareValue="asc">
+            asc
+        </isEqual>
+    </select>
+
+
+
+    <select id="MS_GET_BOXCELL_PAGE" resultMap="BoxCell-Result" parameterClass="java.util.HashMap">
+        <![CDATA[
+
+		SELECT * FROM
+		(
+           SELECT  ROWNUM AS RN,
+		   t.ID AS ID,
+		   t.NAME AS NAME,
+		   t.THUMBNAIL AS THUMBNAIL,
+		   t.USER_ID AS USER_ID,
+		   t.TAG AS TAG ,
+   		   t.CLASS_NAME AS CLASS_NAME ,
+		   t.BOX_CATALOG AS BOX_CATALOG ,
+		   t.HEIGHT AS HEIGHT ,
+  		  t.WIDTH AS WIDTH ,
+		  t.IS_ORIGIN AS IS_ORIGIN ,
+		  t.AUTO_FIT AS AUTO_FIT ,
+		  t.ORIGIN_ID AS ORIGIN_ID ,
+		  t.TAG AS  CONTENT,
+		    t.auto_gen_pic,
+		  to_char( t.GMT_CREATE ,'yyyy-MM-dd hh:mm:ss') AS GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED
+		  FROM
+		  (
+
+		  	SELECT c.*  FROM DCMS_BOX_CELL c ,CMS_MATERIAL_LIB_RESOURCE m where c.ID=m.RESOURCE_ID
+
+	    ]]>
+
+          <isNotEmpty prepend="and" property="keyword">
+            <![CDATA[
+				(
+				]]>
+             c.tag like '%'
+            ||#keyword#||'%'
+ or
+             c.user_id like '%'
+            ||#keyword#||'%'
+ or
+             c.name like '%'
+            ||#keyword#||'%'
+
+            <![CDATA[
+				)
+				]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="isOrigin">
+            c.is_origin = #isOrigin#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="originId">
+            c.origin_id = #originId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="tag">
+            c.tag like '%'||#tag#||'%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="tagexp">
+		      <![CDATA[
+		      REGEXP_LIKE(c.tag, '(^|[[:space:]])' || #tagexp# || '([[:space:]]|$$)')
+          ]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="className">
+            c.class_name = #className#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="userId">
+            c.user_id = #userId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="catalogIds">
+		 	    C.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+	        </isNotEmpty>
+	         <isNotEmpty prepend="AND" property="materialLibId">
+	           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+	    </isNotEmpty>
+
+        <![CDATA[
+		 order by c.GMT_MODIFIED  ]]>
+        <isEqual property="orderType" compareValue="desc">
+            desc
+        </isEqual>
+        <isEqual property="orderType" compareValue="asc">
+            asc
+        </isEqual>
+        <![CDATA[
+		)
+		t WHERE  ROWNUM <= #offset# + #length#
+)
+WHERE   RN > #offset# ]]>
+
+    </select>
+
+    <select id="MS_GET_BOXCELL_COUNT" resultClass="java.lang.Integer">
+        <![CDATA[
+           select count(*)
+
+		  FROM DCMS_BOX_CELL t
+
+		  ,CMS_MATERIAL_LIB_RESOURCE m where t.ID=m.RESOURCE_ID
+	    ]]>
+
+        <isNotEmpty prepend="and" property="keyword">
+            <![CDATA[
+				(
+				]]>
+             t.tag like '%'
+            ||#keyword#||'%'
+ or
+             t.user_id like '%'
+            ||#keyword#||'%'
+ or
+             t.name like '%'
+            ||#keyword#||'%'
+
+            <![CDATA[
+				)
+				]]>
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="isOrigin">
+            t.is_origin = #isOrigin#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="originId">
+            t.origin_id = #originId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="tag">
+            t.tag like '%'||#keyword#||'%'
+        </isNotEmpty>
+	 	<isNotEmpty prepend="and" property="tagexp">
+			  <![CDATA[
+			    REGEXP_LIKE(t.tag, '(^|[[:space:]])' || #tagexp# || '([[:space:]]|$$)')
+	          ]]>
+		</isNotEmpty>
+        <isNotEmpty prepend="and" property="className">
+            t.class_name = #className#
+        </isNotEmpty>
+         <isNotEmpty prepend="and" property="userId">
+            t.user_id = #userId#
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="catalogIds">
+		 	    t.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+	    </isNotEmpty>
+	    <isNotEmpty prepend="AND" property="materialLibId">
+	           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+	    </isNotEmpty>
+    </select>
+
+    <select id="MS_GET_BOXCELL_BY_ID" parameterClass="long" resultMap="BoxCell-Result" resultClass="BoxCell">
+        <![CDATA[
+          SELECT
+		  t.ID AS ID,
+		  t.NAME AS NAME,
+ 		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.TAG AS TAG ,
+		  t.CLASS_NAME AS CLASS_NAME ,
+		  c.CONTENT AS  CONTENT,
+		  t.GMT_CREATE AS GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED,
+		  t.HEIGHT AS HEIGHT ,
+  		  t.WIDTH AS WIDTH ,
+		  t.IS_ORIGIN AS IS_ORIGIN ,
+		  t.AUTO_FIT AS AUTO_FIT ,
+		    t.auto_gen_pic,
+		  t.BOX_CATALOG AS BOX_CATALOG,
+		  t.ORIGIN_ID AS ORIGIN_ID
+		  FROM DCMS_BOX_CELL t
+		  left join DCMS_BOX_CONTENT c on t.id=c.resource_id
+		  and c.resource_type='cell'
+		where t.ID = #id#
+            ]]>
+    </select>
+    <select id="MS_GET_BOXCELL_BY_KEYWORD" parameterClass="java.util.HashMap" resultMap="BoxCell-Result" resultClass="BoxCell">
+        SELECT * FROM (
+        SELECT A.*,ROWNUM RN FROM (
+        SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH ,
+        t.IS_ORIGIN AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+        t.ORIGIN_ID AS ORIGIN_ID ,
+          t.auto_gen_pic,
+        t.BOX_CATALOG AS BOX_CATALOG,
+        'cell' AS  CONTENT
+        FROM DCMS_BOX_CELL t where 1=1
+        <isNotEmpty prepend="and" property="keyword">
+             t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%'
+        </isNotEmpty>
+          <isNotEmpty prepend="and" property="catalogId">
+          t.BOX_CATALOG = #catalogId#
+          </isNotEmpty>
+        UNION all
+        SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH,
+        'N' AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+        t.ID  AS ORIGIN_ID,
+          t.auto_gen_pic,
+        t.BOX_CATALOG AS BOX_CATALOG ,
+        'module' AS  CONTENT
+        FROM DCMS_BOX_MODULE t  where 1=1
+        <isNotEmpty prepend="and" property="keyword">
+            t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%'
+        </isNotEmpty>
+         <isNotEmpty prepend="and" property="catalogId">
+          t.BOX_CATALOG = #catalogId#
+          </isNotEmpty>
+        <![CDATA[
+            ORDER BY GMT_MODIFIED  DESC ) A WHERE rownum <= #endRow#) WHERE rn >= #startRow#
+          ]]>
+    </select>
+     <select id="MS_GET_BOXCELL_COUNT_BY_KEYWORD" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        SELECT count(*)  from  (select id FROM DCMS_BOX_CELL t where 1=1
+        <isNotEmpty prepend="and" property="keyword">
+             t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="catalogId">
+          t.BOX_CATALOG = #catalogId#
+          </isNotEmpty>
+        UNION all
+        select id FROM DCMS_BOX_MODULE t where 1=1
+        <isNotEmpty prepend="and" property="keyword">
+            t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%'
+        </isNotEmpty>
+        <isNotEmpty prepend="and" property="catalogId">
+          t.BOX_CATALOG = #catalogId#
+          </isNotEmpty>
+        )
+    </select>
+       <select id="MS_GET_BOXONLYCELL_BY_KEYWORD" parameterClass="java.util.HashMap" resultMap="BoxCell-Result" resultClass="BoxCell">
+        SELECT * FROM (
+        SELECT A.*,ROWNUM RN FROM (
+        SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH ,
+        t.IS_ORIGIN AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+        t.ORIGIN_ID AS ORIGIN_ID ,
+          t.auto_gen_pic,
+        t.BOX_CATALOG AS BOX_CATALOG,
+        'cell' AS  CONTENT
+        FROM DCMS_BOX_CELL t ,CMS_MATERIAL_LIB_RESOURCE m where t.ID=m.RESOURCE_ID
+         <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+	    </isNotEmpty>
+	    <isNotEmpty prepend="AND" property="materialLibId">
+	           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+	    </isNotEmpty>
+        <isNotEmpty prepend="and" property="keyword">
+             (t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%')
+        </isNotEmpty>
+         <isNotEmpty prepend="and" property="tag">
+             (t.NAME like '%' || #tag# || '%' or  t.TAG  like '%' || #tag# || '%')
+        </isNotEmpty>
+        <isEqual property="andOr" compareValue="and">
+        <isNotEmpty prepend="and" property="catalogIds">
+		 	    T.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+		 </isNotEmpty>
+        </isEqual>
+         <isEqual property="andOr" compareValue="or">
+         	<isNotEmpty prepend="or" property="catalogIds">
+		 	    T.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+		 </isNotEmpty>
+        </isEqual>
+
+        <![CDATA[
+            ORDER BY GMT_MODIFIED  DESC ) A WHERE rownum <= #endRow#) WHERE rn >= #startRow#
+          ]]>
+    </select>
+     <select id="MS_GET_BOXONLYCELL_COUNT_BY_KEYWORD" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        SELECT count(*)  from  (select t.id FROM DCMS_BOX_CELL t ,CMS_MATERIAL_LIB_RESOURCE m where t.ID=m.RESOURCE_ID
+        <isNotEmpty prepend="and" property="keyword">
+             ( t.NAME like '%' || #keyword# || '%' or  t.TAG  like '%' || #keyword# || '%')
+        </isNotEmpty>
+           <isNotEmpty prepend="and" property="tag">
+             ( t.NAME like '%' || #tag# || '%' or  t.TAG  like '%' || #tag# || '%')
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+	    </isNotEmpty>
+	    <isNotEmpty prepend="AND" property="materialLibId">
+	           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+	    </isNotEmpty>
+        <isEqual property="andOr" compareValue="and">
+         <isNotEmpty prepend="and " property="catalogIds">
+		 	    T.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+		 </isNotEmpty>
+        </isEqual>
+        <isEqual property="andOr" compareValue="or">
+         <isNotEmpty prepend="or " property="catalogIds">
+		 	    T.BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+		 </isNotEmpty>
+        </isEqual>
+
+        )
+    </select>
+    <sql id="BASE_GET_BOX_MODULE_BY_KEYWORD">
+
+	     <isNotEmpty prepend="" property="materialLibResourceType">
+			            ,CMS_MATERIAL_LIB_RESOURCE m where t.ID=m.RESOURCE_ID
+		 </isNotEmpty>
+		 <isEmpty prepend="" property="materialLibResourceType">
+			            where 1=1
+		 </isEmpty>
+
+    	<dynamic prepend="">
+	        <isNotEmpty prepend="and" property="keyword">
+	           (t.NAME like '%' || #keyword# || '%' or  REGEXP_LIKE(t.TAG, '(^|[;,[:space:]])' || #keyword# || '([;,[:space:]]|$$)' ))
+	        </isNotEmpty>
+	         <isNotEmpty prepend="and" property="catalogId">
+	          t.BOX_CATALOG = #catalogId#
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="tagexp">
+	          <![CDATA[
+	              REGEXP_LIKE(t.TAG, '(^|[;,[:space:]])' || #tagexp# || '([;,[:space:]]|$$)' )
+	           ]]>
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="catalogIds">
+			 	    T.BOX_CATALOG in
+		        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+		            	#catalogIds[]#
+		         	</iterate>
+			  </isNotEmpty>
+	          <isNotEmpty prepend="and" property="source">
+	           t.SOURCE = #source#
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="status">
+	          T.STATUS in 
+	          	<iterate property="status" open="(" close=")" conjunction=",">
+					#status[]#
+				</iterate>
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="userId">
+	           t.USER_ID = #userId#
+	          </isNotEmpty>
+	           <isNotEmpty prepend="and" property="width">
+	           (t.width = #width# or t.AUTO_FIT ='1')
+	          </isNotEmpty>
+	          <isNotEmpty prepend="AND" property="materialLibResourceType">
+		           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+		  	  </isNotEmpty>
+		      <isNotEmpty prepend="AND" property="materialLibId">
+		           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+		      </isNotEmpty>
+		      <isNotEmpty  property="applyDevice">
+	 			  <isNotEqual    prepend="and" property="applyDevice" compareValue="all">		             
+				            (t.APPLY_DEVICE = #applyDevice# or  t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null )			          
+			      </isNotEqual>
+			      <isEqual  prepend="and" property="applyDevice" compareValue="all">	
+			            (t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null)
+			      </isEqual>
+		      </isNotEmpty>
+		      <isNotEmpty prepend="and" property="boxPageType">
+	           ((t.BOX_PAGE_TYPE like '%' || #boxPageType# || '%') or (t.BOX_PAGE_TYPE is null) )
+	          </isNotEmpty>
+			    <isNotEmpty prepend="and" property="fieldsList"> 
+					<iterate property="fieldsList" open="(" close=")"
+						conjunction=" and ">
+						t.VIEW_FIELDS_NAME like '%,'||#fieldsList[]#||',%'
+					</iterate>
+				</isNotEmpty>
+        </dynamic>
+    </sql>
+    <select id="MS_GET_BOXMODULE_BY_KEYWORD" parameterClass="java.util.HashMap" resultMap="BoxModuleVO-Result" resultClass="BoxCell">
+            SELECT * FROM (
+        SELECT A.*,ROWNUM RN FROM (SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH,
+        'N' AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+        t.ID  AS ORIGIN_ID,
+          t.auto_gen_pic,
+        t.BOX_CATALOG AS BOX_CATALOG ,
+        t.TYPE,
+		t.SOURCE ,
+        'module' AS  CONTENT,
+        t.UED ,
+        t.FRONTEND 
+        
+        FROM DCMS_BOX_MODULE t
+        <include refid="BASE_GET_BOX_MODULE_BY_KEYWORD"/>
+        <![CDATA[
+            ORDER BY GMT_MODIFIED  DESC ) A WHERE rownum <= #endRow#) WHERE rn >= #startRow#
+        ]]>
+
+        </select>
+     <select id="MS_GET_BOXMODULE_COUNT_BY_KEYWORD" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        SELECT count(*)  from  (
+        select t.id FROM DCMS_BOX_MODULE t
+        <include refid="BASE_GET_BOX_MODULE_BY_KEYWORD"/>
+        )
+    </select>
+
+     <select id="MS_GET_BOXMODULE_COUNT_BY_KEYWORD_GROUPBYCAT" parameterClass="java.util.HashMap" resultMap="CountByCat-Result">
+        SELECT BOX_CATALOG, count(BOX_CATALOG) COUNT  from  (
+        select t.BOX_CATALOG FROM DCMS_BOX_MODULE t
+        <include refid="BASE_GET_BOX_MODULE_BY_KEYWORD"/>
+        ) group by BOX_CATALOG
+    </select>
+    <!-- query cellList by ids -->
+    <select id="MS_SELECT_BOXCELL_BY_IDS" parameterClass="java.util.Map" resultMap="BoxCell-Result">
+        SELECT t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.BOX_CATALOG AS BOX_CATALOG ,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH ,
+        t.IS_ORIGIN AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+          t.auto_gen_pic,
+        t.ORIGIN_ID AS ORIGIN_ID ,
+        'cell' AS  CONTENT
+        FROM DCMS_BOX_CELL  t
+        <iterate prepend="WHERE" property="cellIdList" open="(" close=")" conjunction="OR">
+            ID =#cellIdList[]#
+        </iterate>
+        ORDER BY GMT_MODIFIED DESC
+    </select>
+    <!-- query moduleList by ids -->
+    <select id="MS_SELECT_BOXMODULE_BY_IDS" parameterClass="java.util.Map" resultMap="BoxCell-Result">
+        SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.BOX_CATALOG AS BOX_CATALOG ,
+        t.TYPE,
+        t.WIDTH AS WIDTH,
+        'N' AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+          t.auto_gen_pic,
+        t.ID  AS ORIGIN_ID,
+        'module' AS  CONTENT
+        FROM DCMS_BOX_MODULE  t
+        <iterate prepend="WHERE" property="moduleIdList" open="(" close=")" conjunction="OR">
+            ID =#moduleIdList[]#
+        </iterate>
+        ORDER BY GMT_MODIFIED DESC
+    </select>
+   
+    <delete id="MS_DELETE_BOXCELL" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_CELL where ID = #id#
+        ]]>
+    </delete>
+
+    <delete id="MS_DELETE_BOXCELL_CONTENT" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_CONTENT where ID = #id# AND RESOURCE_TYPE='C'
+        ]]>
+    </delete>
+
+    <select id="MS_GET_BOXCELL_BY_CATALOGS" resultMap="BoxCell-Result-Base" parameterClass="java.util.HashMap">
+        <![CDATA[
+		SELECT * FROM DCMS_BOX_CELL t
+		 ]]>
+		 <dynamic prepend="where">
+		 	 <isNotEmpty prepend="and " property="catalogIds">
+		 	    BOX_CATALOG in
+	        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+	            	#catalogIds[]#
+	         	</iterate>
+		 	</isNotEmpty>
+		 </dynamic>
+    </select>
+
+
+    <sql id="BASE_GET_PUBLIC_BLOCK_BY_KEYWORD">
+
+    	<dynamic prepend="">
+	        <isNotEmpty prepend="and" property="keyword">
+	           (t.NAME like '%' || #keyword# || '%' or  REGEXP_LIKE(t.TAG, '(^|[;,[:space:]])' || #keyword# || '([;,[:space:]]|$$)' ))
+	        </isNotEmpty>
+	         <isNotEmpty prepend="and" property="catalogId">
+	          t.BOX_CATALOG = #catalogId#
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="tagexp">
+	          <![CDATA[
+	              REGEXP_LIKE(t.TAG, '(^|[;,[:space:]])' || #tagexp# || '([;,[:space:]]|$$)' )
+	           ]]>
+	          </isNotEmpty>
+	          <isNotEmpty prepend="and" property="catalogIds">
+			 	    T.BOX_CATALOG in
+		        	<iterate property="catalogIds" open="(" close=")" conjunction=",">
+		            	#catalogIds[]#
+		         	</iterate>
+			  </isNotEmpty>
+	          <isNotEmpty prepend="and" property="userId">
+	           t.USER_ID = #userId#
+	          </isNotEmpty>
+	           <isNotEmpty prepend="and" property="width">
+	           (t.width = #width# or t.AUTO_FIT ='1')
+	          </isNotEmpty>
+	          <isNotEmpty  property="applyDevice">
+	 			  <isNotEqual    prepend="and" property="applyDevice" compareValue="all">		             
+				            (t.APPLY_DEVICE = #applyDevice# or  t.APPLY_DEVICE ='all'  or t.APPLY_DEVICE is null)			          
+			      </isNotEqual>
+			      <isEqual  prepend="and" property="applyDevice" compareValue="all">	
+			            (t.APPLY_DEVICE ='all'  or t.APPLY_DEVICE is null)
+			      </isEqual>
+		      </isNotEmpty>
+		      
+        </dynamic>
+    </sql>
+     <select id="MS_GET_PUBLIC_BLOCK_BY_KEYWORD" parameterClass="java.util.HashMap" resultMap="BoxModuleVO-Result" resultClass="BoxCell">
+            SELECT * FROM (
+        SELECT A.*,ROWNUM RN FROM (SELECT
+        t.ID AS ID,
+        t.NAME AS NAME,
+        t.THUMBNAIL AS THUMBNAIL,
+        t.USER_ID AS USER_ID,
+        t.TAG AS TAG ,
+        t.CLASS_NAME AS CLASS_NAME ,
+        t.GMT_CREATE AS GMT_CREATE ,
+        t.GMT_MODIFIED AS GMT_MODIFIED,
+        t.HEIGHT AS HEIGHT ,
+        t.WIDTH AS WIDTH,
+        'N' AS IS_ORIGIN ,
+        t.AUTO_FIT AS AUTO_FIT ,
+        t.ID  AS ORIGIN_ID,
+          t.auto_gen_pic,
+        t.BOX_CATALOG AS BOX_CATALOG ,
+        t.TYPE,
+		t.SOURCE ,
+        'module' AS  CONTENT,
+        t.UED ,
+        t.FRONTEND
+        FROM DCMS_BOX_MODULE t  ,cms_resource_site s where t.ID=s.RESOURCE_ID
+        and  t.source = 'public_block'  and     s.resource_type = 'public_block'
+        and s.site_id=#siteId#
+
+        <include refid="BASE_GET_PUBLIC_BLOCK_BY_KEYWORD"/>
+        <![CDATA[
+            ORDER BY GMT_MODIFIED  DESC ) A WHERE rownum <= #endRow#) WHERE rn >= #startRow#
+        ]]>
+
+        </select>
+    <select id="MS_GET_PUBLICBLOCK_COUNT_BY_KEYWORD" parameterClass="java.util.HashMap" resultClass="java.lang.Integer">
+        SELECT count(*)  from  (
+        select t.id FROM DCMS_BOX_MODULE t  ,cms_resource_site s where t.ID=s.RESOURCE_ID
+        and  t.source = 'public_block'  and     s.resource_type = 'public_block'
+        and s.site_id=#siteId#
+        <include refid="BASE_GET_PUBLIC_BLOCK_BY_KEYWORD"/>
+        )
+    </select>
+    
+    <select id="MS-SEARCH-FAVORITE-MODULE-BY-APPLYDEVICE"  parameterClass="java.util.Map" resultMap="BoxCell-Result">
+       	  <![CDATA[
+            SELECT * FROM (
+             SELECT A.*,ROWNUM RN FROM ( 
+                  SELECT
+			        t.ID AS ID,
+			        t.NAME AS NAME,
+			        t.THUMBNAIL AS THUMBNAIL,
+			        t.USER_ID AS USER_ID,
+			        t.TAG AS TAG ,
+			        t.CLASS_NAME AS CLASS_NAME ,
+			        t.GMT_CREATE AS GMT_CREATE ,
+			        t.GMT_MODIFIED AS GMT_MODIFIED,
+			        t.HEIGHT AS HEIGHT ,
+			        t.BOX_CATALOG AS BOX_CATALOG ,
+			        t.TYPE,
+			        t.WIDTH AS WIDTH,
+			        'N' AS IS_ORIGIN ,
+			        t.AUTO_FIT AS AUTO_FIT ,
+			          t.auto_gen_pic,
+			        t.ID  AS ORIGIN_ID,
+			        'module' AS  CONTENT,
+			        t.APPLY_DEVICE
+			        
+			        FROM DCMS_BOX_MODULE  t,CMS_FAVORITE f  ,CMS_MATERIAL_LIB_RESOURCE m
+			        where t.id=f.num_id and f.user_id=#userId# and f.TYPE='BM'  and t.ID=m.RESOURCE_ID
+          ]]>
+          <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+		  </isNotEmpty>
+		  <isNotEmpty prepend="AND" property="materialLibId">
+		           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+		  </isNotEmpty>
+          <isNotEmpty  property="applyDevice">
+	 			  <isNotEqual    prepend="and" property="applyDevice" compareValue="all">		             
+				            (t.APPLY_DEVICE = #applyDevice# or  t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null )			          
+			      </isNotEqual>
+			      <isEqual  prepend="and" property="applyDevice" compareValue="all">	
+			            (t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null)
+			      </isEqual>
+		 </isNotEmpty>
+		 <isNotEmpty prepend="and" property="width">
+	           (t.width = #width# or t.AUTO_FIT ='1')
+	     </isNotEmpty>
+	    <isNotEmpty prepend="and" property="boxPageType">
+			((t.box_page_type like '%' || #boxPageType# || '%') or (t.box_page_type is null))
+		</isNotEmpty>
+      <![CDATA[
+            order by user_id,id desc
+         ) A WHERE ROWNUM <= #endRow#
+      ) WHERE RN >= #startRow#
+      ]]> 
+    </select>
+       <select id="MS-SEARCH-FAVORITE-MODULE-COUNT-BY-APPLYDEVICE" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+        <![CDATA[ 
+            select count(*)   FROM DCMS_BOX_MODULE  t,CMS_FAVORITE f ,CMS_MATERIAL_LIB_RESOURCE m
+			        where t.id=f.num_id and f.user_id=#userId# and f.TYPE='BM' and t.ID=m.RESOURCE_ID
+        ]]>  
+         <isNotEmpty prepend="AND" property="materialLibResourceType">
+	           <![CDATA[ m.resource_type = #materialLibResourceType# ]]>
+	    </isNotEmpty>
+	    <isNotEmpty prepend="AND" property="materialLibId">
+	           <![CDATA[ m.material_lib_id = #materialLibId# ]]>
+	    </isNotEmpty>
+	    
+         <isNotEmpty  property="applyDevice">
+	 			  <isNotEqual    prepend="and" property="applyDevice" compareValue="all">		             
+				            (t.APPLY_DEVICE = #applyDevice# or  t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null )			          
+			      </isNotEqual>
+			      <isEqual  prepend="and" property="applyDevice" compareValue="all">	
+			            (t.APPLY_DEVICE ='all' or t.APPLY_DEVICE is null)
+			      </isEqual>
+		 </isNotEmpty>
+		 <isNotEmpty prepend="and" property="width">
+	           (t.width = #width# or t.AUTO_FIT ='1')
+	     </isNotEmpty>
+	    <isNotEmpty prepend="and" property="boxPageType">
+			((t.box_page_type like '%' || #boxPageType# || '%') or (t.box_page_type is null))
+		</isNotEmpty>
+    </select>
+</sqlMap>

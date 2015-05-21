@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DistributeRule">
+	<typeAlias alias="distributeRuleDO"
+		type="com.alibaba.bigData.dal.entity.DistributeRuleDO" />
+	<typeAlias alias="odpsDistributeRuleDO"
+		type="com.alibaba.bigData.dal.entity.OdpsDistributeRuleDO" />
+
+
+	<resultMap class="distributeRuleDO" id="distributeRuleDOResult">
+		<result column="rule_id" property="ruleId" />
+		<result column="rule_type" property="ruleType" />
+		<result column="rule_level" property="ruleLevel" />
+		<result column="rule_sql" property="ruleSql" />
+		<result column="rule_desc" property="ruleDesc" />
+		<result column="business_type" property="businessType" />
+		<result column="status" property="status" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="author" property="author" />
+		<result column="expect" property="expect" />
+		<result column="type" property="type" />
+		<result column="stats_flag" property="statsFlag" />
+		<result column="stats_name" property="statsName" />
+		<result column="stats_sql" property="statsSql" />
+		<result column="check_type" property="checkType" />
+		<result column="rule_name" property="ruleName" />
+	</resultMap>
+
+  <resultMap class="odpsDistributeRuleDO" id="odpsRuleDOResult">
+		<result column="rule_id" property="ruleId" />
+		<result column="stats_name" property="statsName" />
+		<result column="stats_flag" property="statsFlag" />
+		<result column="rule_type" property="ruleType" />
+	</resultMap>
+
+
+	<sql id="ruleColumns">
+		select
+		*
+	</sql>
+
+	<sql id="ruleFrom">
+		from bigData_job_distribute_rule a
+	</sql>
+
+	<sql id="ruleJoin">
+		a.status = '1'
+	</sql>
+
+	<sql id="ruleQuery">
+		where
+		<include refid="ruleJoin" />
+		<isNotNull property="ruleId" prepend="AND">
+			a.rule_id =#ruleId#
+		</isNotNull>
+		<isNotNull property="ruleType" prepend="AND">
+			a.rule_type = #ruleType#
+		</isNotNull>
+		<isNotNull property="ruleLevel" prepend="AND">
+			a.rule_level=#ruleLevel#
+		</isNotNull>
+		<isNotNull property="ruleSql" prepend="AND">
+			a.rule_sql=#ruleSql#
+		</isNotNull>
+		<isNotNull property="ruleDesc" prepend="AND">
+			a.rule_desc=#ruleDesc#
+		</isNotNull>
+		<isNotNull property="type" prepend="AND">
+			a.type=#type#
+		</isNotNull>
+		<isNotNull property="author" prepend="AND">
+			a.author=#author#
+		</isNotNull>
+		<isNotNull property="ruleName" prepend="AND">
+			a.rule_name=#ruleName#
+		</isNotNull>
+		<isNotNull property="checkType" prepend="AND">
+			a.check_type=#checkType#
+		</isNotNull>
+	</sql>
+
+
+	<select id="queryRule" resultMap="distributeRuleDOResult">
+		<include refid="ruleColumns" />
+		<include refid="ruleFrom" />
+		<include refid="ruleQuery" />
+		order by gmt_create
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryOdpsRule" resultMap="odpsRuleDOResult">
+		select * from bigdata_job_distribute_rule_odps
+		where rule_id=#ruleId#
+	</select>
+
+	<select id="queryRuleById" resultMap="distributeRuleDOResult">
+		<include refid="ruleColumns" />
+		<include refid="ruleFrom" />
+		where
+		 a.rule_id =#id#
+	</select>
+
+	<select id="QueryRuleCount" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="ruleFrom" />
+		<include refid="ruleQuery" />
+
+	</select>
+
+	<insert id="addRule" parameterClass="distributeRuleDO">
+		insert into bigData_job_distribute_rule
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="ruleType">
+				rule_type
+			</isNotNull>
+			<isNotNull prepend="," property="ruleLevel">
+				rule_level
+			</isNotNull>
+			<isNotNull prepend="," property="ruleSql">
+				rule_sql
+			</isNotNull>
+			<isNotNull prepend="," property="ruleDesc">
+				rule_desc
+			</isNotNull>
+			<isNotNull prepend="," property="businessType">
+				business_type
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				status
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify
+			</isNotNull>
+			<isNotNull prepend="," property="author">
+				author
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				expect
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				type
+			</isNotNull>
+			<isNotNull prepend="," property="checkType">
+				check_type
+			</isNotNull>
+			<isNotNull prepend="," property="ruleName">
+				rule_name
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="ruleType">
+				#ruleType#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleLevel">
+				#ruleLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleSql">
+				#ruleSql#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleDesc">
+				#ruleDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="businessType">
+				#businessType#
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				#status#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>
+			<isNotNull prepend="," property="author">
+				#author#
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				#expect#
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				#type#
+			</isNotNull>
+			<isNotNull prepend="," property="checkType">
+				#checkType#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleName">
+				#ruleName#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="ruleId">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS rule_id
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateRule" parameterClass="distributeRuleDO">
+		update bigData_job_distribute_rule
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="ruleType">
+				rule_type=#ruleType#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleLevel">
+				rule_level=#ruleLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleSql">
+				rule_sql=#ruleSql#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleDesc">
+				rule_desc=#ruleDesc#
+			</isNotNull>
+			<isNotNull prepend="," property="businessType">
+				bussiness_type=#businessType#
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				status=#status#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create=#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify=#gmtModify#
+			</isNotNull>
+			<isNotNull prepend="," property="author">
+				author=#author#
+			</isNotNull>
+			<isNotNull prepend="," property="expect">
+				expect=#expect#
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				#type#
+			</isNotNull>
+			<isNotNull prepend="," property="checkType">
+				check_type=#checkType#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleName">
+				rule_name=#ruleName#
+			</isNotNull>
+			where rule_id = #ruleId#
+		</dynamic>
+	</update>
+
+	<update id="deleteRule" parameterClass="java.lang.Integer">
+		update bigData_job_distribute_rule
+		set status = '0'
+		where rule_id = #id#
+	</update>
+
+</sqlMap>

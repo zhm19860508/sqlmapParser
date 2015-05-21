@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunScanResult">
+	<typeAlias alias="scanTaskResultDO"
+		type="com.alibaba.bigData.dal.entity.HiveScanTaskResultDO" />
+
+
+	<resultMap class="ScanTaskResultDO" id="scanResultDOResult">
+		<result column="taskID" property="taskID" />
+		<result column="runID" property="runID" />
+		<result column="stcJobID" property="stcJobID" />
+		<result column="svn" property="svn" />
+		<result column="in_path" property="inPath" />
+		<result column="ex_path" property="exPath" />
+		<result column="in_type" property="inType" />
+		<result column="ex_type" property="exType" />
+		<result column="conversions" property="conversions" />
+		<result column="script_ids" property="scriptIds" />
+		<result column="bugs_num" property="bugsNum" />
+		<result column="version" property="version" />
+		<result column="bugs_href" property="bugsHref" />
+		<result column="time_stamp_type" property="timeType" />
+		<result column="time_stamp_value" property="timeValue" />
+		<result column="failed_rules" property="failedRules" />
+		<result column="failed_files_num" property="failedFilesNum" />
+
+	</resultMap>
+
+
+	<sql id="scanResultColumns">
+		select
+		*
+	</sql>
+
+	<sql id="scanResultFrom">
+		from bigData_run_result_scan
+	</sql>
+
+	<insert id="addScanResult" parameterClass="scanTaskResultDO">
+		insert into bigData_run_result_scan
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				taskID
+			</isNotNull>
+			<isNotNull prepend="," property="svn">
+				svn
+			</isNotNull>
+			<isNotNull prepend="," property="stcJobID">
+				stcJobID
+			</isNotNull>
+			<isNotNull prepend="," property="inPath">
+				in_path
+			</isNotNull>
+			<isNotNull prepend="," property="exPath">
+				ex_path
+			</isNotNull>
+			<isNotNull prepend="," property="inType">
+				in_type
+			</isNotNull>
+			<isNotNull prepend="," property="exType">
+				ex_type
+			</isNotNull>
+			<isNotNull prepend="," property="conversions">
+				conversions
+			</isNotNull>
+			<isNotNull prepend="," property="scriptIds">
+				script_ids
+			</isNotNull>
+			<isNotNull prepend="," property="runID">
+				runID
+			</isNotNull>
+			<isNotNull prepend="," property="bugsNum">
+				bugs_num
+			</isNotNull>
+			<isNotNull prepend="," property="version">
+				version
+			</isNotNull>
+			<isNotNull prepend="," property="bugsHref">
+				bugs_href
+			</isNotNull>
+			<isNotNull prepend="," property="timeType">
+				time_stamp_type
+			</isNotNull>
+			<isNotNull prepend="," property="timeValue">
+				time_stamp_value
+			</isNotNull>
+			<isNotNull prepend="," property="failedRules">
+				failed_rules
+			</isNotNull>
+			<isNotNull prepend="," property="failedFilesNum">
+				failed_files_num
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskID">
+				#taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="svn">
+				#svn#
+			</isNotNull>
+			<isNotNull prepend="," property="stcJobID">
+				#stcJobID#
+			</isNotNull>
+			<isNotNull prepend="," property="inPath">
+				#inPath#
+			</isNotNull>
+			<isNotNull prepend="," property="exPath">
+				#exPath#
+			</isNotNull>
+			<isNotNull prepend="," property="inType">
+				#inType#
+			</isNotNull>
+			<isNotNull prepend="," property="exType">
+				#exType#
+			</isNotNull>
+			<isNotNull prepend="," property="conversions">
+				#conversions#
+			</isNotNull>
+			<isNotNull prepend="," property="scriptIds">
+				#scriptIds#
+			</isNotNull>
+			<isNotNull prepend="," property="runID">
+				#runID#
+			</isNotNull>
+			<isNotNull prepend="," property="bugsNum">
+				#bugsNum#
+			</isNotNull>
+			<isNotNull prepend="," property="version">
+				#version#
+			</isNotNull>
+			<isNotNull prepend="," property="bugsHref">
+				#bugsHref#
+			</isNotNull>
+			<isNotNull prepend="," property="timeType">
+				#timeType#
+			</isNotNull>
+			<isNotNull prepend="," property="timeValue">
+				#timeValue#
+			</isNotNull>
+			<isNotNull prepend="," property="failedRules">
+				#failedRules#
+			</isNotNull>
+			<isNotNull prepend="," property="failedFilesNum">
+				#failedFilesNum#
+			</isNotNull>
+
+			)
+		</dynamic>
+
+	</insert>
+
+	<select id="queryScanTaskResultByRunId" resultMap="scanResultDOResult" >
+		<include refid="scanResultColumns" />
+		<include refid="scanResultFrom" />
+		where runID=#id#
+	</select>
+
+
+	<update id="updateRunResult" parameterClass="scanTaskResultDO">
+		update bigData_run_result_scan
+		<dynamic prepend="set">
+		<isNotNull prepend="," property="taskID">
+				taskID = #taskID#
+			</isNotNull>
+			<isNotNull prepend="," property="bugsNum">
+				bugs_num = #bugsNum#
+			</isNotNull>
+			<isNotNull prepend="," property="version">
+				version = #version#
+			</isNotNull>
+			<isNotNull prepend="," property="bugsHref">
+				bugs_href = #bugsHref#
+			</isNotNull>
+			<isNotNull prepend="," property="failedRules">
+				failed_rules = #failedRules#
+			</isNotNull>
+			<isNotNull prepend="," property="failedFilesNum">
+				failed_files_num = #failedFilesNum#
+			</isNotNull>
+			where runID = #runID#
+		</dynamic>
+	</update>
+
+</sqlMap>

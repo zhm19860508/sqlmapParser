@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsschemadetail">
+    <typeAlias alias="dsSchemaDetail" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsSchemaDetail"/>
+    <!--
+      - ===============================================
+      - DS_SCHEMA_DETAIL表映射到DataSourceSchemaDetail类
+      - ===============================================
+     -->
+	<resultMap id="dsSchemaDetailResult" class="dsSchemaDetail" >
+	    <result column="ID" property="id"/>
+	    <result column="NAME" property="name" />
+	    <result column="CN_NAME" property="cnName" />
+	    <result column="DATA_LENGTH" property="dataLength" />
+	    <result column="INTF_SHOW_FLAG" property="intfShowFlag" />
+	    <result column="DESCRIPTION" property="description" />
+	    <result column="CHILD_SCHEMA_ID" property="childSchemaMain.id" />
+	    <result column="SCHEMA_MAIN_ID" property="schemaMain.id" />
+	    <result column="PRIMARY_KEY_FLAG" property="primaryKeyFlag"/>
+	    <result column="DATA_MODIFY_FLAG" property="dataModifyFlag"/>
+	    <result column="MAPPING_FIELD" property="mappingField"/>
+	</resultMap>
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertDsSchemaDetail" parameterClass="dsSchemaDetail">
+		<selectKey resultClass="int" keyProperty="id" >
+			SELECT seq_DS_SCHEMA_DETAIL.NEXTVAL AS id FROM DUAL
+		</selectKey>
+    insert into DS_SCHEMA_DETAIL (ID, NAME, CN_NAME, DATA_LENGTH, INTF_SHOW_FLAG, DESCRIPTION, CHILD_SCHEMA_ID, SCHEMA_MAIN_ID,PRIMARY_KEY_FLAG,DATA_MODIFY_FLAG,MAPPING_FIELD)
+    values (#id#, #name#, #cnName#,
+      #dataLength#,#intfShowFlag#, #description#, #childSchemaMain.id#,
+      #schemaMain.id#, #primaryKeyFlag# ,#dataModifyFlag#,#mappingField#)
+    </insert>
+    
+  
+  <!-- 删除 -->
+  <delete id="deleteSchemaDetailBySchemaMain" parameterClass="int" >
+    delete from DS_SCHEMA_DETAIL where 
+        SCHEMA_MAIN_ID = #schemaMain.id#
+  </delete>
+    <!--
+      - ===============================================
+      - 根据组合条件查询schemaDetail
+      - ===============================================
+     -->
+  <select id="querySchemaDetailBySchemaMain" resultMap="dsSchemaDetailResult" parameterClass="dsSchemaDetail" >
+    select *
+    from DS_SCHEMA_DETAIL
+    where SCHEMA_MAIN_ID = #schemaMain.id#
+    order by NAME
+  </select>
+  
+    <!--
+      - ===============================================
+      - 获取所有
+      - ===============================================
+     -->
+    <select id="getAllDsSchemaDetail" resultMap="dsSchemaDetailResult" ><![CDATA[
+    select *
+        from
+                DS_SCHEMA_DETAIL
+    order by  SCHEMA_MAIN_ID,NAME
+    ]]></select>
+
+</sqlMap>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_VCSVersion">
+    <!--定义VCSVersionDO对象别名-->
+    <typeAlias alias="TA-VCSVersion" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.VCSVersionDO"/>
+    
+    <!--TA-VCSVersion对象，JDBC,JAVA字段类型映射-->
+    <resultMap id="RM-VCSVersionResult" class="TA-VCSVersion">
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="versionId" column="VERSION_ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="ipAddress" column="IP_ADDRESS" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="author" column="AUTHOR" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="operation" column="OPERATION" jdbcType="NUMERIC" javaType="java.lang.Integer"/>
+        <result property="resourceId" column="RESOURCE_ID" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="remark" column="REMARK" jdbcType="VARCHAR" javaType="java.lang.String"/>
+    </resultMap>
+    
+    <!--插入VCSVersion对象-->
+    <insert id="MS-INSERT-VCSVersion" parameterClass="TA-VCSVersion">
+        <selectKey resultClass="java.lang.Long" keyProperty="versionId"> SELECT SEQ_VCS_VERSION.NEXTVAL AS id FROM DUAL </selectKey> <![CDATA[
+            insert into 
+            VCS_VERSION (GMT_CREATE,GMT_MODIFIED,VERSION_ID,IP_ADDRESS,AUTHOR,OPERATION,RESOURCE_ID,RESOURCE_TYPE,REMARK)
+            values (sysdate,sysdate,#versionId#,#ipAddress#,#author#,#operation#,#resourceId#,#resourceType#,#remark#)
+        ]]>
+    </insert>
+    
+    <!--根据versionId取得VCSVersion对象-->
+    <select id="MS-FIND-VCSVersion-By-versionId" resultMap="RM-VCSVersionResult"> <![CDATA[
+            select * from VCS_VERSION where VERSION_ID = #versionId#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType取得VCSVersion对象的所有历史版本-->
+    <select id="MS-FIND-VCSVersion-By-resource" resultMap="RM-VCSVersionResult"> <![CDATA[
+            select * from VCS_VERSION where RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType取得VCSVersion对象，分页取法-->
+    <select id="MS-FIND-VCSVersion-By-resource-page" resultMap="RM-VCSVersionResult"> <![CDATA[
+        select 
+            *
+        from
+            (
+            select 
+                t.*,rownum as myrow
+            from
+                (select VCS_VERSION.*,rownum from VCS_VERSION where RESOURCE_ID = #resourceId# and RESOURCE_TYPE=#resourceType# order by GMT_MODIFIED desc) t
+            where
+                rownum<=#maxvalue#
+            )
+        where
+            myrow>#minvalue#
+        ]]>
+    </select>
+    
+    <!--根据resourceId,resourceType，计算数量-->
+    <select id="MS-FIND-VCSVersion-By-resource-count" resultClass="java.lang.Long"> <![CDATA[
+            select count(*) from VCS_VERSION where RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+        ]]>
+    </select>
+    
+	<sql id="BASE_DELETE_BY_VERSIONID">
+	    <![CDATA[
+            SELECT VERSION_ID FROM VCS_RELEASE 
+            WHERE 
+                  RESOURCE_TYPE = #resourceType# 
+              and RESOURCE_ID = #resourceId# 
+              and LATEST_VERSION <> 1 
+              and VERSION_ID in (
+        ]]>	
+		<iterate property="versionIds" conjunction=",">
+			#versionIds[]#
+		</iterate>   
+        <![CDATA[
+            )
+        ]]>  		         
+	</sql>
+	
+    <!--  删除版本 -->
+	<delete id="MS_DELETE_VCSVERSION_BY_RESOURCE_TYPE_AND_ID">
+        <![CDATA[
+            DELETE FROM VCS_VERSION WHERE VERSION_ID in (
+        ]]>
+		<include refid="BASE_DELETE_BY_VERSIONID"/>           
+        <![CDATA[
+            )
+       ]]>     
+	</delete>   	
+	
+	<!-- 删除版本内容 -->
+	<delete id="MS_DELETE_VCSCONTENT_BY_RESOURCE_TYPE_AND_ID">
+        <![CDATA[
+            DELETE FROM VCS_CONTENT WHERE VERSION_ID in (
+        ]]>			
+		<include refid="BASE_DELETE_BY_VERSIONID"/>           
+        <![CDATA[
+            )
+       ]]>	
+	</delete>  		
+	
+    <!-- 删除发布版本 -->
+	<delete id="MS_DELETE_VCSRELEASE_BY_RESOURCE_TYPE_AND_ID">
+        <![CDATA[
+            DELETE FROM VCS_RELEASE WHERE LATEST_VERSION <> 1 and VERSION_ID in (
+        ]]>			
+		<include refid="BASE_DELETE_BY_VERSIONID"/>           
+        <![CDATA[
+            )
+       ]]>	      
+	</delete>   		 
+</sqlMap>

@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsAppHostPage">        
+        
+    <resultMap class="CmsAppHostPage" id="CmsAppHostPage-result" >
+    	<result property="id"					javaType="java.lang.Long"		column="ID" />
+        <result property="gmtCreate"			javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"			javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />
+        <result property="hostId"				javaType="java.lang.Long"		column="HOST_ID" />
+        <result property="pageId"				javaType="java.lang.Long"		column="PAGE_ID" />
+        <result property="version"				javaType="java.lang.Long"		column="VERSION" />
+        <result property="status"				javaType="java.lang.String"		column="STATUS" />
+    </resultMap>
+
+	<select id="MS_SELECT_CMS_APP_HOST_PAGE_BY_ID" parameterClass="java.lang.Long"
+		resultMap="CmsAppHostPage-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_HOST_PAGE WHERE ID = #id# 
+        ]]>
+	</select>
+	
+	
+	<insert id="MS_INSERT_CMS_APP_HOST_PAGE" parameterClass="CmsAppHostPage">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_APP_HOST_PAGE.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_APP_HOST_PAGE
+              (ID , GMT_CREATE  , GMT_MODIFIED ,  HOST_ID  , PAGE_ID  , VERSION  , STATUS   )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #hostId#  , #pageId#  , #version#  , #status#)
+        ]]>
+	</insert>
+
+
+	<update id="MS_UPDATE_CMS_APP_HOST_PAGE" parameterClass="CmsAppHostPage">
+        <![CDATA[
+            update
+                    CMS_APP_HOST_PAGE
+            set
+                    GMT_MODIFIED = sysdate 
+        ]]>
+		<dynamic prepend="">
+			<isNotEmpty property="version" prepend=",">
+				VERSION =#version#
+			</isNotEmpty>
+			<isNotEmpty property="status" prepend=",">
+				STATUS =#status#
+			</isNotEmpty>
+		</dynamic>
+        <![CDATA[           
+		  where  
+                HOST_ID = #hostId# and PAGE_ID = #pageId#
+        ]]>
+	</update>
+	
+	<delete id="MS_DELATE_CMS_APP_HOST_PAGE" parameterClass="java.lang.Long">
+        <![CDATA[
+            delete FROM CMS_APP_HOST_PAGE WHERE ID = #id# 
+        ]]>
+	</delete>
+	
+	<select id="MS_SELECT_CMS_APP_HOST_PAGE_BY_HOST" parameterClass="java.util.Map"
+		resultMap="CmsAppHostPage-result">
+        <![CDATA[
+            SELECT * FROM CMS_APP_HOST_PAGE 
+        ]]>
+        <dynamic prepend="WHERE">
+			<isNotEmpty property="hostId" prepend="AND">
+				HOST_ID =#hostId#
+			</isNotEmpty>
+			<isNotEmpty property="pageId" prepend="AND">
+				PAGE_ID =#pageId#
+			</isNotEmpty>
+		</dynamic>
+	</select>
+</sqlMap>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="HbaseConfig">
+	<typeAlias alias="HbaseConfigDO"
+		type="com.alibaba.bigData.dal.entity.HbaseConfigDO" />
+
+
+	<resultMap class="HbaseConfigDO" id="hbaseConfigDOResult">
+		<result column="id" property="id" />
+		<result column="hbaseClusterName" property="hbaseClusterName" />
+		<result column="zookeeper_quorum" property="zookeeperQuorum" />
+		<result column="zookeeper_parent" property="zookeeperParent" />
+		<result column="is_deleted" property="isDeleted" />
+	</resultMap>
+
+
+	<sql id="hbaseConfigColumns">
+		select
+		a.id,a.hbaseClusterName,a.zookeeper_quorum,a.zookeeper_parent,a.is_deleted
+	</sql>
+
+	<sql id="hbaseConfigFrom">
+		from bigdata_hbase_config a
+	</sql>
+
+	<sql id="hbaseConfigJoin">
+		a.is_deleted = 0 
+	</sql>
+	
+	<select id="queryAllHbaseConfig" resultMap="hbaseConfigDOResult">
+		<include refid="hbaseConfigColumns" />
+		<include refid="hbaseConfigFrom" />
+		where
+		<include refid="hbaseConfigJoin" />
+	</select>
+
+	<insert id="addHbaseConfig" parameterClass="HbaseConfigDO">
+		insert into bigdata_hbase_config
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="hbaseClusterName">
+				hbaseClusterName
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperQuorum">
+				zookeeper_quorum
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperParent">
+				zookeeper_parent
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="hbaseClusterName">
+				#hbaseClusterName#
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperQuorum">
+				#zookeeperQuorum#
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperParent">
+				#zookeeperParent#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateHbaseConfig" parameterClass="HbaseConfigDO">
+		update bigdata_hbase_config
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="hbaseClusterName">
+				hbaseClusterName=#hbaseClusterName#
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperQuorum">
+				zookeeper_quorum=#zookeeperQuorum#
+			</isNotNull>
+			<isNotNull prepend="," property="zookeeperParent">
+				zookeeper_parent=#zookeeperParent#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+	
+	<select id="getHbaseConfigById" resultMap="hbaseConfigDOResult">
+		<include refid="hbaseConfigColumns" />
+		<include refid="hbaseConfigFrom" />
+		where
+		<include refid="hbaseConfigJoin" />
+		and a.id=#id#
+	</select>
+	
+	<update id="deleteHbaseConfig" parameterClass="java.lang.Integer">
+		update bigdata_hbase_config
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+	
+</sqlMap>

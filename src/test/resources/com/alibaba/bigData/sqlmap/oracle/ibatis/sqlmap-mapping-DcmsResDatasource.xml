@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="DcmsResDatasource" >
+
+  <typeAlias alias="dcmsResDatasourceDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsResDatasourceDO" />
+
+  <resultMap id="dcmsResDatasourceDOResultMap" class="dcmsResDatasourceDO" >
+    <result property="id" column="ID" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="createUser" column="CREATE_USER" />
+    <result property="modifyUser" column="MODIFY_USER" />
+    <result property="name" column="NAME" />
+    <result property="showType" column="SHOW_TYPE" />
+    <result property="url" column="URL" />
+    <result property="owner" column="OWNER" />
+    <result property="status" column="STATUS" />
+    <result property="invokeName" column="INVOKE_NAME" />
+    <result property="type" column="TYPE" />
+    <result property="canMerge" column="CAN_MERGE" />
+    <result property="sourceType" column="SOURCE_TYPE" />
+    <result property="sourceParam" column="SOURCE_PARAM" />
+    <result property="note" column="NOTE" />
+  </resultMap>
+
+  <sql id="dcmsResDatasource_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CREATE_USER, a1.MODIFY_USER, a1.NAME, a1.SHOW_TYPE,
+      a1.URL, a1.OWNER, a1.STATUS, a1.INVOKE_NAME, a1.TYPE, a1.CAN_MERGE, a1.SOURCE_TYPE, a1.SOURCE_PARAM,a1.NOTE
+  </sql>
+
+  <sql id="dcmsResDatasource_do_columns" >
+    a1.ID, a1.GMT_CREATE, a1.GMT_MODIFIED, a1.CREATE_USER, a1.MODIFY_USER, a1.NAME, a1.SHOW_TYPE,
+      a1.URL, a1.OWNER, a1.STATUS, a1.INVOKE_NAME, a1.TYPE, a1.CAN_MERGE, a1.SOURCE_TYPE, a1.SOURCE_PARAM,a1.NOTE
+  </sql>
+
+  <sql id="dcmsResDatasource_queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="showType" prepend="AND" >
+        <![CDATA[
+        SHOW_TYPE = #showType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="url" prepend="AND" >
+        <![CDATA[
+        URL = #url#
+        ]]>
+      </isNotNull>
+      <isNotNull property="owner" prepend="AND" >
+        <![CDATA[
+        OWNER = #owner#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="AND" >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceType" prepend="AND" >
+        <![CDATA[
+        SOURCE_TYPE = #sourceType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceParam" prepend="AND" >
+        <![CDATA[
+        SOURCE_PARAM = #sourceParam#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="dcmsResDatasource_doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreateStart" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE >= #gmtCreateStart#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtCreateEnd" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE <= #gmtCreateEnd#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModifiedStart" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED >= #gmtModifiedStart#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModifiedEnd" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED <= #gmtModifiedEnd#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="showType" prepend="AND" >
+        <![CDATA[
+        SHOW_TYPE = #showType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="url" prepend="AND" >
+        <![CDATA[
+        URL = #url#
+        ]]>
+      </isNotNull>
+      <isNotNull property="owner" prepend="AND" >
+        <![CDATA[
+        OWNER = #owner#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="AND" >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceType" prepend="AND" >
+        <![CDATA[
+        SOURCE_TYPE = #sourceType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceParam" prepend="AND" >
+        <![CDATA[
+        SOURCE_PARAM = #sourceParam#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="dcmsResDatasourceDO" >
+    <selectKey resultClass="java.lang.Long" keyProperty="id">
+         SELECT SEQ_DCMS_RES_DATASOURCE.NEXTVAL AS ID FROM DUAL
+    </selectKey>
+    INSERT INTO DCMS_RES_DATASOURCE( ID, GMT_CREATE, GMT_MODIFIED, CREATE_USER, MODIFY_USER, NAME, SHOW_TYPE,
+      URL, OWNER, STATUS, INVOKE_NAME, TYPE, CAN_MERGE,SOURCE_TYPE,SOURCE_PARAM,NOTE)
+     VALUES ( #id#, #gmtCreate#, #gmtModified#, #createUser#, #modifyUser#, #name#, #showType#,
+      #url#, #owner#, #status#, #invokeName#, #type#, #canMerge#,#sourceType#,#sourceParam#,#note#)
+   </insert>
+
+  <update id="update" parameterClass="dcmsResDatasourceDO" >
+    UPDATE DCMS_RES_DATASOURCE
+    <dynamic prepend="SET" >
+      <!--
+      <isNotNull property="id" prepend="," >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      -->
+      <isNotNull property="gmtCreate" prepend="," >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="," >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="," >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="," >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="," >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="showType" prepend="," >
+        <![CDATA[
+        SHOW_TYPE = #showType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="url" prepend="," >
+        <![CDATA[
+        URL = #url#
+        ]]>
+      </isNotNull>
+      <isNotNull property="owner" prepend="," >
+        <![CDATA[
+        OWNER = #owner#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="," >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="," >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="," >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="," >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceType" prepend="," >
+        <![CDATA[
+        SOURCE_TYPE = #sourceType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceParam" prepend="," >
+        <![CDATA[
+        SOURCE_PARAM = #sourceParam#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="," >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="dcmsResDatasourceDOResultMap" >
+     SELECT
+    <include refid="dcmsResDatasource_do_columns" />
+    <![CDATA[
+     FROM DCMS_RES_DATASOURCE a1 WHERE ID = #id#
+    ]]>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[
+     DELETE FROM DCMS_RES_DATASOURCE WHERE ID = #id#
+    ]]>
+  </delete>
+
+  <select id="countByDOExample" parameterClass="dcmsResDatasourceDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM DCMS_RES_DATASOURCE
+    <include refid="dcmsResDatasource_doQueryParams" />
+  </select>
+
+  <select id="findListByDO" parameterClass="dcmsResDatasourceDO" resultMap="dcmsResDatasourceDOResultMap" >
+     SELECT
+    <include refid="dcmsResDatasource_do_columns" />
+     FROM DCMS_RES_DATASOURCE a1
+    <include refid="dcmsResDatasource_doQueryParams" />
+    order by gmt_modified desc
+  </select>
+
+  <select id="findListByParams" parameterClass="java.util.Map" resultMap="dcmsResDatasourceDOResultMap" >
+     SELECT
+    <include refid="dcmsResDatasource_do_columns" />
+     FROM DCMS_RES_DATASOURCE a1
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[
+        ID = #id#
+        ]]>
+      </isNotNull>
+      <isNotNull property="ids" prepend="AND" >
+         ID in 
+			<iterate property="ids" open="(" close=")" conjunction=",">
+				#ids[]#
+			</iterate>
+	  </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[
+        GMT_CREATE = #gmtCreate#
+        ]]>
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[
+        GMT_MODIFIED = #gmtModified#
+        ]]>
+      </isNotNull>
+      <isNotNull property="createUser" prepend="AND" >
+        <![CDATA[
+        CREATE_USER = #createUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="modifyUser" prepend="AND" >
+        <![CDATA[
+        MODIFY_USER = #modifyUser#
+        ]]>
+      </isNotNull>
+      <isNotNull property="name" prepend="AND" >
+        <![CDATA[
+        NAME = #name#
+        ]]>
+      </isNotNull>
+      <isNotNull property="showType" prepend="AND" >
+        <![CDATA[
+        SHOW_TYPE = #showType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="url" prepend="AND" >
+        <![CDATA[
+        URL = #url#
+        ]]>
+      </isNotNull>
+      <isNotNull property="owner" prepend="AND" >
+        <![CDATA[
+        OWNER = #owner#
+        ]]>
+      </isNotNull>
+      <isNotNull property="status" prepend="AND" >
+        <![CDATA[
+        STATUS = #status#
+        ]]>
+      </isNotNull>
+      <isNotNull property="invokeName" prepend="AND" >
+        <![CDATA[
+        INVOKE_NAME = #invokeName#
+        ]]>
+      </isNotNull>
+      <isNotNull property="type" prepend="AND" >
+        <![CDATA[
+        TYPE = #type#
+        ]]>
+      </isNotNull>
+      <isNotNull property="canMerge" prepend="AND" >
+        <![CDATA[
+        CAN_MERGE = #canMerge#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceType" prepend="AND" >
+        <![CDATA[
+        SOURCE_TYPE = #sourceType#
+        ]]>
+      </isNotNull>
+      <isNotNull property="sourceParam" prepend="AND" >
+        <![CDATA[
+        SOURCE_PARAM = #sourceParam#
+        ]]>
+      </isNotNull>
+      <isNotNull property="note" prepend="AND" >
+        <![CDATA[
+        NOTE = #note#
+        ]]>
+      </isNotNull>
+    </dynamic>
+  </select>
+</sqlMap>

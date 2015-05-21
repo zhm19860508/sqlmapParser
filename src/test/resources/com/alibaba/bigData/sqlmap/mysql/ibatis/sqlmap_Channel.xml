@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Channel">
+	<typeAlias alias="ChannelDO"
+		type="com.alibaba.bigData.dal.entity.ChannelDO" />
+
+	<resultMap id="ChannelResultMap" class="ChannelDO">
+		<result property="channelId" column="id" />
+		<result property="channelName" column="channel_name" />
+	</resultMap>
+
+	<select id="queryChannelNameById" resultClass="java.lang.String">
+		SELECT channel_name FROM bigData_channel
+		where id=#channelId#
+	</select>
+
+	<select id="queryChannelIdByName" resultClass="java.lang.Integer">
+		SELECT id FROM bigData_channel
+		where channel_name=#channelName# and is_deleted=0
+	</select>
+
+	<insert id="addChannel" parameterClass="ChannelDO">
+		INSERT INTO bigData_channel(id,channel_name)
+		VALUES
+		(#channelId#,#channelName#)
+		<selectKey keyProperty="channelId" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+
+	<select id="getAllChannel" resultMap="ChannelResultMap">
+		SELECT * FROM bigData_channel
+		where is_deleted = 0;
+	</select>
+
+	<update id="updateChannel" parameterClass="ChannelDO">
+		update bigData_channel
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="channelName">
+				channel_name=#channelName#
+			</isNotNull>
+			where id = #channelId#
+		</dynamic>
+	</update>
+
+	<update id="deleteChannelById" parameterClass="java.lang.Integer">
+        update bigData_channel
+		set is_deleted=1
+		where
+		id=#channelId#
+    </update>
+
+	<update id="unDeleteChannelById" parameterClass="java.lang.Integer">
+        update bigData_channel
+		set is_deleted=0
+		where
+		id=#channelId#
+    </update>
+
+</sqlMap>

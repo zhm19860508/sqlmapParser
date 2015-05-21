@@ -1,0 +1,694 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="CompareTask">
+	<typeAlias alias="compareTaskDO" type="com.alibaba.bigData.dal.entity.CompareTaskDO" />
+	<typeAlias alias="compareHdfsDO" type="com.alibaba.bigData.dal.entity.CompareHdfsDO" />
+
+
+
+	<resultMap class="CompareTaskDO" id="compareTaskDOResult">
+		<result column="task_id" property="taskId" />
+		<result column="source_tbl" property="sourceTbl" />
+		<result column="target_tbl" property="targetTbl" />
+		<result column="rule_ids" property="ruleIds" />
+		<result column="source_pt" property="sourcePt" />
+		<result column="target_pt" property="targetPt" />
+		<result column="source_column" property="sourceColumn" />
+		<result column="target_column" property="targetColumn" />
+		<result column="threshold" property="threshold" />
+		<result column="source_cluster" property="sourceCluster" />
+		<result column="target_cluster" property="targetCluster" />
+		<result column="compare_type" property="compareType" />
+		<result column="fulltext_sourceColumn" property="fulltextSourceColumn" />
+		<result column="fulltext_targetColumn" property="fulltextTargetColumn" />
+		<result column="has_fulltext" property="hasFulltext" />
+		<result column="source_key" property="sourceKey" />
+		<result column="target_key" property="targetKey" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="sourceSortCols" property="sourceSortCols" />
+		<result column="targetSortCols" property="targetSortCols" />
+		<result column="sourceSortSplit" property="sourceSortSplit" />
+		<result column="targetSortSplit" property="targetSortSplit" />
+		<result column="sourceQuery" property="sourceQuery" />
+		<result column="targetQuery" property="targetQuery" />
+		<result column="runProject" property="runProject" />
+		<result column="sourceMeasure" property="sourceMeasure" />
+		<result column="targetMeasure" property="targetMeasure" />
+	</resultMap>
+
+	<resultMap class="CompareTaskDO" id="compareTaskDOFullResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="title" property="projectName" />
+		<result column="task_name" property="taskName" />
+		<result column="task_description" property="taskDescription" />
+		<result column="task_type" property="taskType" />
+		<result column="run_type" property="runType" />
+		<result column="channel_id" property="channelId" />
+		<result column="machine_ip" property="machineIp" />
+		<result column="user_name" property="userName" />
+		<result column="group_id" property="groupId" />
+		<result column="source_tbl" property="sourceTbl" />
+		<result column="target_tbl" property="targetTbl" />
+		<result column="work_flow_project_id" property="requestId" />
+	</resultMap>
+
+	<resultMap class="CompareHdfsDO" id="CompareHdfsResult">
+		<result column="hdfs_path" property="hdfs" />
+		<result column="file_type" property="fileType" />
+		<result column="line_split" property="lineSplit" />
+		<result column="column_split" property="columnSplit" />
+		<result column="fileCode" property="fileCode" />
+		<result column="task_id" property="taskId" />
+		<result column="sequence_valueonly" property="sequenceValueonly" />
+		<result column="binary_mode" property="binaryMode" />
+		<result column="diff_pb_rep" property="diffPbRep" />
+		<result column="diff_pb_translate" property="diffPbTranslate" />
+		<result column="diff_pb_class" property="diffPbClass" />
+	</resultMap>
+
+
+
+	<sql id="compareTaskFullColumns">
+		select
+		a.task_id,a.source_tbl,a.target_tbl,b.id,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,c.title
+	</sql>
+
+	<sql id="compareTaskColumns">
+		select
+		*
+	</sql>
+
+	<sql id="compareTaskFrom">
+		from bigData_job_compare a
+	</sql>
+
+	<insert id="addCompareTask" parameterClass="compareTaskDO">
+		insert into bigData_job_compare
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTbl">
+				source_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="targetTbl">
+				target_tbl
+			</isNotNull>
+			<isNotNull prepend="," property="ruleIds">
+				rule_ids
+			</isNotNull>
+			<isNotNull prepend="," property="sourcePt">
+				source_pt
+			</isNotNull>
+			<isNotNull prepend="," property="targetPt">
+				target_pt
+			</isNotNull>
+			<isNotNull prepend="," property="sourceColumn">
+				source_column
+			</isNotNull>
+			<isNotNull prepend="," property="targetColumn">
+				target_column
+			</isNotNull>
+			<isNotNull prepend="," property="threshold">
+				threshold
+			</isNotNull>
+			<isNotNull prepend="," property="sourceCluster">
+				source_cluster
+			</isNotNull>
+			<isNotNull prepend="," property="targetCluster">
+				target_cluster
+			</isNotNull>
+			<isNotNull prepend="," property="compareType">
+				compare_type
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextSourceColumn">
+				fulltext_sourceColumn
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextTargetColumn">
+				fulltext_targetColumn
+			</isNotNull>
+			<isNotNull prepend="," property="hasFulltext">
+				has_fulltext
+			</isNotNull>
+			<isNotNull prepend="," property="sourceKey">
+				source_key
+			</isNotNull>
+			<isNotNull prepend="," property="targetKey">
+				target_key
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSortCols">
+				sourceSortCols
+			</isNotNull>
+			<isNotNull prepend="," property="targetSortCols">
+				targetSortCols
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSortSplit">
+				sourceSortSplit
+			</isNotNull>
+			<isNotNull prepend="," property="targetSortSplit">
+				targetSortSplit
+			</isNotNull>
+			<isNotNull prepend="," property="sourceQuery">
+				sourceQuery
+			</isNotNull>
+			<isNotNull prepend="," property="targetQuery">
+				targetQuery
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				runProject
+			</isNotNull>
+			<isNotNull prepend="," property="sourceMeasure">
+				sourceMeasure
+			</isNotNull>
+			<isNotNull prepend="," property="targetMeasure">
+				targetMeasure
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTbl">
+				#sourceTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="targetTbl">
+				#targetTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleIds">
+				#ruleIds#
+			</isNotNull>
+			<isNotNull prepend="," property="sourcePt">
+				#sourcePt#
+			</isNotNull>
+			<isNotNull prepend="," property="targetPt">
+				#targetPt#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceColumn">
+				#sourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="targetColumn">
+				#targetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="threshold">
+				#threshold#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceCluster">
+				#sourceCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="targetCluster">
+				#targetCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="compareType">
+				#compareType#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextSourceColumn">
+				#fulltextSourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextTargetColumn">
+				#fulltextTargetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="hasFulltext">
+				#hasFulltext#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceKey">
+				#sourceKey#
+			</isNotNull>
+			<isNotNull prepend="," property="targetKey">
+				#targetKey#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSortCols">
+				#sourceSortCols#
+			</isNotNull>
+			<isNotNull prepend="," property="targetSortCols">
+				#targetSortCols#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceSortSplit">
+				#sourceSortSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="targetSortSplit">
+				#targetSortSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceQuery">
+				#sourceQuery#
+			</isNotNull>
+			<isNotNull prepend="," property="targetQuery">
+				#targetQuery#
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				#runProject#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceMeasure">
+				#sourceMeasure#
+			</isNotNull>
+			<isNotNull prepend="," property="targetMeasure">
+				#targetMeasure#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="taskId">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryCompareTaskByTaskId" resultMap="compareTaskDOResult">
+		<include refid="compareTaskColumns" />
+		<include refid="compareTaskFrom" />
+		where a.task_id=#taskId#
+	</select>
+
+	<select id="queryCompareTaskByTableName" resultMap="compareTaskDOResult">
+		select a.* from bigData_job_compare a,bigdata_job_base b
+		where (a.source_tbl=#tableName# or a.target_tbl=#tableName#)
+		and a.task_id=b.id and b.is_deleted=0
+	</select>
+
+	<select id="queryResultLogs" parameterClass="java.lang.String" resultClass="java.lang.String">
+		select run_log from bigdata_run_result_base where id in ($runIds$)
+	</select>
+
+
+	<sql id="compareTaskQuery">
+        where b.is_deleted = 0
+		<isNotNull property="taskName" prepend="AND">
+            task_name like '$taskName$%'
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (a.source_tbl like '$tableName$%' or a.target_tbl like '$tableName$%')
+		</isNotNull>
+
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+	<sql id="compareTaskJoinQuery">
+        where b.is_deleted=0
+		<isNotNull property="taskName" prepend="AND">
+            task_name like '$taskName$%'
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            a.title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            b.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (source_tbl = #tableName# or target_tbl = #tableName#)
+		</isNotNull>
+
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="compareTaskJoinQueryNoFuzzyMatch">
+        where b.is_deleted=0
+		<isNotNull property="taskName" prepend="AND">
+            task_name = #taskName#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            a.title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            b.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="machineIp" prepend="AND">
+            machine_ip = #machineIp#
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+            task_type=#taskType#
+		</isNotNull>
+		<isNotNull property="runType" prepend="AND">
+            run_type=#runType#
+		</isNotNull>
+		<isNotNull property="channelId" prepend="AND">
+            channel_id=#channelId#
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND">
+            group_id=#groupId#
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (source_tbl = #tableName# or target_tbl = #tableName#)
+		</isNotNull>
+
+		<isNotNull property="startDate" prepend="AND">
+		<![CDATA[
+			gmt_create>=#startDate#
+		]]>
+		</isNotNull>
+		<isNotNull property="stopDate" prepend="AND">
+
+		<![CDATA[
+			gmt_create<=#stopDate#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+
+	<select id="queryCompareListWithTableName" resultMap="compareTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl,b.target_tbl,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b left join bigdata_project a on  b.project_id=a.id
+		<include refid="compareTaskJoinQuery" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+	
+	<select id="queryCompareListWithTableNameForceIndex" resultMap="compareTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl,b.target_tbl,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b force index(task_name) left join bigdata_project a on  b.project_id=a.id
+		<include refid="compareTaskJoinQuery" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryCompareListWithTableNameNoFuzzyMatch" resultMap="compareTaskDOFullResult">
+		select
+		b.id as task_id,b.source_tbl,b.target_tbl,b.id,b.is_deleted,b.project_id,b.task_name,b.task_description,b.task_type,b.run_type,b.channel_id,b.machine_ip,b.user_name,b.group_id,a.title,a.work_flow_project_id
+		from
+		bigData_job_base b left join bigdata_project a on  b.project_id=a.id
+		<include refid="compareTaskJoinQueryNoFuzzyMatch" />
+		order by b.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+
+	<select id="queryCompareListWithProject" resultMap="compareTaskDOResult">
+		select a.*
+		from bigData_job_compare a left join bigData_job_base b on a.task_id = b.id
+		where b.project_id = #projectId#
+	</select>
+
+
+	<select id="queryCompareCountWithTableName" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="compareTaskJoinQuery" />
+	</select>
+	
+	<select id="queryCompareCountWithTableNameForceIndex" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b force index(task_name) left join bigdata_project a on b.project_id=a.id
+		<include refid="compareTaskJoinQuery" />
+	</select>
+
+	<select id="queryCompareCountWithTableNameNoFuzzyMatch" resultClass="java.lang.Integer">
+		select count(*)
+		from
+		bigData_job_base b left join bigdata_project a on b.project_id=a.id
+		<include refid="compareTaskJoinQueryNoFuzzyMatch" />
+	</select>
+
+
+	<update id="updateCompareTask" parameterClass="compareTaskDO">
+		update bigData_job_compare
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceTbl">
+				source_tbl=#sourceTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="targetTbl">
+				target_tbl=#targetTbl#
+			</isNotNull>
+			<isNotNull prepend="," property="ruleIds">
+				rule_ids=#ruleIds#
+			</isNotNull>
+			<isNotNull prepend="," property="sourcePt">
+				source_pt=#sourcePt#
+			</isNotNull>
+			<isNotNull prepend="," property="targetPt">
+				target_pt=#targetPt#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceColumn">
+				source_column=#sourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="targetColumn">
+				target_column=#targetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="threshold">
+				threshold=#threshold#
+			</isNotNull>
+			<isNotNull prepend="," property="sourceCluster">
+				source_cluster=#sourceCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="targetCluster">
+				target_cluster=#targetCluster#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextSourceColumn">
+				fulltext_sourceColumn=#fulltextSourceColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="fulltextTargetColumn">
+				fulltext_targetColumn=#fulltextTargetColumn#
+			</isNotNull>
+			<isNotNull prepend="," property="hasFulltext">
+				has_fulltext=#hasFulltext#
+			</isNotNull>
+			<isNotNull prepend="," property="runProject">
+				runProject=#runProject#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			,source_key=#sourceKey#
+			,target_key=#targetKey#
+			,sourceSortCols=#sourceSortCols#
+			,targetSortCols=#targetSortCols#
+			,sourceSortSplit=#sourceSortSplit#
+			,targetSortSplit=#targetSortSplit#
+			,compare_type=#compareType#
+			,sourceQuery=#sourceQuery#
+			,targetQuery=#targetQuery#
+			,sourceMeasure=#sourceMeasure#
+			,targetMeasure=#targetMeasure#
+			where task_id = #taskId#
+		</dynamic>
+	</update>
+
+	<update id="deleteCompareTask" parameterClass="java.lang.Integer">
+		update bigData_job_base,bigData_job_compare
+		set
+		bigData_job_base.is_deleted = 1
+		where bigData_job_base.id = #task_id#
+	</update>
+
+	<insert id="addCompareHdfs" parameterClass="compareHdfsDO">
+		insert into bigdata_compare_hdfs
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="hdfs">
+				hdfs_path
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				file_type
+			</isNotNull>
+			<isNotNull prepend="," property="lineSplit">
+				line_split
+			</isNotNull>
+			<isNotNull prepend="," property="columnSplit">
+				column_split
+			</isNotNull>
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="fileCode">
+				fileCode
+			</isNotNull>
+			<isNotNull prepend="," property="sequenceValueonly">
+				sequence_valueonly
+			</isNotNull>
+			<isNotNull prepend="," property="binaryMode">
+				binary_mode
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbRep">
+				diff_pb_rep
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbTranslate">
+				diff_pb_translate
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbClass">
+				diff_pb_class
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="hdfs">
+				#hdfs#
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				#fileType#
+			</isNotNull>
+			<isNotNull prepend="," property="lineSplit">
+				#lineSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="columnSplit">
+				#columnSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="fileCode">
+				#fileCode#
+			</isNotNull>
+			<isNotNull prepend="," property="sequenceValueonly">
+				#sequenceValueonly#
+			</isNotNull>
+			<isNotNull prepend="," property="binaryMode">
+				#binaryMode#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbRep">
+				#diffPbRep#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbTranslate">
+				#diffPbTranslate#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbClass">
+				#diffPbClass#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="taskId">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateCompareHdfs" parameterClass="compareHdfsDO">
+		update bigdata_compare_hdfs
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="hdfs">
+				hdfs_path=#hdfs#
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				file_type=#fileType#
+			</isNotNull>
+			<isNotNull prepend="," property="lineSplit">
+				line_split=#lineSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="columnSplit">
+				column_split=#columnSplit#
+			</isNotNull>
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="fileCode">
+				fileCode=#fileCode#
+			</isNotNull>
+			<isNotNull prepend="," property="sequenceValueonly">
+				sequence_valueonly=#sequenceValueonly#
+			</isNotNull>
+			<isNotNull prepend="," property="binaryMode">
+				binary_mode=#binaryMode#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbRep">
+				diff_pb_rep=#diffPbRep#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbTranslate">
+				diff_pb_translate=#diffPbTranslate#
+			</isNotNull>
+			<isNotNull prepend="," property="diffPbClass">
+				diff_pb_class=#diffPbClass#
+			</isNotNull>
+			where task_id = #taskId#
+		</dynamic>
+	</update>
+
+	<select id="queryCompareHdfsByTaskId" resultMap="CompareHdfsResult">
+		select hdfs_path,file_type,line_split,column_split,task_id,fileCode,sequence_valueonly,binary_mode,
+		diff_pb_rep,diff_pb_translate,diff_pb_class from bigdata_compare_hdfs where task_id=#taskId#
+	</select>
+
+</sqlMap>

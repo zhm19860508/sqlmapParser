@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms.spmPageBlock">
+	<resultMap id="SpmPageBlock-result" class="CmsSpmPageBlock">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result	property="pageId"		 javaType="java.lang.Long"		 column="PAGE_ID" />
+		<result property="blockId"       javaType="java.lang.String"     column="BLOCK_ID" />
+		<result property="blockName"     javaType="java.lang.String"     column="BLOCK_NAME" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<insert id="MS_INSERT_SPM_PAGE_BLOCK" parameterClass="CmsSpmPageBlock">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_SPM_PAGE_BLOCK.NEXTVAL AS ID FROM DUAL
+		</selectKey>	
+        <![CDATA[
+            insert into CMS_SPM_PAGE_BLOCK
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , PAGE_ID  , BLOCK_ID,  BLOCK_NAME )
+            values
+              (sysdate  , sysdate  , #id#  , #pageId#  , #blockId# , #blockName# )
+        ]]>
+	</insert>	
+	
+   <select id="MS_SELECT_PAGE_BLOCK_BY_ID" parameterClass="java.lang.Long" resultClass="java.util.HashMap">
+        <![CDATA[
+            SELECT BLOCK_ID as BLOCK_ID, ID as ID FROM CMS_SPM_PAGE_BLOCK WHERE PAGE_ID = #pageId# 
+        ]]>
+    </select>		
+	
+	<delete id="MS_DELETE_BLOCK_BY_PAGE_ID" parameterClass="java.lang.Long">
+        <![CDATA[
+            delete from CMS_SPM_PAGE_BLOCK where PAGE_ID = #pageId# 
+        ]]>
+	</delete>	
+	
+	<delete id="MS_DELETE_BLOCK_BY_ID" parameterClass="Collection">
+        <![CDATA[
+            delete from CMS_SPM_PAGE_BLOCK where ID in 
+        ]]>
+        <iterate open="(" close=")" conjunction=",">
+            #[]#
+        </iterate>
+	</delete>		
+</sqlMap>

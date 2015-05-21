@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="E2MScanBaseRules">
+	<typeAlias alias="E2MscanBaseRules"
+		type="com.alibaba.bigData.dal.entity.E2MScanBaseRulesDO" />
+
+	<resultMap class="E2MscanBaseRules" id="e2MScanBaseRulesDO">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="status" property="status" />
+		<result column="has_modify_script" property="hasMScript" />
+		<result column="is_public" property="isPublic" />
+		<result column="description" property="description" />
+		<result column="line" property="line" />
+
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+			a.id,a.name,a.status,a.has_modify_script,a.is_public,a.description,a.line
+	</sql>
+
+	<sql id="From">
+		from bigData_e2m_base_rules a
+	</sql>
+
+	<select id="queryAllE2MScanBaseRules" resultMap="e2MScanBaseRulesDO" >
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.status=1 and a.is_public=1
+	</select>
+
+  <select id="queryAllE2MScanRules" resultMap="e2MScanBaseRulesDO" >
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.status=1
+	</select>
+
+	<select id="queryExcuteRuleIds" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select exec_ids
+		<include refid="From" />
+		where a.id=#id#
+	</select>
+
+	<select id="getPrivateRulesByLine" resultMap="e2MScanBaseRulesDO" parameterClass="java.lang.String">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		 where a.status=1  and a.is_public=0 and  a.line like '%$prodline$%'
+	</select>
+
+	<select id="queryModifyScriptFlag" resultClass="java.lang.Integer" parameterClass="java.lang.Integer">
+		select a.has_modify_script
+		<include refid="From" />
+		 where a.id=#ruleid#
+	</select>
+
+</sqlMap>

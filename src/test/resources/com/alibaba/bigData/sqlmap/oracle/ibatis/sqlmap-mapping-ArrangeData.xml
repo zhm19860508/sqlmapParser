@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.arrangedata">
+    <typeAlias alias="arrangeData" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.ArrangeData"/>
+     <!--
+      - ===============================================
+      - DCMS_ARRANGE_DATA表映射到ArrangeData类
+      - ===============================================
+     -->
+    <resultMap id="arrangeResult" class="arrangeData">
+        <result property="id" column="ID"/>
+        <result property="dsId" column="DS_ID"/>
+        <result property="dsParam" column="DS_PARAM"/>
+        <result property="mergeData" column="MERGE_DATA"/>
+        <result property="pushData" column="PUSH_DATA" />
+    </resultMap>
+
+
+   <select id="queryArrangeDataById" resultMap="arrangeResult" parameterClass="int" >
+      select    *
+      from DCMS_ARRANGE_DATA where ID=#id#
+   </select>
+
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertArrangeData" parameterClass="arrangeData">
+		<selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DCMS_ARRANGE_DATA.NEXTVAL AS id FROM DUAL</selectKey>
+                insert into DCMS_ARRANGE_DATA (
+                ID,
+                DS_ID,
+                DS_PARAM,
+                MERGE_DATA
+        ) values (
+                #id#,
+                #dsId#,
+                #dsParam#,
+                #mergeData#
+                )
+    </insert>
+    <!--
+      - ===============================================
+      - 修改
+      - ===============================================
+     -->
+    <update id="updateArrangeData" parameterClass="arrangeData"><![CDATA[
+        update
+                DCMS_ARRANGE_DATA
+        set
+                DS_ID = #dsId#,
+                DS_PARAM = #dsParam#,
+                MERGE_DATA=#mergeData#,
+                PUSH_DATA=#pushData#            
+        where
+                ID = #id#
+    ]]></update>
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteArrangeData" parameterClass="int"><![CDATA[
+        delete from
+                DCMS_ARRANGE_DATA
+         where
+                ID = #id#
+    ]]></delete>
+
+
+</sqlMap>

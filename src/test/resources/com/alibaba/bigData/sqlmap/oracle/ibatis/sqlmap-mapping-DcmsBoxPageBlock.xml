@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcmsBoxPageBlockDO">
+	<typeAlias alias="dcmsBoxPageBlockDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsBoxPageBlockDO" />
+	<typeAlias alias="dcmsBoxPageBlockQueryParam" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsBoxPageBlockQueryParam" />
+	<sql id="selectDcmsBoxPageBlockDOSql">
+		<![CDATA[
+		select
+		t.id,
+		t.gmt_create gmtCreate,
+		t.gmt_modified gmtModified,
+		t.content,
+		t.resource_id resourceId,t.resource_type resourceType,t.creator,
+		t.class_name className
+		from dcms_box_page_block t
+		]]>
+	</sql>
+	<sql id="selectDcmsBoxPageBlockDOWhereSql">
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="id">t.id = #id#</isNotEmpty>
+			<isNotEmpty prepend="and" property="gmtCreate">t.gmt_create = #gmtCreate#</isNotEmpty>
+			<isNotEmpty prepend="and" property="gmtModified">t.gmt_modified = #gmtModified#</isNotEmpty>
+			<isNotEmpty prepend="and" property="content">t.content = #content#</isNotEmpty>
+			<isNotEmpty prepend="and" property="className">t.class_name = #className#</isNotEmpty>
+			<isNotEmpty prepend="and" property="resourceId">t.resource_id = #resourceId#</isNotEmpty>
+			<isNotEmpty prepend="and" property="resourceType">t.resource_type = #resourceType#</isNotEmpty>
+			<isNotEmpty prepend="and" property="creator">t.creator = #creator#</isNotEmpty>
+		</dynamic>
+	</sql>
+	<select id="findDcmsBoxPageBlockDOById" parameterClass="Long" resultClass="dcmsBoxPageBlockDO">
+		<include refid="selectDcmsBoxPageBlockDOSql"/>
+		<![CDATA[
+		where t.id = #id#
+		]]>
+	</select>
+	<select id="findDcmsBoxPageBlockDOByWhere" parameterClass="dcmsBoxPageBlockQueryParam" resultClass="dcmsBoxPageBlockDO">
+		<include refid="selectDcmsBoxPageBlockDOSql"/>
+		<include refid="selectDcmsBoxPageBlockDOWhereSql"/>
+		
+	</select>
+	<select id="countDcmsBoxPageBlockDOByWhere" parameterClass="dcmsBoxPageBlockQueryParam" resultClass="java.lang.Integer">
+		select count(1) from dcms_box_page_block t
+		<include refid="selectDcmsBoxPageBlockDOWhereSql"/>
+	</select>
+	<insert id="insertDcmsBoxPageBlockDO" parameterClass="dcmsBoxPageBlockDO">
+		insert into dcms_box_page_block
+		(
+		gmt_create ,
+		gmt_modified ,
+		content,
+		resource_id,
+		resource_type,
+		creator,
+		class_name
+		)
+		values (
+		now() ,
+		now() ,
+		#content#,
+		#resourceId#,
+		#resourceType#,
+		#creator#,
+		#className#
+		)
+		<selectKey resultClass="long" type="post" keyProperty="id">select last_insert_id() as id</selectKey>
+	</insert>
+	<update id="updateDcmsBoxPageBlockDO" parameterClass="dcmsBoxPageBlockDO">
+		update dcms_box_page_block t  set t.gmt_modified = now()
+		<dynamic prepend=",">
+			<isNotEmpty prepend="," property="content">t.content = #content#</isNotEmpty>
+			<isNotEmpty prepend="," property="className">t.class_name = #className#</isNotEmpty>
+			<isNotEmpty prepend="," property="resourceId">t.resource_id = #resourceId#</isNotEmpty>
+			<isNotEmpty prepend="," property="resourceType">t.resource_type = #resourceType#</isNotEmpty>
+			<isNotEmpty prepend="," property="creator">t.creator = #creator#</isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		where t.id = #id#
+		]]>
+	</update>
+	<delete id="deleteDcmsBoxPageBlockDO" parameterClass="map">
+		<![CDATA[
+		delete from dcms_box_page_block where id in (
+		<iterate property="ids" conjunction=",">
+		#ids[]#
+		</iterate>
+		)
+		]]>
+	</delete>
+		<delete id="deleteDcmsBoxPageBlockDOByPageId" parameterClass="java.lang.Long">
+		<![CDATA[
+		delete from dcms_box_page_block where resource_id = #resourceId#
+		]]>
+	</delete>
+</sqlMap>

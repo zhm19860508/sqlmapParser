@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Bug">
+	<typeAlias alias="BugDO"
+		type="com.alibaba.bigData.dal.entity.BugDO" />
+
+	<resultMap class="BugDO" id="BugDOResult">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="kelude_bug_id" property="keludeBugId" />
+		<result column="task_id" property="taskId" />		
+		<result column="kelude_bug_url" property="keludeBugUrl" />
+		<result column="bug_title" property="bugTitle" />
+		<result column="serious_level" property="seriousLevel" />
+		<result column="bug_reason" property="bugReason" />
+		<result column="bug_status" property="bugStatus" />
+		<result column="assigned_name" property="assignedName" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+	</resultMap>
+
+	<sql id="BugColumns">
+		select a.id,a.project_id,a.kelude_bug_id,a.task_id,a.kelude_bug_url,a.bug_title,a.serious_level,a.bug_reason,a.bug_status,a.assigned_name,a.gmt_create,a.gmt_modify
+	</sql>
+
+	<sql id="BugFrom">
+		from bigData_bug a
+	</sql>
+
+	<sql id="BugJoin">
+        a.is_deleted = 0
+	</sql>
+
+	<sql id="BugQuery">
+        where
+		<include refid="BugJoin" />
+		<isNotNull property="projectId" prepend="AND">
+            a.project_id=#projectId#
+		</isNotNull>
+		<isNotNull property="keludeBugId" prepend="AND">
+            a.kelude_bug_id=#keludeBugId#
+		</isNotNull>
+		<isNotNull property="taskId" prepend="AND">
+            a.task_id=#taskId#
+		</isNotNull>		
+		<isNotNull property="keludeBugUrl" prepend="AND">
+            a.kelude_bug_url=#keludeBugUrl#
+		</isNotNull>
+		<isNotNull property="bugTitle" prepend="AND">
+            a.bug_title=#bugTitle#
+		</isNotNull>
+		<isNotNull property="seriousLevel" prepend="AND">
+            a.serious_level=#seriousLevel#
+		</isNotNull>
+		<isNotNull property="bugReason" prepend="AND">
+            a.bug_reason=#bugReason#
+		</isNotNull>
+		<isNotNull property="bugStatus" prepend="AND">
+            a.bug_status=#bugStatus#
+		</isNotNull>
+		<isNotNull property="assignedName" prepend="AND">
+            a.assigned_name=#assignedName#
+		</isNotNull>
+		<isNotNull property="gmtCreate" prepend="AND">
+            a.gmt_create=#gmtCreate#
+		</isNotNull>
+		<isNotNull property="gmtModify" prepend="AND">
+            a.gmt_modify=#gmtModify#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addBug" parameterClass="BugDO">
+		insert into bigData_bug
+		<dynamic prepend="(">
+			<isNotNull property="projectId" prepend="AND">
+                project_id
+    		</isNotNull>
+			<isNotNull prepend="," property="keludeBugId">
+				kelude_bug_id
+			</isNotNull>
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>			
+			<isNotNull prepend="," property="keludeBugUrl">
+				kelude_bug_url
+			</isNotNull>
+			<isNotNull prepend="," property="bugTitle">
+				bug_title
+			</isNotNull>
+			<isNotNull prepend="," property="seriousLevel">
+				serious_level
+			</isNotNull>
+			<isNotNull prepend="," property="bugReason">
+				bug_reason
+			</isNotNull>
+			<isNotNull prepend="," property="bugStatus">
+				bug_status
+			</isNotNull>
+			<isNotNull prepend="," property="assignedName">
+				assigned_name
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify
+			</isNotNull>
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="projectId">
+                #projectId#
+    		</isNotNull>
+			<isNotNull prepend="," property="keludeBugId">
+				#keludeBugId#
+			</isNotNull>
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>			
+			<isNotNull prepend="," property="keludeBugUrl">
+				#keludeBugUrl#
+			</isNotNull>
+			<isNotNull prepend="," property="bugTitle">
+				#bugTitle#
+			</isNotNull>
+			<isNotNull prepend="," property="seriousLevel">
+				#seriousLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="bugReason">
+				#bugReason#
+			</isNotNull>
+			<isNotNull prepend="," property="bugStatus">
+				#bugStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="assignedName">
+				#assignedName#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryBugById" resultMap="BugDOResult">
+		<include refid="BugColumns" />
+		<include refid="BugFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryBugListByQuery" resultMap="BugDOResult">
+		<include refid="BugColumns" />
+		<include refid="BugFrom" />
+		<include refid="BugQuery" />
+	</select>
+
+	<update id="updateBug" parameterClass="BugDO">
+		update bigData_bug
+		<dynamic prepend="set">
+		<isNotNull property="projectId" prepend=",">
+            project_id=#projectId#
+		</isNotNull>
+		<isNotNull property="keludeBugId" prepend=",">
+            kelude_bug_id=#keludeBugId#
+		</isNotNull>
+		<isNotNull property="keludeBugUrl" prepend=",">
+            kelude_bug_url=#keludeBugUrl#
+		</isNotNull>
+		<isNotNull property="bugTitle" prepend=",">
+            bug_title=#bugTitle#
+		</isNotNull>
+		<isNotNull property="seriousLevel" prepend=",">
+            serious_level=#seriousLevel#
+		</isNotNull>
+		<isNotNull property="bugReason" prepend=",">
+            bug_reason=#bugReason#
+		</isNotNull>
+		<isNotNull property="bugStatus" prepend=",">
+            bug_status=#bugStatus#
+		</isNotNull>
+		<isNotNull property="assignedName" prepend=",">
+            assigned_name=#assignedName#
+		</isNotNull>
+		<isNotNull property="gmtCreate" prepend=",">
+            gmt_create=#gmtCreate#
+		</isNotNull>
+		<isNotNull property="gmtModify" prepend=",">
+            gmt_modify=#gmtModify#
+		</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="deleteBug" parameterClass="java.lang.Integer">
+		update bigData_bug
+		set is_deleted = 1
+		where id = #id#
+	</update>
+	
+	<update id="deleteBugByKeludeId" parameterClass="java.lang.Integer">
+		update bigData_bug
+		set is_deleted = 1
+		where kelude_bug_id = #keludeBugId#
+	</update>	
+</sqlMap>

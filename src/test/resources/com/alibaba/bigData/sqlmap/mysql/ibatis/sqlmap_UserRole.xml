@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="UserRole">
+
+	<typeAlias alias="userRoleDO"
+		type="com.alibaba.bigData.dal.entity.UserRoleDO" />
+	<typeAlias alias="roleDO"
+		type="com.alibaba.bigData.dal.entity.RoleDO" />
+	<typeAlias alias="userRoleQuery"
+		type="com.alibaba.bigData.dal.query.UserRoleQuery" />
+		<typeAlias alias="publicAccountDO"
+		type="com.alibaba.bigData.dal.entity.PublicAccountDO" />
+
+	<resultMap id="userRoleDOResultMap" class="userRoleDO">
+		<result property="id" column="id" />
+		<result property="loginAccount" column="login_account" />
+		<result property="roleId" column="role_id" />
+		<result property="name" column="name" />
+	</resultMap>
+
+
+	<resultMap id="publicAccountResultMap" class="publicAccountDO">
+		<result property="account" column="public_account" />
+		<result property="account_id" column="public_account_id" />
+	</resultMap>
+
+
+	<resultMap id="roleDOResultMap" class="roleDO">
+		<result property="id" column="id" />
+		<result property="name" column="name" />
+		<result property="access" column="access" />
+		<result property="description" column="description" />
+		<result property="isDefault" column="is_default" />
+
+	</resultMap>
+
+	<sql id="userRole_columns">
+		a1.id, a1.login_account, a1.role_id,a2.name
+	</sql>
+
+	<sql id="role_columns">
+		a2.id, a2.name, a2.access,a2.description,a2.is_default
+	</sql>
+
+	<sql id="userRole_queryParams">
+		<dynamic prepend="WHERE">
+			<isNotNull property="roleId" prepend="AND">
+			<![CDATA[
+				a1.role_id = #roleId#
+			]]>
+			</isNotNull>
+			<isNotNull property="loginAccount" prepend="AND">
+			<![CDATA[
+				a1.login_account = #loginAccount#
+			]]>
+			</isNotNull>
+		</dynamic>
+	</sql>
+
+
+	<insert id="insert" parameterClass="userRoleDO">
+		INSERT INTO bigData_user_role(id,login_account,role_id)
+		VALUES
+		(#id#,#loginAccount#,#roleId#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+
+	<update id="update" parameterClass="userRoleDO">
+		UPDATE bigData_user_role
+		<dynamic prepend="SET">
+			<isNotNull property="loginAccount" prepend=",">
+			<![CDATA[
+				login_account = #loginAccount#
+			]]>
+			</isNotNull>
+			<isNotNull property="roleId" prepend=",">
+			<![CDATA[
+				   role_id = #roleId#
+			]]>
+			</isNotNull>
+		</dynamic>
+		WHERE id = #id#
+	</update>
+
+
+
+	<delete id="deleteById" parameterClass="java.lang.Integer">
+	<![CDATA[
+		 DELETE FROM bigData_user_role WHERE id = #id#
+	]]>
+	</delete>
+
+	<select id="queryUserRoleDOListByQuery" resultMap="userRoleDOResultMap"
+		parameterClass="userRoleQuery">
+		SELECT
+		<include refid="userRole_columns" />
+		FROM bigData_user_role a1,bigData_role a2
+		where a1.role_id=a2.id
+		<isNotNull property="loginAccount" prepend="and">
+		<![CDATA[
+			login_account = #loginAccount#
+		]]>
+		</isNotNull>
+		<isNotNull property="roleId" prepend="and">
+		<![CDATA[
+			   role_id = #roleId#
+		]]>
+		</isNotNull>
+		order by a1.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="getAll" resultMap="roleDOResultMap">
+		SELECT
+		<include refid="role_columns" />
+		FROM bigData_role a2
+	</select>
+
+	<select id="countByUserRoleQuery" parameterClass="userRoleQuery"
+		resultClass="java.lang.Integer">
+		SELECT COUNT(a1.id) AS num FROM
+		bigData_user_role a1 where 1=1
+		<isNotNull property="loginAccount" prepend="and">
+		<![CDATA[
+			a1.login_account = #loginAccount#
+		]]>
+		</isNotNull>
+		<isNotNull property="roleId" prepend="and">
+		<![CDATA[
+			   a1.role_id = #roleId#
+		]]>
+		</isNotNull>
+	</select>
+
+
+	<select id="getAdmin" resultClass="java.lang.String">
+		SELECT
+		a1.login_account from
+		bigData_user_role a1
+		where a1.role_id in(SELECT a2.id FROM bigData_role a2
+		where
+		a2.access='ADMIN')
+	</select>
+
+	<select id="getPublicAccount" resultMap="publicAccountResultMap">
+		SELECT public_account,public_account_id from bigdata_role
+		where access=#access#
+	</select>
+
+	<select id="getAlipay" resultClass="java.lang.String">
+		SELECT
+		login_account from
+		bigData_user_role where role_id=4;
+	</select>
+
+    <!-- 根据工号获取用户角色 -->
+	<select id="getUserAccess" resultClass="com.alibaba.bigData.env.enums.RoleAccess">
+        SELECT
+		    a2.access
+		FROM
+		    bigData_user_role a1,
+		    bigData_role a2
+		WHERE
+		    a1.role_id=a2.id
+		    and a1.login_account=#loginAccount#
+    </select>
+    
+    
+     <!-- 根据工号获取用户角色，只获取有公共角色的 -->
+	<select id="getPublicAccess" resultClass="com.alibaba.bigData.env.enums.RoleAccess">
+        SELECT
+		    a2.access
+		FROM
+		    bigData_user_role a1,
+		    bigData_role a2
+		WHERE
+		    a1.role_id=a2.id
+		    and a1.login_account=#loginAccount#
+		    and a2.public_account is not null
+    </select>
+
+    <!-- 根据角色获取用户列表 -->
+	<select id="getUserByRoleAccess" resultClass="java.lang.String">
+        SELECT
+		    a1.login_account
+		FROM
+		    bigData_user_role a1,
+		    bigData_role a2
+		WHERE
+		    a1.role_id=a2.id
+		    and a2.access=#access#
+    </select>
+
+</sqlMap>

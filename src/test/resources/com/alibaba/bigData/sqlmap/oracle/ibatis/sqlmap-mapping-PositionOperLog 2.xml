@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.positionOperLog">
+	
+	<resultMap id="PositionOperLog-result" class="PositionOperLog">		
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="positionId"    javaType="java.lang.Long"       column="POSITION_ID" />
+		<result property="action"        javaType="java.lang.String"     column="ACTION" />
+		<result property="operator"      javaType="java.lang.String"     column="OPERATOR" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+
+	<!-- 创建语句集 -->
+	<insert id="createPositionOperLog" parameterClass="PositionOperLog">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_POS_OPER_LOG.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO DCMS_POS_OPER_LOG(
+			    ID,
+			    GMT_CREATE,
+		        GMT_MODIFIED,
+		        POSITION_ID,
+		        ACTION,
+		        OPERATOR)
+		    VALUES(
+			    #id#,
+		        sysdate,
+		        sysdate,
+		        #positionId#,
+		        #action#,
+		        #operator#)		
+		]]>		
+	</insert>
+    
+	<select id="getPositionOperLogList" resultMap="PositionOperLog-result" parameterClass="java.util.Map">
+		<![CDATA[
+			SELECT  ID,
+				    GMT_CREATE,
+			        GMT_MODIFIED,
+			        POSITION_ID,
+			        ACTION,
+			        OPERATOR 
+	        FROM (
+	                SELECT r.*,ROWNUM rnum FROM (
+	                	SELECT * FROM DCMS_POS_OPER_LOG WHERE POSITION_ID=#positionId# ORDER BY ID DESC
+	            )r WHERE ROWNUM <= #num#
+            )
+		]]>
+    </select>
+</sqlMap>

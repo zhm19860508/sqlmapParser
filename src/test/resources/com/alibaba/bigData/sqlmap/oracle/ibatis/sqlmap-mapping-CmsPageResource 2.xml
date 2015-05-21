@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsPageResource">        
+	<resultMap class="CmsPageResource" id="CmsPageResource-result" >
+        <result property="gmtCreate"	javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"	javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />
+        <result property="id"			javaType="java.lang.Long"		column="ID" />
+        <result property="startId"		javaType="java.lang.Long"		column="START_ID" />
+        <result property="endId"		javaType="java.lang.Long"		column="END_ID" />
+        <result property="startType"	javaType="java.lang.String"	    column="START_TYPE" />
+        <result property="startCode"	javaType="java.lang.String"		column="START_CODE" />
+        <result property="endCode"		javaType="java.lang.String"		column="END_CODE" />
+    </resultMap>    
+   
+    <insert id = "MS-INSERT-CMSPAGERESOURCE" parameterClass="CmsPageResource" >
+         <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_PAGE_RESOURCE.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_PAGE_RESOURCE
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , START_ID  , END_ID  , START_TYPE	,	START_CODE	,	END_CODE)
+            values
+              (SYSDATE  , SYSDATE  , #id#  , #startId#  , #endId#  , #startType#  , #startCode# ,#endCode#)
+        ]]>
+    </insert>
+    
+    <select id = "MS-SELECT-RESOURCE-BY-PAGEID" resultMap = "CmsPageResource-result">
+    	<![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_RESOURCE 
+            WHERE START_ID = #pageId# 
+            AND START_TYPE = #startType# ORDER BY GMT_MODIFIED, GMT_CREATE
+        ]]>
+    </select>   
+    
+    <select id = "MS-SELECT-RESOURCE-BY-ENDID" resultMap = "CmsPageResource-result">
+    	<![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_RESOURCE 
+            WHERE END_ID = #endId# 
+            AND START_TYPE = #startType# ORDER BY GMT_MODIFIED, GMT_CREATE
+        ]]>
+    </select>       
+   
+    <delete id="MS-DELETE-BY-ID" >         
+		<![CDATA[
+            DELETE FROM CMS_PAGE_RESOURCE WHERE ID in 
+        ]]>
+		<iterate property="deleteIds" open="(" close=")" conjunction=",">
+			#deleteIds[]#
+		</iterate>
+        <dynamic prepend=" and ">
+            <isNotEmpty property="startType">
+                <![CDATA[ START_TYPE =  #startType# ]]>
+            </isNotEmpty>
+        </dynamic>
+    </delete>
+    
+    <select id = "MS-SELECT-RESOURCE" resultMap = "CmsPageResource-result">
+    	<![CDATA[
+            SELECT GMT_CREATE, GMT_MODIFIED, ID, START_ID, END_ID, START_TYPE,	START_CODE,	END_CODE FROM CMS_PAGE_RESOURCE 
+            WHERE 1=1 
+        ]]>
+        <dynamic prepend="">        
+		  <isNotEmpty prepend="AND" property="startType" >	
+			        START_TYPE = #startType#
+		  </isNotEmpty>	
+		  <isNotEmpty prepend="AND" property="pageId" >	
+			        START_ID = #pageId#
+		  </isNotEmpty>
+		  <isNotEmpty prepend="AND" property="endId" >	
+			        END_ID = #endId#
+		  </isNotEmpty>	    
+        </dynamic>
+        <![CDATA[
+            ORDER BY GMT_MODIFIED, GMT_CREATE
+        ]]>
+    </select>  
+    
+    <delete id="MS-DELETE-BY-PAGEID-ENDID" >         
+		<![CDATA[
+            DELETE FROM CMS_PAGE_RESOURCE WHERE  START_TYPE =  #startType# 
+            and  START_ID = #pageId#
+        ]]>		
+        <isNotEmpty prepend="AND" property="endId" >	
+			        END_ID = #endId#
+		  </isNotEmpty>
+        
+    </delete>   
+        
+     <select id="MS-COUNT-BY-ENDIDS-STARTTYPE" resultClass="java.util.HashMap" parameterClass="java.util.Map">         
+		<![CDATA[
+            SELECT END_ID ID,  count(*) NUM FROM CMS_PAGE_RESOURCE WHERE  START_TYPE =  #startType# 
+            and  END_ID in        ]]>
+            <iterate property="endIds" open="(" close=")" conjunction=",">
+				#endIds[]#
+			</iterate>
+            group by END_ID
+    </select>   
+</sqlMap>

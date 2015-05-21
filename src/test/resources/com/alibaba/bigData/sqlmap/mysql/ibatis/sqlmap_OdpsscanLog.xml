@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="OdpsscanLogDAO">
+
+	<typeAlias alias="odpsscanLogDO"
+		type="com.alibaba.bigData.dal.entity.OdpsscanLogDO" />
+		
+	<resultMap id="odpsscanLogDOResultAll" class="odpsscanLogDO">
+		<result property="inputLog" column="input_log" />
+		<result property="outputLog" column="output_log" />
+		<result property="authorId" column="author_id" />
+	</resultMap>
+	
+	<insert id="insert" parameterClass="odpsscanLogDO">
+      insert into `bigdata_odpsscan_log` (`input_log`,`output_log`,`create_at`,`author_id`) 
+      values(#inputLog#,#outputLog#,now(),#authorId#) 
+	</insert>
+	
+</sqlMap>

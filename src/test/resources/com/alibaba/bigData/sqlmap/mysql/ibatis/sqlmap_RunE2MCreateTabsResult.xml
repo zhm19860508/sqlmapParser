@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunE2MCreateTabsResult">
+	<typeAlias alias="e2mCreateTableTaskResultDO"
+		type="com.alibaba.bigData.dal.entity.E2MCreateTableTaskResultDO" />
+
+	<resultMap class="e2mCreateTableTaskResultDO" id="e2mCreateTabsResult">
+		<result column="table_name" property="tableName" />
+		<result column="is_run_success" property="isRunSuccess" />
+		<result column="is_create" property="isCreate" />
+		<result column="log" property="log" />
+	</resultMap>
+
+	<insert id="add" parameterClass="e2mCreateTableTaskResultDO">
+		insert into bigData_run_result_e2mcreate (table_name, is_run_success, is_create, log) VALUES (#tableName#, #isRunSuccess#, #isCreate#, #log#)
+	</insert>
+
+	<update id="update" parameterClass="e2mCreateTableTaskResultDO">
+		update bigData_run_result_e2mcreate SET is_run_success = #isRunSuccess#, is_create = #isCreate#, log = #log# WHERE table_name = #tableName#
+	</update>
+
+	<select id="query" resultMap="e2mCreateTabsResult">
+		select * from bigData_run_result_e2mcreate WHERE table_name = #tableName# limit 1
+	</select>
+
+	<delete id="delete" parameterClass="java.lang.String">
+        delete from bigData_run_result_e2mcreate where table_name = #tableName#
+	</delete>
+
+	<select id="queryProjects" resultClass="java.lang.String">
+		select distinct project  from bigData_e2m_svn_base WHERE status=1 and project is not null and LENGTH(project)>0
+	</select>
+
+
+	<select id="queryDetail" resultMap="e2mCreateTabsResult">
+		select table_name,is_run_success,is_create,log from bigData_run_result_e2mcreate a
+
+		where 1=1
+		<isNotNull property="success" prepend="AND">
+
+		<![CDATA[
+			a.is_run_success=#success#
+		]]>
+		</isNotNull>
+       <isNotNull property="project" prepend="AND">
+		<![CDATA[
+			a.table_name like '%$project$%'
+		]]>
+		</isNotNull>
+
+		<isNotNull property="tableName" prepend="AND">
+		<![CDATA[
+			a.table_name like '%$tableName$%'
+		]]>
+		</isNotNull>
+
+        <isNotNull property="pageSize">
+		<![CDATA[
+			limit #pageNum#,#pageSize#
+		]]>
+		</isNotNull>
+	</select>
+
+
+	<select id="queryDetailCount" resultClass="java.lang.Integer">
+		select count(*) from bigData_run_result_e2mcreate a
+
+		where 1=1
+		<isNotNull property="success" prepend="AND">
+
+		<![CDATA[
+			a.is_run_success=#success#
+		]]>
+		</isNotNull>
+       <isNotNull property="project" prepend="AND">
+		<![CDATA[
+			a.table_name like '%$project$%'
+		]]>
+		</isNotNull>
+
+		<isNotNull property="tableName" prepend="AND">
+		<![CDATA[
+			a.table_name like '%$tableName$%'
+		]]>
+		</isNotNull>
+
+	</select>
+
+
+</sqlMap>

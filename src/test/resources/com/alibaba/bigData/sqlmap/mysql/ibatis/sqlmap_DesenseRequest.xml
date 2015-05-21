@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DesenseRequest">
+	<typeAlias alias="DesenseRequestDO"
+		type="com.alibaba.bigData.dal.entity.DesenseRequestDO" />
+
+	<resultMap class="DesenseRequestDO" id="DesenseRequestDOResult">
+		<result column="id" property="id" />
+		<result column="name" property="name" />
+		<result column="source" property="source" />
+		<result column="type" property="type" />
+		<result column="size" property="dataSize" />
+		<result column="end_time" property="endTime" />
+		<result column="destation" property="destation" />
+		<result column="note" property="note" />
+		<result column="status" property="status" />
+		<result column="current_status" property="curStatus" />
+		<result column="operate_role" property="operateRole" />
+		<result column="create_by" property="createBy" />
+		<result column="create_time" property="createTime" />
+		<result column="seed" property="seed" />
+		<result column="dept" property="dept" />
+		<result column="id" property="requestInfoDOs" select="RequestInfo.getRequestInfoDOsById"/>
+		<result column="id" property="operateUsers" select="RequestUser.queryRequestUserById"/>
+	</resultMap>
+
+	<sql id="DesenReqColumns">
+		select a.id,a.name,a.source,a.type,a.size,a.end_time,a.destation,a.note,a.status,a.current_status,a.operate_role,a.create_by,a.create_time,a.seed,a.dept
+	</sql>
+
+	<sql id="DesenReqFrom">
+		from bigData_desense_request a
+	</sql>
+
+	<sql id="DesenReqJoin">
+        1 = 1
+	</sql>
+
+	<sql id="DesenReqQuery">
+        where
+		<include refid="DesenReqJoin" />
+		<isNotNull property="name" prepend="AND">
+            a.name like '$name$%'
+		</isNotNull>
+		<isNotNull property="source" prepend="AND">
+            a.source=#source#
+		</isNotNull>
+		<isNotNull property="type" prepend="AND">
+            a.type=#type#
+		</isNotNull>
+		<isNotNull property="dataSize" prepend="AND">
+            a.size=#dataSize#
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+            a.end_time=#endTime#
+		</isNotNull>
+		<isNotNull property="destation" prepend="AND">
+            a.destation=#destation#
+		</isNotNull>
+		<isNotNull property="note" prepend="AND">
+            a.note=#note#
+		</isNotNull>
+		<isNotNull property="status" prepend="AND">
+            a.status=#status#
+		</isNotNull>
+		<isNotNull property="curStatus" prepend="AND">
+            a.current_status=#curStatus#
+		</isNotNull>
+		<isNotNull property="operateRole" prepend="AND">
+            a.operate_role=#operateRole#
+		</isNotNull>
+		<isNotNull property="createBy" prepend="AND">
+            a.create_by=#createBy#
+		</isNotNull>
+		<isNotNull property="createTime" prepend="AND">
+            a.create_time=#createTime#
+		</isNotNull>
+		<isNotEmpty property="idList" prepend="AND" >
+            a.id in
+			<iterate  property="idList" open="(" close=")" conjunction=",">
+            #idList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<insert id="addDesenseRequest" parameterClass="DesenseRequestDO">
+		insert into bigData_desense_request
+		<dynamic prepend="(">
+			<isNotNull property="name" prepend="AND">
+                name
+    		</isNotNull>
+			<isNotNull prepend="," property="source">
+				source
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				type
+			</isNotNull>
+			<isNotNull prepend="," property="dataSize">
+				size
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time
+			</isNotNull>
+			<isNotNull prepend="," property="destation">
+				destation
+			</isNotNull>
+			<isNotNull prepend="," property="note">
+				note
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				status
+			</isNotNull>
+			<isNotNull prepend="," property="curStatus">
+				current_status
+			</isNotNull>
+			<isNotNull prepend="," property="operateRole">
+				operate_role
+			</isNotNull>
+			<isNotNull prepend="," property="createBy">
+				create_by
+			</isNotNull>
+			<isNotNull prepend="," property="createTime">
+				create_time
+			</isNotNull>
+			<isNotNull prepend="," property="seed">
+				seed
+			</isNotNull>
+			<isNotNull prepend="," property="dept">
+				dept
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="name">
+                #name#
+    		</isNotNull>
+			<isNotNull prepend="," property="source">
+				#source#
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				#type#
+			</isNotNull>
+			<isNotNull prepend="," property="dataSize">
+				#dataSize#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				#endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="destation">
+				#destation#
+			</isNotNull>
+			<isNotNull prepend="," property="note">
+				#note#
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+				#status#
+			</isNotNull>
+			<isNotNull prepend="," property="curStatus">
+				#curStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="operateRole">
+				#operateRole#
+			</isNotNull>
+			<isNotNull prepend="," property="createBy">
+				#createBy#
+			</isNotNull>
+			<isNotNull prepend="," property="createTime">
+				#createTime#
+			</isNotNull>
+			<isNotNull prepend="," property="seed">
+				#seed#
+			</isNotNull>
+			<isNotNull prepend="," property="dept">
+				#dept#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryDesenseRequestById" resultMap="DesenseRequestDOResult">
+		<include refid="DesenReqColumns" />
+		<include refid="DesenReqFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryRequestByRequestInfoId" resultMap="DesenseRequestDOResult">
+		<include refid="DesenReqColumns" />
+		from bigData_desense_request a,bigData_request_info b
+		where a.id=b.request_id and b.id = #requestInfoId#
+	</select>
+
+	<select id="querySeedByInfoId" resultClass="java.lang.String">
+		select a.seed from bigData_desense_request a , bigData_request_info b where b.id=#requestInfoId# and a.id = b.request_id
+		</select>
+
+    <select id="queryReqListByQuery" resultMap="DesenseRequestDOResult">
+        <include refid="DesenReqColumns" />
+        <include refid="DesenReqFrom" />
+        <include refid="DesenReqQuery" />
+        order by create_time desc
+        <isNotNull property="size">
+        <![CDATA[
+            limit #start#,#size#
+        ]]>
+        </isNotNull>
+    </select>
+    <!-- 待处理申请的列表 -->
+    <select id="queryReqToDOList" resultMap="DesenseRequestDOResult">
+		select a1.* from bigData_desense_request a1,bigData_request_user a2
+			where a2.user =#empId#
+			and a2.request_id = a1.id
+        	<isNotNull prepend="and" property="name">
+        		a1.name like '$name$%'
+        	</isNotNull>
+			order by create_time desc
+        <isNotNull property="size">
+        <![CDATA[
+            limit #start#,#size#
+        ]]>
+        </isNotNull>
+    </select>
+
+    <select id="queryReqToDoCnt" resultClass="java.lang.Integer">
+        select count(1) from bigData_desense_request a1,bigData_request_user a2
+			where a2.user =#empId#
+			and a2.request_id = a1.id
+        	<isNotNull prepend="and" property="name">
+        		a1.name like '$name$%'
+        	</isNotNull>
+    </select>
+
+    <select id="queryReqCntByQuery" resultClass="java.lang.Integer">
+        select count(*)
+        <include refid="DesenReqFrom" />
+        <include refid="DesenReqQuery" />
+    </select>
+
+    <!-- 根据工号查询待我处理过的脱敏请求 -->
+    <select id="queryAppHstyByEmpId" resultMap="DesenseRequestDOResult">
+        <include refid="DesenReqColumns" />
+		from(
+		    select
+		        distinct request_id
+		    from
+		        bigData_request_log
+		    where
+		        user=#empId#
+		) b join(
+		    select
+		        *
+		    from
+		        bigData_desense_request a
+		     <include refid="DesenReqQuery" />
+		     and create_by &lt;&gt; #empId#
+		) a
+		on b.request_id=a.id
+		order by a.create_time desc
+		<isNotNull property="size">
+        <![CDATA[
+            limit #start#,#size#
+        ]]>
+        </isNotNull>
+    </select>
+
+    <select id="queryAppHstyCntByQuery" resultClass="java.lang.Integer">
+         select count(*)
+        from(
+            select
+                distinct request_id
+            from
+                bigData_request_log
+            where
+                user=#empId#
+        ) b join(
+            select
+                *
+            from
+                bigData_desense_request a
+             <include refid="DesenReqQuery" />
+             and create_by &lt;&gt; #empId#
+        ) a
+        on b.request_id=a.id;
+    </select>
+
+    <select id="hasDesense" resultClass="java.lang.Integer">
+    	SELECT b.id  from bigdata_desense_request a, bigdata_request_info b
+    	WHERE a.create_by=#user# and (a.status='EXPORT' or a.status='OVER') and b.project=#projectName# and b.table_name=#tableName# and a.id = b.request_id
+    	order by a.id desc limit 1
+    </select>
+
+	<update id="updateDesenseRequest" parameterClass="DesenseRequestDO">
+		update bigData_desense_request
+		<dynamic prepend="set">
+		<isNotNull property="name" prepend=",">
+            name=#name#
+		</isNotNull>
+		<isNotNull property="source" prepend=",">
+            source=#source#
+		</isNotNull>
+		<isNotNull property="type" prepend=",">
+            type=#type#
+		</isNotNull>
+		<isNotNull property="dataSize" prepend=",">
+            size=#dataSize#
+		</isNotNull>
+		<isNotNull property="endTime" prepend=",">
+            end_time=#endTime#
+		</isNotNull>
+		<isNotNull property="destation" prepend=",">
+            destation=#destation#
+		</isNotNull>
+		<isNotNull property="note" prepend=",">
+            note=#note#
+		</isNotNull>
+		<isNotNull property="curStatus" prepend=",">
+            current_status=#curStatus#
+		</isNotNull>
+		<isNotNull property="status" prepend=",">
+            status=#status#
+		</isNotNull>
+		<isNotNull property="operateRole" prepend=",">
+            operate_role=#operateRole#
+		</isNotNull>
+		<isNotNull property="createBy" prepend=",">
+            create_by=#createBy#
+		</isNotNull>
+		<isNotNull property="createTime" prepend=",">
+            create_time=#createTime#
+		</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+</sqlMap>

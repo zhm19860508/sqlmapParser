@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.onlinememberobject">
+
+	<resultMap id="OnlineMemberObject-result" class="OnlineMemberObject">
+		<result property="id" 		javaType="java.lang.Long" 	column="ID" />
+		<result property="memberObjectId"	javaType="java.lang.Long" 	column="MEMBER_OBJECT_ID" />
+		<result property="value" 	javaType="java.lang.String" column="OBJECT_VALUE" />
+		<result property="type" 	javaType="java.lang.String" column="OBJECT_TYPE" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<sql id="rows">ID,MEMBER_OBJECT_ID,OBJECT_VALUE,OBJECT_TYPE,GMT_MODIFIED,GMT_CREATE</sql>
+	<sql id="table">ONLINE_MEMBER_OBJECT</sql>
+	
+	<select id="getMemberObjectByMID" resultClass="OnlineMemberObject"
+		parameterClass="java.lang.Long" resultMap="OnlineMemberObject-result">
+		SELECT <include refid="rows"/> FROM
+		<include refid="table"/> WHERE MEMBER_OBJECT_ID=#ID#
+    </select>
+    
+	<insert id="createOnlineMemberObject" parameterClass="OnlineMemberObject">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_ONLINE_MEMBER_OBJECT.NEXTVAL AS id FROM DUAL
+		</selectKey>
+		insert into <include refid="table"/>
+				(ID,MEMBER_OBJECT_ID,OBJECT_VALUE,OBJECT_TYPE,GMT_CREATE,GMT_MODIFIED) 
+		values	(#id#,#memberObjectId#,#value#,#type#,SYSDATE,SYSDATE)
+	</insert>
+	
+	<update id="updateOnlineMemberObject" parameterClass="OnlineMemberObject">
+		UPDATE <include refid="table"/> SET GMT_MODIFIED = SYSDATE
+			 <isNotNull prepend="," property="value" >
+		        OBJECT_VALUE = #value#
+		     </isNotNull>
+		     <isNotNull prepend="," property="type" >
+		        OBJECT_TYPE = #type#
+		     </isNotNull>
+		WHERE MEMBER_OBJECT_ID = #memberObjectId#
+	</update>
+	
+	
+	<select id="getMemberObjectByMemberObjectIds" resultMap="OnlineMemberObject-result">
+		SELECT <include refid="rows"/> FROM <include refid="table"/> WHERE MEMBER_OBJECT_ID in
+		  <iterate  property="ids" open="(" close=")" conjunction=",">
+			       #ids[]#
+		  </iterate>
+    </select>
+</sqlMap>

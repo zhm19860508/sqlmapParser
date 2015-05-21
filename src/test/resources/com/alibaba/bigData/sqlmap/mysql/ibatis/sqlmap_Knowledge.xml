@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="Knowledge">
+
+	<typeAlias alias="knowledgeDO"
+		type="com.alibaba.bigData.dal.entity.KnowledgeDO" />
+	<typeAlias alias="knowledgeQuery" type="com.alibaba.bigData.dal.query.KnowledgeQuery" />
+
+	<resultMap id="knowledgeDOResultMap" class="knowledgeDO">
+		<result property="id" column="id" />
+		<result property="subject" column="subject" />
+		<result property="description" column="description" />
+		<result property="gmtCreate" column="gmt_create" />
+		<result property="gmtModify" column="gmt_modify" />
+		<result property="userName" column="user_name" />
+		<result property="type" column="type" />
+		<result property="tags" column="tags" />
+		<result property="filePath" column="file_path" />
+	</resultMap>
+
+	<!-- 2014-11-14 by心渡，由于description字段太大了，导致List页面OOM，但是List不需要展示这个字段，所以新加了一个ResultMap -->
+	<resultMap id="knowledgeDOResultMapForList" class="knowledgeDO">
+		<result property="id" column="id" />
+		<result property="subject" column="subject" />
+		<result property="gmtCreate" column="gmt_create" />
+		<result property="gmtModify" column="gmt_modify" />
+		<result property="userName" column="user_name" />
+		<result property="type" column="type" />
+		<result property="tags" column="tags" />
+		<result property="filePath" column="file_path" />
+	</resultMap>
+
+	<sql id="knowledge_columns">
+		select a.id, a.subject, a.description,a.gmt_create,a.gmt_modify,a.user_name,a.type,a.tags,a.file_path
+	</sql>
+
+	<insert id="addKnowledge" parameterClass="knowledgeDO">
+		INSERT INTO bigData_knowledge (subject,description,gmt_create,gmt_modify,user_name,type,tags,file_path)
+		VALUES
+		(#subject#,#description#,#gmtCreate#,#gmtModify#,#userName#,#type#,#tags#,#filePath#)
+		<selectKey keyProperty="id" resultClass="java.lang.Integer">
+			SELECT
+			LAST_INSERT_ID() AS value
+		</selectKey>
+	</insert>
+
+	<update id="updateKnowledge" parameterClass="knowledgeDO">
+		UPDATE bigData_knowledge
+		<dynamic prepend="SET">
+			<isNotNull property="subject" prepend=",">
+			<![CDATA[
+				subject = #subject#
+			]]>
+			</isNotNull>
+			<isNotNull property="description" prepend=",">
+			<![CDATA[
+				   description = #description#
+			]]>
+			</isNotNull>
+			<isNotNull property="gmtCreate" prepend=",">
+			<![CDATA[
+				   gmt_create = #gmtCreate#
+			]]>
+			</isNotNull>
+			<isNotNull property="gmtModify" prepend=",">
+			<![CDATA[
+				   gmt_modify = #gmtModify#
+			]]>
+			</isNotNull>
+			<isNotNull property="userName" prepend=",">
+			<![CDATA[
+				   user_name = #userName#
+			]]>
+			</isNotNull>
+				<isNotNull property="type" prepend=",">
+			<![CDATA[
+				   type = #type#
+			]]>
+			</isNotNull>
+				<isNotNull property="tags" prepend=",">
+			<![CDATA[
+				   tags = #tags#
+			]]>
+			</isNotNull>
+				<isNotNull property="filePath" prepend=",">
+			<![CDATA[
+				   file_path = #filePath#
+			]]>
+			</isNotNull>
+		</dynamic>
+		WHERE id = #id#
+	</update>
+
+
+
+	<delete id="deleteKnowledge" parameterClass="java.lang.Integer">
+	<![CDATA[
+		 DELETE FROM bigData_knowledge WHERE id = #id#
+	]]>
+	</delete>
+
+	<select id="queryKnowledgeByQuery" resultMap="knowledgeDOResultMapForList" parameterClass="knowledgeQuery">
+		<include refid="knowledge_columns" />
+		from bigData_knowledge a
+		<isNotNull property="type">
+			where a.type = #type#
+		</isNotNull>
+		order by a.gmt_modify desc
+
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+	
+	<select id="queryAllKnowledgeType" resultMap="knowledgeDOResultMapForList">
+		<include refid="knowledge_columns" />
+		from bigdata_knowledge a GROUP BY type
+	</select>
+
+	<select id="queryKnowledgeById" resultMap="knowledgeDOResultMap">
+		<include refid="knowledge_columns" />
+		from bigData_knowledge a
+		where
+		 a.id=#id#
+	</select>
+
+	<select id="queryCountByQuery" resultClass="java.lang.Integer" parameterClass="knowledgeQuery">
+		select count(*) from bigData_knowledge a
+		<isNotNull property="type">
+			where a.type = #type#
+		</isNotNull>
+	</select>
+</sqlMap>

@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms.spmsite">
+	<typeAlias alias="spmSite" type="com.alibaba.china.cmshollywood.cms.dal.dataobject.CmsSpmSite"/>
+	<resultMap id="spmSiteResult" class="spmSite">		
+		<result property="id"                 column="ID" />
+		<result property="gmtCreate"          column="GMT_CREATE" />
+        <result property="gmtModified"   	  column="GMT_MODIFIED" />
+        <result property="spma"               column="SPMA" />
+        <result property="cateId"               column="CATE_ID" />
+	</resultMap>
+	
+	<insert id="insertSpmSite" parameterClass="spmSite">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_SPM_SITE.NEXTVAL AS ID FROM DUAL
+		</selectKey>	
+        <![CDATA[
+            insert into CMS_SPM_SITE
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , SPMA  , CATE_ID )
+            values
+              (sysdate  , sysdate  , #id#  , #spma#  , #cateId# )
+        ]]>
+	</insert>	
+	
+   <select id="querySpmSiteByCate" parameterClass="int" resultMap="spmSiteResult">
+        <![CDATA[
+            SELECT * FROM CMS_SPM_SITE WHERE CATE_ID = #cateId# 
+        ]]>
+    </select>		
+	<delete id="deleteSpmSiteByCate" parameterClass="int"><![CDATA[
+        delete from
+                CMS_SPM_SITE
+         where
+                CATE_ID = #cateId#
+    ]]></delete>
+</sqlMap>

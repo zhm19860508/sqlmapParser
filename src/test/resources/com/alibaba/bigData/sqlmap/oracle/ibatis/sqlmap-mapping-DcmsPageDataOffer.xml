@@ -1,0 +1,121 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dcmsPageDataOffer">
+
+	<!-- 以下代码仅提供参考，可选取使用，减少重复工作 -->
+
+	<typeAlias alias="dcmsPageDataOfferDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DcmsPageDataOfferDO"/>
+
+	<resultMap id="dcmsPageDataOfferDO-result" class="dcmsPageDataOfferDO">
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="gmtCreate" javaType="java.util.Date" column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.util.Date" column="GMT_MODIFIED" />
+		<result property="pageId" javaType="java.lang.Long" column="PAGE_ID" />
+		<result property="offerId" javaType="java.lang.Long" column="OFFER_ID" />
+		<result property="onlineDate" javaType="java.util.Date" column="ONLINE_DATE" />
+		<result property="offlineDate" javaType="java.util.Date" column="OFFLINE_DATE" />
+		<result property="custFloorId" javaType="java.lang.String" column="CUST_FLOOR_ID" />
+	</resultMap>
+	
+	<resultMap id="dcmsPageDataOfferDO-mapresult" class="dcmsPageDataOfferDO">
+		<result property="offerId" javaType="java.lang.Long" column="OFFER_ID" />
+		<result property="onlineDate" javaType="java.util.Date" column="ONLINE_DATE" />
+	</resultMap>
+
+	<!-- 根据页面ID和时间范围查询变化的数据 -->
+	<select id="selectChangesByDate" parameterClass="java.util.HashMap" resultMap="dcmsPageDataOfferDO-result">
+	 <![CDATA[ 
+	 select ID as id,
+		GMT_CREATE,
+		GMT_MODIFIED,
+		PAGE_ID,
+		OFFER_ID,
+		ONLINE_DATE,
+		OFFLINE_DATE,
+		CUST_FLOOR_ID
+	from DCMS_PAGE_DATA_OFFER WHERE PAGE_ID=#pageId# 
+	]]>
+	<isNotNull property="beginDate" prepend="AND" >
+        <![CDATA[
+	     (
+	     (ONLINE_DATE>=#beginDate# and ONLINE_DATE<#endDate#)
+	     or
+	     (OFFLINE_DATE>=#beginDate# and OFFLINE_DATE<#endDate#)
+	     )
+	  ]]>
+      </isNotNull>
+      <isNull property="beginDate" prepend="AND" >
+      <![CDATA[
+         OFFLINE_DATE is null
+      ]]>
+      </isNull>
+	</select>
+
+	<!-- 查询展示中的数据 -->
+	<select id="selectOnline" parameterClass="java.util.HashMap" resultMap="dcmsPageDataOfferDO-result">
+	select ID as id,
+		GMT_CREATE,
+		GMT_MODIFIED,
+		PAGE_ID,
+		OFFER_ID,
+		ONLINE_DATE,
+		OFFLINE_DATE,
+		CUST_FLOOR_ID
+	from DCMS_PAGE_DATA_OFFER WHERE OFFLINE_DATE IS NULL AND PAGE_ID=#pageId#
+	</select>
+	
+	
+	<select id="checkOnlineByOffers" parameterClass="java.util.HashMap" resultMap="dcmsPageDataOfferDO-mapresult">
+	 <![CDATA[
+			 select 
+				OFFER_ID,
+				ONLINE_DATE
+			from DCMS_PAGE_DATA_OFFER WHERE OFFLINE_DATE IS NULL 
+	    ]]>
+	    <iterate prepend="AND"  property="pageIds" open="(" close=")"
+		    conjunction="OR">
+		          PAGE_ID=#pageIds[]#
+		</iterate>
+		<iterate prepend="AND"  property="offerIds" open="(" close=")"
+		    conjunction="OR">
+		          OFFER_ID=#offerIds[]#
+		</iterate>
+	</select>
+
+	<!-- insert into 基本语句 -->
+	<insert id="insert" parameterClass="dcmsPageDataOfferDO">
+	<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_PAGE_DATA_OFFER.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        <![CDATA[
+			insert into DCMS_PAGE_DATA_OFFER(ID,GMT_CREATE,GMT_MODIFIED,PAGE_ID,OFFER_ID,ONLINE_DATE,OFFLINE_DATE,CUST_FLOOR_ID)
+				values(#id#,sysdate,sysdate,#pageId#,#offerId#,#onlineDate#,#offlineDate#,#custFloorId#)
+		]]>
+	</insert>
+
+	<!-- 按批量主键ID更新下架时间，只有下架时间为空的才会更新 -->
+	<update id="batchUpdateOfflineByIds" parameterClass="java.util.HashMap">
+	update DCMS_PAGE_DATA_OFFER
+		set GMT_MODIFIED=sysdate, OFFLINE_DATE=#offlineDate#
+		where OFFLINE_DATE is null and id in
+		<iterate property="ids" open="(" close=")" conjunction=",">
+		    #ids[]#
+		</iterate>
+	</update>
+
+	<!-- 按页面offerID批量更新下架时间，只有下架时间为空的才会更新 -->
+	<update id="batchUpdateOfflineByOfferids" parameterClass="java.util.HashMap">
+	update DCMS_PAGE_DATA_OFFER
+		set GMT_MODIFIED=sysdate, OFFLINE_DATE=#offlineDate#
+		where PAGE_ID=#pageId# and OFFLINE_DATE is null and offerId in
+		<iterate property="offerIds" open="(" close=")" conjunction=",">
+		    #offerIds[]#
+		</iterate>
+	</update>
+
+	<!-- delete 基本语句 -->
+	<delete id="deleteByPrimaryKey" parameterClass="dcmsPageDataOfferDO">
+	delete from DCMS_PAGE_DATA_OFFER
+		where id = #id#
+	</delete>
+</sqlMap>

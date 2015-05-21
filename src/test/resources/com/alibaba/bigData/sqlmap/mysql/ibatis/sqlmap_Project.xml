@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Project">
+	<typeAlias alias="projectDO"
+		type="com.alibaba.bigData.dal.entity.ProjectDO" />
+	<typeAlias alias="compareTaskDO"
+		type="com.alibaba.bigData.dal.entity.CompareTaskDO" />
+
+	<resultMap class="ProjectDO" id="projectDOResult">
+		<result column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="summary" property="summary" />
+		<result column="content" property="content" />
+		<result column="examination_doc_id" property="examinationDocId" />
+		<result column="status" property="status" />
+		<result column="examination_task_ids" property="examinationTaskIds" />
+		<result column="quality_report_id" property="qualityReportId" />
+		<result column="user_name" property="userName" />
+		<result column="create_time" property="createTime" />
+		<result column="member_ids" property="memberIds" />
+		<result column="work_flow_project_id" property="requestId" />
+		<result column="run_task_ids" property="runTaskIDs" />
+		<result column="monitor_id" property="monitorId" />
+	</resultMap>
+
+	<resultMap class="CompareTaskDO" id="allPartition">
+		<result column="source_pt" property="sourcePt" />
+		<result column="target_pt" property="targetPt" />
+	</resultMap>
+
+	<update id="updateProjectPartition" parameterClass="java.util.HashMap" >
+		update bigdata_job_compare,bigdata_job_base
+		set bigdata_job_compare.source_pt=replace(bigdata_job_compare.source_pt,#oldPartition#, #newPartition# ),
+		bigdata_job_compare.target_pt=replace(bigdata_job_compare.target_pt,#oldPartition#, #newPartition# )
+		where bigdata_job_compare.task_id=bigdata_job_base.id
+		and bigdata_job_base.project_id = #projectId#
+	</update>
+
+	<update id="updateProjectPartitionForDistribute" parameterClass="java.util.HashMap" >
+		update bigdata_job_distribute,bigdata_job_base
+		set bigdata_job_distribute.partition=replace(bigdata_job_distribute.partition,#oldPartition#, #newPartition# )
+		where bigdata_job_distribute.task_id=bigdata_job_base.id
+		and bigdata_job_base.project_id = #projectId#
+	</update>
+
+	<select id="queryAllPartition" parameterClass="java.lang.Integer" resultMap="allPartition" >
+		select distinct source_pt, target_pt
+		from
+		bigdata_job_compare a, bigdata_job_base b
+		where a.task_id=b.id
+		and b.project_id=#projectId#
+	</select>
+
+	<select id="queryCountOfWaitingAndDeploying" parameterClass="java.lang.Integer" resultClass="java.lang.Integer">
+		select count(*)
+		from bigdata_job_base a, bigdata_run_result_base b
+		where a.id = b.task_id
+		and project_id = #projectId#
+		and b.run_status in ('WAITING' ,'DEPLOYING')
+		limit 1
+	</select>
+
+	<select id="queryAllPartitionFromDistribute" parameterClass="java.lang.Integer" resultClass="java.lang.String" >
+		select distinct partition
+		from
+		bigdata_job_distribute a, bigdata_job_base b
+		where a.task_id=b.id
+		and b.project_id=#projectId#
+	</select>
+
+	<select id="getTaskId" resultClass="java.lang.String">
+		select examination_task_ids from bigdata_project where id=#projectId# and is_deleted = 0
+	</select>
+
+
+	<insert id="addProject" parameterClass="projectDO">
+        INSERT INTO bigData_project
+          (title,summary,content,status,user_name,create_time,member_ids,work_flow_project_id)
+        VALUES
+          (#title#,#summary#,#content#,#status#,#userName#,#createTime#,#memberIds#,#requestId#)
+		<selectKey resultClass="java.lang.Integer" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+		</selectKey>
+	</insert>
+
+	<sql id="baseProjectColumns">
+		select
+		a.id,a.title,a.summary,a.content,a.examination_doc_id,a.status,a.examination_task_ids,a.quality_report_id,a.user_name,a.create_time,a.member_ids,a.work_flow_project_id,a.run_task_ids,a.monitor_id
+	</sql>
+
+	<sql id="baseProjectJoin">
+         1 = 1
+	</sql>
+
+	<sql id="baseProjectQuery">
+        where
+		<include refid="baseProjectJoin" />
+		<isNotNull property="projectState" prepend="AND">
+            a.status=#projectState#
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+            a.user_name=#userName#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+            a.title like '$projectName$%'
+		</isNotNull>
+		<isNotNull property="userName" prepend="OR">
+            a.member_ids like '%$userName$%'
+		</isNotNull>
+		<isNotNull property="nickName" prepend="OR">
+            a.member_ids like '%$nickName$%'
+		</isNotNull>
+	</sql>
+
+	<sql id="baseProjectFrom">
+		from bigData_project a
+	</sql>
+
+	<select id="queryProjectHistoryList" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+		WHERE
+			a.status= #projectState# AND (user_name = #userName# OR member_ids LIKE '%$userName$%' or member_ids LIKE '%$nickName$%')
+			and a.is_deleted=0
+			ORDER BY create_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryProjectListByAllQuery" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+		<include refid="baseProjectQuery" />
+		and a.is_deleted=0
+        order by create_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryProjectListByWorkFlowQuery" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+		<include refid="baseProjectQuery" />
+        AND work_flow_project_id IS NOT NULL
+        and a.is_deleted=0
+        order by create_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryProjectListWorkFlowNotNull" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+        where work_flow_project_id IS NOT NULL and a.is_deleted=0
+	</select>
+
+	<select id="queryProjectListByCustomQuery" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+		<include refid="baseProjectQuery" />
+        AND work_flow_project_id IS NULL
+        and a.is_deleted=0
+        order by create_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryNotCLoseProjectListByQuery" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+	where a.status<![CDATA[
+		<>3
+	]]>and (a.user_name=#userName# or a.member_ids like '%$userName$%' or a.member_ids LIKE '%$nickName$%')
+	 AND work_flow_project_id IS NULL and a.is_deleted=0 order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryProjectById" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+        where a.id=#id# and a.is_deleted=0
+	</select>
+
+	<select id="queryProjectByWorkFlowId" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+        where a.work_flow_project_id=#workFlowId# and a.is_deleted=0
+	</select>
+
+	<select id="queryProjectNameById" resultClass="java.lang.String">
+        select title
+		<include refid="baseProjectFrom" />
+        where a.id=#id# and a.is_deleted=0
+	</select>
+
+	<select id="queryProjectCountByQuery" resultClass="java.lang.Integer">
+        select count(*)
+		<include refid="baseProjectFrom" />
+		<include refid="baseProjectQuery" />
+		and a.is_deleted=0
+	</select>
+
+	<select id="queryNotCLoseProjectCountByQuery" resultClass="java.lang.Integer">
+        select count(*)
+		<include refid="baseProjectFrom" />
+	where a.status<![CDATA[
+		<>3
+	]]> and (a.user_name=#userName# or a.member_ids like '%$userName$%' or a.member_ids LIKE '%$nickName$%')
+		 AND work_flow_project_id IS NULL and a.is_deleted=0
+	</select>
+
+
+	<select id="queryProjectHistoryCountByQuery" resultClass="java.lang.Integer">
+        select count(*)
+		<include refid="baseProjectFrom" />
+		WHERE
+			a.status= #projectState# AND (user_name = #userName# OR member_ids LIKE '%$userName$%' or member_ids LIKE '%$nickName$%')
+			and a.is_deleted=0
+	</select>
+
+
+	<select id="getAllProject" resultClass="java.util.HashMap" remapResults="true">
+        select distinct id,title
+		<include refid="baseProjectFrom" />
+		and a.is_deleted=0
+	</select>
+
+	<update id="updateProject" parameterClass="projectDO">
+        update bigData_project
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="title">
+                title=#title#
+			</isNotNull>
+			<isNotNull prepend="," property="summary">
+                summary=#summary#
+			</isNotNull>
+			<isNotNull prepend="," property="content">
+                content=#content#
+			</isNotNull>
+			<isNotNull prepend="," property="examinationDocId">
+                examination_doc_id=#examinationDocId#
+			</isNotNull>
+			<isNotNull prepend="," property="status">
+                status=#status#
+			</isNotNull>
+			<isNotNull prepend="," property="examinationTaskIds">
+                examination_task_ids=#examinationTaskIds#
+			</isNotNull>
+			<isNotNull prepend="," property="qualityReportId">
+                quality_report_id=#qualityReportId#
+			</isNotNull>
+			<isNotNull prepend="," property="memberIds">
+                member_ids=#memberIds#
+			</isNotNull>
+			<isNotNull prepend="," property="runTaskIDs">
+                run_task_ids=#runTaskIDs#
+			</isNotNull>
+            where id = #id#
+		</dynamic>
+	</update>
+
+	<select id="queryStatusHaveNameProjectList" resultMap="projectDOResult">
+		select
+			a.id,a.title,a.summary,a.content,a.examination_doc_id,a.status,a.examination_task_ids,a.quality_report_id,a.user_name,a.create_time,a.member_ids,a.work_flow_project_id,a.run_task_ids,a.monitor_id
+		from bigData_project a
+		where
+		<include refid="baseProjectJoin" />
+		<isNotNull property="projectState" prepend="AND">
+           	a.status=#projectState#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+           	a.title like '$projectName$%'
+		</isNotNull>
+		AND (member_ids LIKE '%$memberName$%' OR member_ids LIKE '%$memberId$%')
+		and a.is_deleted=0
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryStatusNoNameProjectList" resultMap="projectDOResult">
+		select
+			a.id,a.title,a.summary,a.content,a.examination_doc_id,a.status,a.examination_task_ids,a.quality_report_id,a.user_name,a.create_time,a.member_ids,a.work_flow_project_id,a.run_task_ids,a.monitor_id
+		from bigData_project a
+		where
+		<include refid="baseProjectJoin" />
+		<isNotNull property="projectState" prepend="AND">
+           	a.status=#projectState#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+           	a.title like '$projectName$%'
+		</isNotNull>
+		and a.is_deleted=0
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryStatusHaveNameProjectCount" resultClass="java.lang.Integer">
+		select count(*) from bigData_project a
+		where
+		<include refid="baseProjectJoin" />
+		<isNotNull property="projectState" prepend="AND">
+           	a.status=#projectState#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+           	a.title like '$projectName$%'
+		</isNotNull>
+		AND (member_ids LIKE '%$memberName$%' OR member_ids LIKE '%$memberId$%')
+		and a.is_deleted=0
+	</select>
+
+	<select id="queryStatusNoNameProjectCount" resultClass="java.lang.Integer">
+		select count(*) from bigData_project a
+		 where
+		<include refid="baseProjectJoin" />
+		<isNotNull property="projectState" prepend="AND">
+           	a.status=#projectState#
+		</isNotNull>
+		<isNotNull property="projectName" prepend="AND">
+           	a.title like '$projectName$%'
+		</isNotNull>
+		and a.is_deleted=0
+	</select>
+
+	<select id="queryProjectByExaminationId" resultMap="projectDOResult">
+		<include refid="baseProjectColumns" />
+		<include refid="baseProjectFrom" />
+		where examination_doc_id = #id# and a.is_deleted=0
+	</select>
+
+	<update id="updateMonitorId" parameterClass="java.util.HashMap">
+		update bigData_project
+		set monitor_id = #monitorId#
+		where id = #projectId#
+	</update>
+
+	<update id="delMonitorId">
+		update bigData_project
+		set monitor_id = null
+		where monitor_id = #monitorId#
+	</update>
+
+	<!-- Modified by dongsheng.dds on 2014-03-18. -->
+	<delete id="deleteProject" parameterClass="java.lang.Integer">
+        update
+		bigdata_project
+		set is_deleted=1
+		where
+		id=#projectId#
+	</delete>
+
+	<!-- Modified by dongsheng.dds on 2013-03-18 -->
+	<update id="updateJobBase" parameterClass="java.lang.Integer">
+		update bigdata_job_base
+		set project_id = 0
+		where project_id = #projectId#
+	</update>
+
+	<!-- Modified by dongsheng.dds on 2013-03-18 -->
+	<update id="updateRunResultCompare" parameterClass="java.lang.Integer">
+		update bigdata_run_result_compare
+		set project_id = 0
+		where project_id = #projectId#
+	</update>
+
+	<!-- Modified by dongsheng.dds on 2013-04-18 -->
+	<update id="delJobBase" parameterClass="java.lang.Integer">
+		update  bigdata_job_base
+		set is_deleted=1
+		where project_id=#projectId#
+	</update>
+
+	<update id="delRunResultCompare" parameterClass="java.lang.Integer">
+		update  bigdata_run_result_compare
+		set is_deleted=1
+		where project_id=#projectId#
+	</update>
+
+	<update id="delJobCompare" parameterClass="java.lang.Integer">
+		update bigdata_job_compare,bigdata_job_base
+		set bigdata_job_compare.is_deleted=1
+		where
+		bigdata_job_compare.task_id=bigdata_job_base.id
+		and bigdata_job_base.is_deleted=1
+		and  bigdata_job_base.project_id=#projectId#;
+	</update>
+
+	<update id="delJobDistribute" parameterClass="java.lang.Integer">
+		update bigdata_job_distribute,bigdata_job_base
+		set bigdata_job_distribute.is_deleted=1
+		where
+		bigdata_job_distribute.task_id=bigdata_job_base.id
+		and bigdata_job_base.is_deleted=1
+		and  bigdata_job_base.project_id=#projectId#;
+	</update>
+
+	<update id="delRunResultBase" parameterClass="java.lang.Integer">
+		update bigdata_run_result_base,bigdata_job_base
+		set bigdata_run_result_base.is_deleted=1
+		where
+		bigdata_run_result_base.task_id=bigdata_job_base.id
+		and bigdata_job_base.is_deleted=1
+		and  bigdata_job_base.project_id=#projectId#;
+	</update>
+
+	<update id="delRunResultDistibute" >
+		update bigdata_run_result_distibute,bigdata_run_result_base
+		set bigdata_run_result_distibute.is_deleted=1
+		where
+		bigdata_run_result_distibute.run_id=bigdata_run_result_base.id
+		and bigdata_run_result_base.is_deleted=1
+	</update>
+
+	<update id="delJobUdf" parameterClass="java.lang.Integer">
+		update bigdata_job_udf, bigdata_job_base
+		set bigdata_job_udf.is_deleted=1
+		where
+		bigdata_job_udf.task_id=bigdata_job_base.id
+		and bigdata_job_base.is_deleted=1
+		and  bigdata_job_base.project_id=#projectId#;
+	</update>
+
+	<update id="delRunResultUdf">
+		update bigdata_run_result_udf,bigdata_run_result_base
+		set bigdata_run_result_udf.is_deleted=1
+		where
+		bigdata_run_result_udf.run_id=bigdata_run_result_base.id
+		and bigdata_run_result_base.is_deleted=1
+	</update>
+
+	<delete id="delFavoriteJob" parameterClass="java.lang.Integer">
+		delete from bigdata_favorite_job
+		where
+		task_id in (select id from bigdata_job_base where project_id=#projectId#) ;
+	</delete>
+
+
+
+</sqlMap>

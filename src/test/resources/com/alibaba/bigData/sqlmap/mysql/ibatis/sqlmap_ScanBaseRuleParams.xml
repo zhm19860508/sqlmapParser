@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="ScanBaseRuleParams">
+	<typeAlias alias="scanBaseRuleparams"
+		type="com.alibaba.bigData.dal.entity.HiveScanBaseRuleParamsDO" />
+
+
+	<resultMap class="scanBaseRuleparams" id="scanBaseRuleParamsDO">
+		<result column="id" property="id" />
+		<result column="script_id" property="scriptId" />
+		<result column="name" property="name" />
+		<result column="type" property="type" />
+
+
+	</resultMap>
+
+	<sql id="getAllColumns">
+		select
+		a.id,a.script_id,a.name,a.type
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_baseRuleParams a
+	</sql>
+
+
+
+	<select id="queryParamsByScriptid" resultMap="scanBaseRuleParamsDO" parameterClass="java.lang.Integer">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.script_id=#script_id#
+	</select>
+
+	<select id="queryParamNameByParamid" resultMap="scanBaseRuleParamsDO" parameterClass="java.lang.Integer">
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.id=#paramid#
+	</select>
+
+   <select id="queryAllBaseMetaEnvParamsids" resultMap="scanBaseRuleParamsDO"  >
+		<include refid="getAllColumns" />
+		<include refid="From" />
+		where a.name="metaDataEnv"
+	</select>
+
+
+</sqlMap>

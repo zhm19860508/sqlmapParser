@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DataPanel">
+	<typeAlias alias="DataPanelDO"
+		type="com.alibaba.bigData.dal.entity.DataPanelDO" />
+
+	<resultMap class="DataPanelDO" id="DataPanelDOResult">
+		<result column="id" property="id" />
+		<result column="panel_name" property="panelName" />
+		<result column="panel_desc" property="panelDesc" />
+		<result column="report_list" property="reportList" />
+		<result column="owner" property="owner" />
+		<result column="gmt_create" property="gmtCreate" />
+		<result column="gmt_modify" property="gmtModify" />
+		<result column="mail_list" property="mailList" />
+		<result column="is_daily" property="isDaily" />
+		<result column="group_id" property="groupId" />
+		<result column="is_deleted" property="isDeleted" />
+	</resultMap>
+
+
+	<sql id="DataPanelColumns">
+		select
+		a.id,a.panel_name,a.panel_desc,a.report_list,a.owner,a.gmt_create,a.gmt_modify,a.mail_list,a.is_daily,a.group_id,a.is_deleted
+	</sql>
+
+	<sql id="DataPanelFrom">
+		from bigdata_data_panel a
+	</sql>
+
+	<sql id="DataPanelWhere">
+		a.is_deleted = 0 
+	</sql>
+
+	<insert id="addDataPanel" parameterClass="DataPanelDO">
+		insert into bigdata_data_panel
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="panelName">
+				panel_name
+			</isNotNull>
+			<isNotEmpty prepend="," property="panelDesc">
+				panel_desc
+			</isNotEmpty>
+			<isNotNull prepend="," property="reportList">
+				report_list
+			</isNotNull>
+			<isNotNull prepend="," property="owner">
+				owner
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify
+			</isNotNull>
+			<isNotEmpty prepend="," property="mailList">
+				mail_list
+			</isNotEmpty>
+			<isNotNull prepend="," property="isDaily">
+				is_daily
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				group_id
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="panelName">
+				#panelName#
+			</isNotNull>
+			<isNotEmpty prepend="," property="panelDesc">
+				#panelDesc#
+			</isNotEmpty>
+			<isNotNull prepend="," property="reportList">
+				#reportList#
+			</isNotNull>
+			<isNotNull prepend="," property="owner">
+				#owner#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				#gmtModify#
+			</isNotNull>
+			<isNotEmpty prepend="," property="mailList">
+				#mailList#
+			</isNotEmpty>
+			<isNotNull prepend="," property="isDaily">
+				#isDaily#
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				#groupId#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateDataPanel" parameterClass="DataPanelDO" >
+		update bigdata_data_panel
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="panelName">
+				panel_name=#panelName#
+			</isNotNull>
+			<isNotEmpty prepend="," property="panelDesc">
+				panel_desc=#panelDesc#
+			</isNotEmpty>
+			<isNotNull prepend="," property="reportList">
+				report_list=#reportList#
+			</isNotNull>
+			<isNotNull prepend="," property="owner">
+				owner=#owner#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtCreate">
+				gmt_create=#gmtCreate#
+			</isNotNull>
+			<isNotNull prepend="," property="gmtModify">
+				gmt_modify=#gmtModify#
+			</isNotNull>
+			<isNotEmpty prepend="," property="mailList">
+				mail_list=#mailList#
+			</isNotEmpty>
+			<isNotNull prepend="," property="isDaily">
+				is_daily=#isDaily#
+			</isNotNull>
+			<isNotNull prepend="," property="groupId">
+				group_id=#groupId#
+			</isNotNull>
+			where id=#id#
+		</dynamic>
+	</update>
+	
+	<update id="deleteDataPanel" parameterClass="java.lang.Integer">
+		update bigdata_data_panel a
+		set
+		a.is_deleted = 1
+		where a.id = #id#
+	</update>
+	
+	
+	<select id="getDataPanelById" resultMap="DataPanelDOResult">
+		<include refid="DataPanelColumns" />
+		<include refid="DataPanelFrom" />
+		where
+		<include refid="DataPanelWhere" />
+		and a.id=#id#
+	</select>
+	
+	
+	<select id="getMyOwnerDataPanel" resultMap="DataPanelDOResult">
+		<include refid="DataPanelColumns" />
+		<include refid="DataPanelFrom" />
+		where
+		<include refid="DataPanelWhere" />
+		and a.owner=#owner#
+		<isNotEmpty property="searchPanelName">
+			and a.panel_name like '%$searchPanelName$%'
+		</isNotEmpty>
+		order by a.id desc
+		<isNotNull property="size">
+	   	<![CDATA[
+	      	limit #start#,#size#
+	   	]]>
+		</isNotNull>
+	</select>
+	
+	<select id="getMyOwnerDataPanelCount" resultClass="java.lang.Integer">
+		select count(*) 
+		<include refid="DataPanelFrom" />
+		where
+		<include refid="DataPanelWhere" />
+		and a.owner=#owner#
+		<isNotEmpty property="searchPanelName">
+			and a.panel_name like '%$searchPanelName$%'
+		</isNotEmpty>
+	</select>
+	
+	<select id="getMyCollDataPanel" resultMap="DataPanelDOResult">
+		select t1.id,t1.panel_name,t1.panel_desc,t1.report_list,t1.owner,t1.gmt_create,t1.gmt_modify,t1.mail_list,t1.is_daily,t1.group_id,t1.is_deleted
+		from 
+		(
+			<include refid="DataPanelColumns" />
+			<include refid="DataPanelFrom" />
+			where
+			<include refid="DataPanelWhere" />
+		)t1
+		join
+		(select panel_id from bigdata_panel_authorization where #owner# in authorize_list)t2
+		on t1.id = t2.panel_id
+		where
+		<isNotEmpty property="searchPanelName">
+			a.panel_name like '%$searchPanelName$%'
+		</isNotEmpty>
+		<isNotNull property="size">
+	   	<![CDATA[
+	      	limit #start#,#size#
+	   	]]>
+		</isNotNull>
+		order by id desc
+	</select>
+	
+	<select id="getAllDataPanel" resultMap="DataPanelDOResult">
+		<include refid="DataPanelColumns" />
+		<include refid="DataPanelFrom" />
+		where
+		<include refid="DataPanelWhere" />
+		<isNotEmpty property="owner">
+			and a.owner=#owner#
+		</isNotEmpty>
+		<isNotEmpty property="searchPanelName">
+			and a.panel_name like '%$searchPanelName$%'
+		</isNotEmpty>
+		order by a.id desc
+		<isNotNull property="size">
+	   	<![CDATA[
+	      	limit #start#,#size#
+	   	]]>
+		</isNotNull>
+	</select>
+	
+	<select id="getAllDataPanelCount" resultClass="java.lang.Integer">
+		select count(*) 
+		<include refid="DataPanelFrom" />
+		where
+		<include refid="DataPanelWhere" />
+		<isNotEmpty property="owner">
+			and a.owner=#owner#
+		</isNotEmpty>
+		<isNotEmpty property="searchPanelName">
+			and a.panel_name like '%$searchPanelName$%'
+		</isNotEmpty>
+	</select>
+	
+</sqlMap>

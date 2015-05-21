@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="E2MTaskRunType">
+	<typeAlias alias="e2mRunType"
+		type="com.alibaba.bigData.dal.entity.E2MRunTypeDO" />
+
+
+	<resultMap class="e2mRunType" id="e2mScanResultDOResult">
+		<result column="runID" property="runID" />
+		<result column="type" property="type" />
+		<result column="scan_runid" property="scanRunID" />
+	</resultMap>
+
+
+	<insert id="addRunType" parameterClass="e2mRunType">
+		insert into bigData_e2m_run_type
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runID">
+				runID
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				type
+			</isNotNull>
+			<isNotNull prepend="," property="scanRunID">
+				scan_runid
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="runID">
+				#runID#
+			</isNotNull>
+			<isNotNull prepend="," property="type">
+				#type#
+			</isNotNull>
+			<isNotNull prepend="," property="scanRunID">
+				#scanRunID#
+			</isNotNull>
+
+			)
+		</dynamic>
+
+	</insert>
+
+	<select id="queryRunType" resultClass="java.lang.String" parameterClass="java.lang.Long">
+		select type from bigData_e2m_run_type
+		where runID=#runID#
+	</select>
+
+	<select id="queryScanRunID" resultClass="java.lang.Long" parameterClass="java.lang.Long">
+		select scan_runid from bigData_e2m_run_type
+		where runID=#runID#
+	</select>
+
+
+
+
+</sqlMap>

@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsPermission">
+	<resultMap id="CmsPermission-result" class="CmsPermission" >		
+		<result property="id"                 javaType="java.lang.Long"       column="ID" />
+		<result property="permCode"           javaType="java.lang.String"     column="PERM_CODE" />
+		<result property="description"        javaType="java.lang.String"     column="DESCRIPTION" />
+		<result property="gmtCreate"	      javaType="java.sql.Timestamp"	  column="GMT_CREATE" />
+        <result property="gmtModified"	      javaType="java.sql.Timestamp"	  column="GMT_MODIFIED" />
+	</resultMap>
+
+	<!-- 创建语句集 -->
+	<insert id="MS_CREATE_PERMISSION" parameterClass="CmsPermission">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_PERMISSION.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO CMS_PERMISSION(
+			    ID,
+			    DESCRIPTION,
+		        PERM_CODE,
+		        GMT_CREATE,
+		        GMT_MODIFIED)
+		    VALUES(
+			    #id#,
+		        #description#,
+			    #permCode#,
+		        sysdate,
+		        sysdate)		
+		]]>		
+	</insert>
+	
+	<insert id="MS_AUTHORIZE_PERMISSION" parameterClass="java.util.Map">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_ROLE_PERMISSION.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+		    INSERT INTO CMS_ROLE_PERMISSION(
+			    ID,
+		        ROLE_ID,
+			    PERM_ID,
+		        GMT_CREATE,
+		        GMT_MODIFIED)
+		    VALUES(
+			    #id#,
+		        #roleId#,
+			    #permId#,
+		        sysdate,
+		        sysdate)		
+		]]>	
+	</insert>
+	<!-- 查询语句集 -->	
+	<select id="MS_QUERY_ALL_PERMISSIONS" resultMap="CmsPermission-result">
+		<![CDATA[
+            SELECT * FROM CMS_PERMISSION ORDER BY ID DESC
+        ]]>
+	</select>
+	
+	<select id="MS_QUERY_PERMISSION_BY_CONDITION" parameterClass="CmsPermission" resultMap="CmsPermission-result">
+		<![CDATA[
+		    SELECT * FROM CMS_PERMISSION WHERE PERM_CODE = #permCode#
+		]]>
+	</select>
+	
+	<select id="MS_QUERY_PERMISSION_BY_ID" parameterClass="CmsPermission" resultMap="CmsPermission-result">
+		<![CDATA[
+		    SELECT * FROM CMS_PERMISSION WHERE ID = #id#
+		]]>
+	</select>
+	
+	<select id="MS_QUERY_ALL_PERMISSIONS_BY_ROLE"  parameterClass="java.lang.Long" resultMap="CmsPermission-result">
+		<![CDATA[
+		    SELECT p.* FROM CMS_ROLE_PERMISSION RP, CMS_PERMISSION P, CMS_ROLE R WHERE RP.PERM_ID = P.ID and RP.ROLE_ID = R.ID and R.ID = #roleId#
+		]]>
+	</select>
+	
+	<select id="MS_COUNT_ALL_PERMISSIONS" resultClass="java.lang.Integer">
+		<![CDATA[
+            SELECT count(*) FROM CMS_PERMISSION
+        ]]>
+	</select>
+	
+	<!-- 根据用户ID，查询该用户所拥有的全部权限 -->
+	<select id="GET_USER_PERMISSION_BY_USERID" parameterClass="java.lang.String" resultClass="java.lang.String">
+		<![CDATA[
+		    SELECT PERM.PERM_CODE
+				  FROM CMS_ROLE_PERMISSION CRP, CMS_PERMISSION PERM, CMS_USER_ROLE UR
+				 WHERE UR.ROLE_ID = CRP.ROLE_ID
+				   AND CRP.PERM_ID = PERM.ID
+				   AND UR.USER_ID = #value#
+		]]>
+	</select>
+	
+	<!-- 根据用户ID，查询该用户所拥有的全部权限的详细信息 -->
+	<select id="GET_USER_PERMISSION_DETAIL_BY_USERID" parameterClass="java.lang.String" resultMap="CmsPermission-result">
+		<![CDATA[
+		    SELECT DISTINCT PERM.*
+			  FROM CMS_USER_ROLE UR, CMS_PERMISSION PERM, CMS_ROLE_PERMISSION RP
+			 WHERE UR.ROLE_ID = RP.ROLE_ID
+			   AND RP.PERM_ID = PERM.ID
+			   AND UR.USER_ID  = #value#
+		]]>
+	</select>
+	
+	<!-- 更新语句集 -->
+	<update id="MS_UPDATE_PERMISSION" parameterClass="CmsPermission">
+		 <![CDATA[	 
+	         UPDATE CMS_PERMISSION SET DESCRIPTION= #description#, GMT_MODIFIED = sysdate WHERE ID = #id#	 
+	     ]]>
+	 </update>
+	<!-- 删除语句集 -->
+	<delete id="MS_DELETE_PERMISSION_BY_CONDITION" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE FROM CMS_ROLE_PERMISSION WHERE ROLE_ID = #roleId#
+        ]]>
+    </delete>
+    <delete id="MS_DELETE_PERMISSION_BY_ID" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE FROM cms_permission WHERE ID = #id#
+        ]]>
+    </delete>
+    <delete id="MS_DELETE_ROLE_PERMISSION_BY_ID" parameterClass="java.lang.Long">
+        <![CDATA[
+           DELETE FROM CMS_ROLE_PERMISSION WHERE PERM_ID = #id#
+        ]]>
+    </delete>
+</sqlMap>

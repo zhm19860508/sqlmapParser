@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="cms_CmsTdp">        
+    <resultMap class="CmsTdp" id="CmsTdp-result" >
+        <result property="gmtCreate"	javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"	javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />
+        <result property="id"			javaType="java.lang.Long"		column="ID" />
+        <result property="name"			javaType="java.lang.String"		column="NAME" />
+        <result property="methodName"   javaType="java.lang.String"		column="METHOD_NAME" />
+		<result property="categoryId"   javaType="java.lang.Long"		column="CATEGORY_ID" />
+		<result property="introduce"    javaType="java.lang.String"		column="INTRODUCE" />
+		<result property="params"       javaType="java.lang.String"		column="PARAMS" />
+		<result property="paramsIntroduce"      javaType="java.lang.String"		column="PARAMS_INTRODUCE" />
+    </resultMap>
+
+    <select id="MS-GET-CMSTDP-BY-ID" parameterClass="java.lang.Long" resultMap="CmsTdp-result">
+        <![CDATA[
+            select * from CMS_TDP
+            where ID = #id# 
+        ]]>
+    </select>
+    <select id="MS-GET-CMSTDP-BY-TDPCATEGORYID" parameterClass="java.lang.Long" resultMap="CmsTdp-result">
+        <![CDATA[
+            select * from CMS_TDP
+            where CATEGORY_ID = #tdpCategoryId# 
+        ]]>
+    </select>
+    <select id="MS-GET-CMSTDP-BY-METHOD-NAME" parameterClass="java.lang.String" resultMap="CmsTdp-result">
+        <![CDATA[
+            select * from CMS_TDP
+            where METHOD_NAME = #methodName# 
+        ]]>
+    </select>
+    <update id="MS-UPDATE-CMSTDP-BY-ID" parameterClass="CmsTdp" >
+        <![CDATA[
+            update CMS_TDP
+            	set GMT_MODIFIED = SYSDATE , 
+                    NAME = #name# , 
+                    METHOD_NAME = #methodName#,
+				    CATEGORY_ID=#categoryId#,
+					INTRODUCE=#introduce#,
+					PARAMS = #params#,
+					PARAMS_INTRODUCE=#paramsIntroduce#
+                where  ID = #id#
+        ]]>
+    </update>
+
+    <insert id="MS-INSERT-CMSTDP" parameterClass="CmsTdp" >
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_TDP.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_TDP
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , NAME  , METHOD_NAME,CATEGORY_ID,INTRODUCE,PARAMS,PARAMS_INTRODUCE)
+            values
+              (sysdate  , sysdate  , #id#  , #name#  , #methodName#,#categoryId#,#introduce#,#params#,#paramsIntroduce#)
+        ]]>
+    </insert>
+     
+    <select id="MS-SELECT-ALL-CMSTDP" resultClass="CmsTdp" resultMap="CmsTdp-result" >
+        <![CDATA[
+            select * from CMS_TDP order by GMT_CREATE desc
+        ]]>
+    </select>
+    <select id="MS-SELECT-CMSTDP-BY-TDPIDS"  resultMap="CmsTdp-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT A.*,ROWNUM RN FROM (
+            SELECT * FROM CMS_TDP 
+      ]]>
+         <iterate prepend="WHERE" property="tdpIdList" open="(" close=")" conjunction="OR">
+		                      ID =#tdpIdList[]#
+		 </iterate> 
+      <![CDATA[
+            ORDER BY GMT_MODIFIED DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+     ]]>
+    </select>
+	<select id="MS-SELECT-COUNT-CMSTDP-BY-TDPIDS"  resultClass="java.lang.Integer" parameterClass="java.util.Map">
+          SELECT count(*) FROM CMS_TDP 
+         <iterate prepend="WHERE" property="tdpIdList" open="(" close=")" conjunction="OR">
+		                      ID =#tdpIdList[]#
+		 </iterate>
+    </select>
+	<select id="MS-SELECT-CMSTDP-BY-TDPCATEGORYID"  resultMap="CmsTdp-result" parameterClass="java.util.Map">
+    <![CDATA[
+      SELECT * FROM (
+         SELECT A.*,ROWNUM RN FROM (
+            SELECT * FROM CMS_TDP 
+      ]]>
+         where CATEGORY_ID = #tdpCategoryId# 
+      <![CDATA[
+            ORDER BY GMT_MODIFIED DESC
+         ) A WHERE ROWNUM <= #offset# + #length#
+      ) WHERE RN > #offset#
+     ]]>
+    </select>
+    <select id="MS-SELECT-COUNT-CMSTDP-BY-TDPCATEGORYID"  resultClass="java.lang.Integer" parameterClass="java.lang.Long"> 
+          SELECT count(*) FROM CMS_TDP 
+          where CATEGORY_ID = #tdpCategoryId# 
+    </select>
+</sqlMap>

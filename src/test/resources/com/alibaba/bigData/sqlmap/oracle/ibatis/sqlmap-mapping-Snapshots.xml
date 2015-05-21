@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.snapshots">
+   
+    <resultMap id="Snapshots-result" class="Snapshots">
+        <result property="gmtCreate" column="GMT_CREATE" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="gmtModified" column="GMT_MODIFIED" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <result property="versionId" column="VERSION_ID" jdbcType="NUMERIC" javaType="java.lang.Long"/>
+        <result property="resourceId" column="RESOURCE_ID" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result property="hot" column="HOT" jdbcType="NUMERIC" javaType="java.lang.Integer"/>        
+        <result property="priority" column="PRIORITY" jdbcType="NUMERIC" javaType="java.lang.Integer"/>
+    </resultMap>
+    	    
+	<insert id="MS_INSERT_SNAPSHOTS" parameterClass="Snapshots">
+        <![CDATA[
+            insert into DCMS_SNAPSHOTS
+              (GMT_CREATE  , GMT_MODIFIED  , VERSION_ID  , RESOURCE_ID  , RESOURCE_TYPE  , HOT, PRIORITY )
+            values
+              (#gmtCreate#  , #gmtCreate#  , #versionId#  , #resourceId#,  #resourceType#, #hot# , #priority#)
+        ]]>
+	</insert> 	    
+    
+	<update id = "MS_UPDATE_SNAPSHOTS" parameterClass="Snapshots">
+        <![CDATA[ UPDATE DCMS_SNAPSHOTS SET GMT_MODIFIED = #gmtModified# ]]>
+        <dynamic prepend = "">
+        		<isNotNull property = "versionId" prepend = ",">VERSION_ID = #versionId#</isNotNull>
+                <isNotNull property = "resourceId" prepend = ",">RESOURCE_ID = #resourceId#</isNotNull>
+                <isNotNull property = "resourceType" prepend = ",">RESOURCE_TYPE = #resourceType#</isNotNull>
+                <isNotNull property = "hot" prepend = ",">HOT = #hot#</isNotNull>
+                <isNotNull property = "priority" prepend = ",">PRIORITY = #priority#</isNotNull>
+        </dynamic>
+        <![CDATA[ WHERE VERSION_ID =  #versionId# ]]>
+	</update>  
+    
+	<select id="MS_ITERATE_SNAPSHOTS" parameterClass="java.util.Map"  resultMap="Snapshots-result" resultClass="Snapshots">
+      <![CDATA[
+            SELECT * FROM (
+             SELECT A.*,ROWNUM RN FROM ( 
+               SELECT * FROM DCMS_SNAPSHOTS 
+      ]]>
+      <dynamic prepend="where">
+		  <isEqual property="snapshots" prepend="and" compareValue="hot" >
+				<![CDATA[ HOT > 0 ]]> 
+		  </isEqual>      
+	      <isNotEmpty property="hot" prepend="and">
+	      		<![CDATA[ HOT = #hot# ]]> 
+	      </isNotEmpty>      
+      </dynamic>
+      <![CDATA[        
+              order by VERSION_ID
+             ) A WHERE ROWNUM <= #offset# + #length#
+            ) WHERE RN > #offset#
+      ]]>
+	</select>    
+	
+	<select id="MS_GET_SNAPSHOTS" parameterClass="long"  resultMap="Snapshots-result" resultClass="Snapshots">
+	      <![CDATA[
+	      	SELECT * FROM DCMS_SNAPSHOTS where version_id = #versionId#
+	      ]]> 
+	</select>
+	
+	<select id="MS_GET_SNAPSHOTS_WITH_IDS" resultMap="Snapshots-result" resultClass="Snapshots">
+	      <![CDATA[
+	      	SELECT * FROM DCMS_SNAPSHOTS where version_id in
+	      ]]> 
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>   	      
+	</select>
+	
+	<select id="MS_GET_SNAPSHOTS_WITH_RULEID" parameterClass="Collection"  resultMap="Snapshots-result" resultClass="Snapshots">
+	      <![CDATA[
+	      	SELECT S.* FROM DCMS_SNAPSHOTS S, ONLINE_RULE R WHERE R.TPL_VERSION_ID = S.VERSION_ID AND R.RULE_ID IN
+	      ]]> 
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>    	      
+	</select>
+	
+    <update id="MS_MARK_PROCESSING" parameterClass="Collection" >
+        <![CDATA[
+			UPDATE DCMS_SNAPSHOTS SET HOT=(NVL(HOT, 0)+2) WHERE VERSION_ID IN
+        ]]>
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>       
+    </update>	
+    
+    <update id="MS_UPDATE_HOT_STATUS" parameterClass="java.util.Map" >
+        <![CDATA[
+			UPDATE DCMS_SNAPSHOTS SET HOT=#hot# WHERE VERSION_ID IN
+        ]]>
+		<iterate property="versionIds" open="(" close=")" conjunction=",">
+			#versionIds[]#
+		</iterate>       
+    </update>	    
+    
+    <update id="MS_MARKING_FINISHED" parameterClass="java.util.Map">
+        <![CDATA[
+			UPDATE DCMS_SNAPSHOTS SET HOT = (CASE WHEN HOT=1 THEN #oldHot# ELSE 1 END) WHERE HOT > 0
+        ]]> 
+    </update>
+   
+    <delete id="MS_DELETE_SNAPSHOTS" parameterClass="Collection">
+        <![CDATA[
+            DELETE from DCMS_SNAPSHOTS where VERSION_ID in
+        ]]>
+		<iterate open="(" close=")" conjunction=",">
+			#[]#
+		</iterate>         
+    </delete>   
+    
+	<select id="MS_ITERATE_UNUSE_SNAPSHOTS" parameterClass="java.util.Map" resultClass="java.lang.Long">
+      <![CDATA[
+            SELECT VERSION_ID FROM (
+             SELECT A.*,ROWNUM RN FROM ( 
+               SELECT VERSION_ID FROM DCMS_SNAPSHOTS 
+			   WHERE VERSION_ID NOT IN (SELECT R.TPL_VERSION_ID FROM ONLINE_RULE R)        
+               ORDER BY VERSION_ID
+             ) A WHERE ROWNUM <= #offset# + #length#
+            ) WHERE RN > #offset#
+      ]]>
+	</select>       
+  
+</sqlMap>

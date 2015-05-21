@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="UDFType">
+	<typeAlias alias="UDFTypeDO"
+		type="com.alibaba.bigData.dal.entity.UDFTypeDO" />
+
+	<resultMap class="UDFTypeDO" id="UDFTypeDOResult">
+		<result column="udf_id" property="udfId" />
+		<result column="udf_type" property="udfType" />
+		<result column="is_default" property="isDefault" />
+	</resultMap>
+
+	<sql id="UDFTypeColumns">
+		select a.udf_id,a.udf_type,a.is_default
+	</sql>
+
+	<sql id="UDFTypeFrom">
+		from bigData_udf_type a
+	</sql>
+
+	<sql id="UDFTypeJoin">
+        1 = 1
+	</sql>
+
+	<sql id="UDFTypeQuery">
+        where
+		<include refid="UDFTypeJoin" />
+		<isNotNull property="udfId" prepend="AND">
+            a.udf_id=#udfId#
+		</isNotNull>
+		<isNotNull property="udfType" prepend="AND">
+            a.udf_type=#udfType#
+		</isNotNull>
+		<isNotNull property="isDefault" prepend="AND">
+            a.is_default=#isDefault#
+		</isNotNull>		
+	</sql>
+
+
+	<insert id="addUDFType" parameterClass="UDFTypeDO">
+		insert into bigData_udf_type
+		<dynamic prepend="(">
+			<isNotNull property="udfId" prepend="AND">
+                udf_id
+    		</isNotNull>
+			<isNotNull prepend="," property="udfType">
+				udf_type
+			</isNotNull>
+			<isNotNull prepend="," property="isDefault">
+				is_default
+			</isNotNull>			
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="udfId">
+                #udfId#
+    		</isNotNull>
+			<isNotNull prepend="," property="udfType">
+				#udfType#
+			</isNotNull>
+			<isNotNull prepend="," property="isDefault">
+				#isDefault#
+			</isNotNull>					
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryUDFTypeById" resultMap="UDFTypeDOResult">
+		<include refid="UDFTypeColumns" />
+		<include refid="UDFTypeFrom" />
+		where a.id=#id#
+	</select>
+
+</sqlMap>

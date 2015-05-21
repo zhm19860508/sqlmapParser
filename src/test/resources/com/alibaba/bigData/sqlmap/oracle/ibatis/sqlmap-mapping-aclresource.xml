@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="acl_resource">
+	<typeAlias alias="aclResource" type="com.alibaba.china.cmshollywood.acl.domain.ACLResource" />
+	<resultMap id="aclResourceResult" class="aclResource">
+        <result property="createUser" column="CREATE_USER" />
+        <result property="modifyUser" column="MODIFY_USER" />
+        <result property="id" column="ID" />
+        <result property="name" column="NAME" />
+        <result property="resourceCode" column="RESOURCE_CODE" />
+        <result property="parentId" column="PARENT_ID" />
+        <result property="url" column="URL" />
+        <result property="sort" column="SORT" />
+        <result property="appName" column="APP_NAME" />
+        <result property="resourceType" column="RESOURCE_TYPE" />
+        <result property="isDelete" column="IS_DELETE" />
+        <result property="isWhite" column="IS_WHITE" />
+        <result property="description" column="DESCRIPTION" />
+        <result property="gmtCreate" column="GMT_CREATE" />
+        <result property="gmtModified" column="GMT_MODIFIED" />
+	</resultMap>
+	
+	<sql id="selectResourceBeanSql">
+		<![CDATA[
+			select t.create_user, t.modify_user, t.id, t.name, t.resource_code, t.parent_id, t.url, t.sort, t.app_name, t.resource_type, t.is_delete, t.is_white, t.description, t.gmt_create, t.gmt_modified from acl_resource t
+		]]>
+	</sql>
+	
+	<select id="findResourceCountByAppNameAndCode" parameterClass="java.util.Map" resultClass="aclResource">
+	    <![CDATA[
+	        select t.id, t.is_delete isDelete
+	          from acl_resource t
+	         where t.app_name = #appName#
+	           and t.resource_code = #resourceCode#
+	    ]]>
+	</select>
+	
+	<select id="findBlacklistByAppName" parameterClass="java.util.Map" resultClass="com.alibaba.china.cmshollywood.acl.domain.ACLRoleResource">
+	    <![CDATA[
+	        select t.id, t.url, rr.role_id roleID
+              from acl_resource t
+             inner join (select rr.resource_code, rr.role_id
+                           from acl_role_resource rr
+                          inner join (select r.id from acl_role r where r.is_delete = #isDelete#) r 
+                             on rr.role_id = r.id
+                          where rr.status = #status#) rr 
+                on t.id = rr.resource_code
+             where t.is_delete = #isDelete#
+               and t.app_name = #appName#
+	    ]]>
+	</select>
+	
+	<select id="findAclResourcesCountByRoleID" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	    <![CDATA[
+	        select count(*) from acl_resource t
+	         inner join acl_role_resource rr
+               on t.id = rr.resource_code
+	    ]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findAclResourcesPageByRoleID" parameterClass="java.util.Map" resultMap="aclResourceResult">
+	    <![CDATA[
+	        select * from (select a.*, rownum num from (
+	    ]]>
+	    <include refid="selectResourceBeanSql"/>
+	    <![CDATA[
+			inner join acl_role_resource rr
+               on t.id = rr.resource_code
+		]]>
+		<dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    order by t.app_name, t.resource_type, t.sort
+		    ) a where rownum <= #end# ) where num >= #start#
+		]]>
+	</select>
+	
+	<select id="findAclResourcesByRoleID" parameterClass="java.util.Map" resultMap="aclResourceResult">
+	    <include refid="selectResourceBeanSql"/>
+	    <![CDATA[
+			inner join acl_role_resource rr
+               on t.resource_code = rr.resource_code
+		]]>
+		<dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    order by t.app_name, t.resource_type
+		]]>
+	</select>
+	
+	<select id="findAclResourcesCountCanApply" parameterClass="java.util.Map" resultClass="java.lang.Integer">
+	     <![CDATA[
+	         select count(*)
+               from acl_resource r, (select t.id
+                                       from acl_resource t
+                                      inner join acl_role_resource rr
+                                         on t.id = rr.resource_code
+	     ]]>
+	     <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		                             ) t
+		    where r.id = t.id(+)
+              and t.id is null
+		]]>
+		<dynamic>
+		    <isNotEmpty prepend="and" property="isDelete">
+                r.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                r.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                r.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                r.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findAclResourcesPageCanApply" parameterClass="java.util.Map" resultMap="aclResourceResult">
+	     <![CDATA[
+	         select * from (select a.*, rownum num from (
+	         select r.id, r.name, r.resource_code, r.parent_id, r.url, r.sort, r.app_name,
+                    r.resource_type, r.is_delete, r.is_white, r.description, r.gmt_create,
+                    r.gmt_modified, r.create_user, r.modify_user
+               from acl_resource r, (select t.id
+                                       from acl_resource t
+                                      inner join acl_role_resource rr
+                                         on t.id = rr.resource_code
+	     ]]>
+	     <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		                             ) t
+		    where r.id = t.id(+)
+              and t.id is null
+		]]>
+		<dynamic>
+		    <isNotEmpty prepend="and" property="isDelete">
+                r.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                r.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                r.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                r.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    order by r.app_name, r.resource_type, r.sort
+		    ) a where rownum <= #end# ) where num >= #start#
+		]]>
+	</select>
+	
+	<select id="findAclResourceById" parameterClass="String" resultMap="aclResourceResult">
+	    <include refid="selectResourceBeanSql"/>
+		<![CDATA[
+			where t.id = #id#
+		]]>
+	</select>
+	
+	<select id="findResoucesByRoles" parameterClass="java.util.Map" resultMap="aclResourceResult">
+	    <![CDATA[
+			select t.create_user, t.modify_user, t.id, t.name, t.resource_code, t.parent_id,
+                   t.url, t.sort, t.app_name, t.resource_type, t.is_delete, t.is_white,
+                   t.description, t.gmt_create, t.gmt_modified
+              from acl_resource t
+             inner join (select rr.resource_code from acl_role_resource rr
+		]]>
+		<dynamic prepend="where">
+            <isNotEmpty prepend="and" property="roleID">
+                rr.role_id = #roleID#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="roleIDs">
+                rr.role_id in
+                <iterate property="roleIDs" open="(" close=")" conjunction=",">
+			        #roleIDs[]#
+		        </iterate>
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    ) rr on t.id = rr.resource_code
+		]]>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceTypes">
+                t.resource_type in
+                <iterate property="resourceTypes" open="(" close=")" conjunction=",">
+			          #resourceTypes[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		    union all
+		    select t.create_user, t.modify_user, t.id, t.name, t.resource_code, t.parent_id,
+                   t.url, t.sort, t.app_name, t.resource_type, t.is_delete, t.is_white,
+                   t.description, t.gmt_create, t.gmt_modified
+              from acl_resource t
+		]]>
+		<dynamic prepend="where">
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceTypes">
+                t.resource_type in
+                <iterate property="resourceTypes" open="(" close=")" conjunction=",">
+			          #resourceTypes[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                t.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findAclResourceCountByWhere" parameterClass="aclResource" resultClass="java.lang.Integer">
+	    <![CDATA[
+			select count(*) from acl_resource t
+		]]>
+		<dynamic prepend="where">
+            <isNotEmpty prepend="and" property="createUser">
+                t.CREATE_USER = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="name">
+                t.name = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="parentId">
+                t.parent_id = #parentId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="url">
+                t.url = #url#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="sort">
+                t.sort = #sort#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                t.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="description">
+                t.description = #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+		</dynamic>
+	</select>
+	
+	<select id="findAclResourcePageByWhere" parameterClass="java.util.Map" resultMap="aclResourceResult">
+	    <![CDATA[
+	         select * from (select a.*, rownum num from (
+	    ]]>     
+	    <include refid="selectResourceBeanSql"/>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="createUser">
+                t.CREATE_USER = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="name">
+                t.name = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="parentId">
+                t.parent_id = #parentId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="url">
+                t.url = #url#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                t.is_white = #isWhite#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+		        order by t.app_name, t.gmt_modified desc
+		     ) a where rownum <= #end# ) where num >= #start#
+		]]> 
+	</select>
+	
+	<select id="findAclResourceByWhere" parameterClass="aclResource" resultMap="aclResourceResult">
+	    <include refid="selectResourceBeanSql"/>
+	    <dynamic prepend="where">
+            <isNotEmpty prepend="and" property="createUser">
+                t.CREATE_USER = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="name">
+                t.name = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="parentId">
+                t.parent_id = #parentId#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="url">
+                t.url = #url#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="sort">
+                t.sort = #sort#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="resourceTypes">
+                t.resource_type in
+                <iterate property="resourceTypes" open="(" close=")" conjunction=",">
+			        #resourceTypes[]#
+		        </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="isWhite">
+                t.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="description">
+                t.description = #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+		</dynamic>
+		<![CDATA[
+			order by t.resource_type desc, t.sort
+		]]>
+	</select>
+	
+	<insert id="insertAclResource" parameterClass="aclResource">
+	    insert into acl_resource
+	    <dynamic prepend="(">
+            <isNotEmpty prepend="," property="createUser">
+                create_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                modify_user
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="id">
+                id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="name">
+                name
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                resource_code
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="parentId">
+                parent_id
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="url">
+                url
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="sort">
+                sort
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="appName">
+                app_name
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceType">
+                resource_type
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                is_delete
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isWhite">
+                is_white
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                description
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                gmt_create
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                gmt_modified
+            </isNotEmpty>
+	    </dynamic>
+	    <dynamic prepend=") values (">
+            <isNotEmpty prepend="," property="createUser">
+                #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="id">
+                #id#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="name">
+                #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="parentId">
+                #parentId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="url">
+                #url#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="sort">
+                #sort#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="appName">
+                #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceType">
+                #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isWhite">
+                #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                #gmtModified#
+            </isNotEmpty>
+	    </dynamic>)
+	</insert>
+	
+	<update id="updateAclResource" parameterClass="aclResource">
+		update acl_resource t
+        <dynamic prepend="set">
+            <isNotEmpty prepend="," property="createUser">
+                t.CREATE_USER = #createUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="modifyUser">
+                t.modify_user = #modifyUser#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="name">
+                t.name = #name#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceCode">
+                t.resource_code = #resourceCode#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="parentId">
+                t.parent_id = #parentId#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="url">
+                t.url = #url#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="sort">
+                t.sort = #sort#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="appName">
+                t.app_name = #appName#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="resourceType">
+                t.resource_type = #resourceType#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isDelete">
+                t.is_delete = #isDelete#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="isWhite">
+                t.is_white = #isWhite#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="description">
+                t.description = #description#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtCreate">
+                t.gmt_create = #gmtCreate#
+            </isNotEmpty>
+            <isNotEmpty prepend="," property="gmtModified">
+                t.gmt_modified = #gmtModified#
+            </isNotEmpty>
+        </dynamic>
+        <![CDATA[
+		   where t.id = #id#
+		]]>  
+	</update>
+	
+	<delete id="deleteAclResource" parameterClass="String">
+	    <![CDATA[
+		  delete from acl_resource where id = #id#
+		]]>  
+	</delete>
+</sqlMap>

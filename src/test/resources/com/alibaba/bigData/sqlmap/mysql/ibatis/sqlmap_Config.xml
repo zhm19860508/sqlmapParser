@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Config">
+	<typeAlias alias="configScriptDO"
+		type="com.alibaba.bigData.dal.entity.ConfigScriptDO" />
+
+
+	<resultMap class="ConfigScriptDO" id="configScriptDOResult">
+		<result column="id" property="id" />
+		<result column="task_type" property="taskType" />
+		<result column="deploy_script" property="deployScript" />
+		<result column="kill_script" property="killScript" />
+		<result column="is_deleted" property="isDeleted" />
+	
+	</resultMap>
+
+
+	<sql id="configColumns">
+		select
+		a.id,a.task_type,a.deploy_script,a.kill_script,a.is_deleted
+	</sql>
+
+	<sql id="configFrom">
+		from bigData_config a
+	</sql>
+
+	<sql id="configJoin">
+		a.is_deleted = 0 
+	</sql>
+	
+	<select id="queryAllConfig" resultMap="configScriptDOResult">
+		<include refid="configColumns" />
+		<include refid="configFrom" />
+		where
+		<include refid="configJoin" />
+	</select>
+
+	<insert id="addConfig" parameterClass="configScriptDO">
+		insert into bigData_config
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskType">
+				task_type
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				deploy_script
+			</isNotNull>
+			<isNotNull prepend="," property="killScript">
+				kill_script
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskType">
+				#taskType#
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				#deployScript#
+			</isNotNull>
+			<isNotNull prepend="," property="killScript">
+				#killScript#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updateConfig" parameterClass="configScriptDO">
+		update bigData_config
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskType">
+				task_type=#taskType#
+			</isNotNull>
+			<isNotNull prepend="," property="deployScript">
+				deploy_script=#deployScript#
+			</isNotNull>
+			<isNotNull prepend="," property="killScript">
+				kill_script=#killScript#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="deleteConfig" parameterClass="java.lang.Integer">
+		update bigData_config
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+
+	<select id="queryConfigById" resultMap="configScriptDOResult">
+		<include refid="configColumns" />
+		<include refid="configFrom" />
+		where
+		<include refid="configJoin" />
+		and a.id=#id#
+	</select>
+
+
+	<select id="queryConfigByTaskType" resultMap="configScriptDOResult">
+		<include refid="configColumns" />
+		<include refid="configFrom" />
+		where
+		<include refid="configJoin" />
+		and a.task_type=#taskType#
+	</select>
+</sqlMap>

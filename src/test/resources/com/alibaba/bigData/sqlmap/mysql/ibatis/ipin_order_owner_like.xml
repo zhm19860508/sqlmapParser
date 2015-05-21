@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="orderOwnerLike"
+		type="com.alibaba.china.ipinshared.dataobject.OrderOwnerLikeDO" />
+	<typeAlias alias="orderOwnerLikeQuery"
+		type="com.alibaba.china.ipinshared.query.OrderOwnerLikeQuery" />
+	<resultMap id="orderOwnerLikeResult" class="orderOwnerLike">
+	    <result property="id"          column="id"             jdbcType="INTEGER" />
+		<result property="gmtCreated"  column="gmt_created"    jdbcType="DATETIME"  />
+		<result property="gmtModified" column="gmt_modified"   jdbcType="DATETIME" />
+		<result property="orderOwner"  column="order_owner"    jdbcType="LONG" />
+		<result property="likeUserId"  column="like_user_id"   jdbcType="LONG" />
+		<result property="orderId"     column="order_id"       jdbcType="LONG" />
+		<result property="isDeleted"   column="is_cancelled"   jdbcType="INTEGER" />
+		<result property="message"     column="message"        jdbcType="VARCHAR" />
+	</resultMap>
+
+	<!-- 新增记录 -->
+	<insert id="order_owner_like_insert" parameterClass="orderOwnerLike">
+		insert into ipin_order_owner_like(gmt_created, gmt_modified, order_owner, like_user_id, order_id, is_cancelled, message)
+		values(now(), now(), #orderOwner#, #likeUserId#, #orderId#, 0, #message#)
+		<selectKey resultClass="Long" keyProperty="id">
+			select last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新记录 -->
+	<update id="order_owner_like_update" parameterClass="orderOwnerLike">
+	    update ipin_order_owner_like set gmt_modified = now()
+	    <isNotNull prepend="," property="orderOwner">
+		    order_owner=#orderOwner#
+		</isNotNull>
+		<isNotNull prepend="," property="likeUserId">
+		    like_user_id=#likeUserId#
+		</isNotNull>
+		<isNotNull prepend="," property="orderId">
+		    order_id=#orderId#
+		</isNotNull>
+		<isNotNull prepend="," property="isDeleted">
+		    is_cancelled=#isDeleted#
+		</isNotNull>
+		<isNotNull prepend="," property="message">
+		    message=#message#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<update id="order_owner_like_isdelete_update" parameterClass="orderOwnerLike">
+	    update ipin_order_owner_like set gmt_modified = now()
+	    <isNotNull prepend="," property="isDeleted">
+		    is_cancelled=#isDeleted#
+		</isNotNull>
+		<isNotNull prepend="," property="message">
+		    message=#message#
+		</isNotNull>
+		where order_owner=#orderOwner# and like_user_id=#likeUserId# and order_id=#orderId#
+	</update>
+
+	<!-- 查询子语句 -->
+	<sql id="order_owner_like_sql_where_list">
+		WHERE 1=1
+		<isNotNull prepend="and" property="id">
+		    id=#id#
+		</isNotNull>
+		<isNotNull prepend="and" property="orderOwner">
+		    order_owner=#orderOwner#
+		</isNotNull>
+		<isNotNull prepend="and" property="likeUserId">
+		    like_user_id=#likeUserId#
+		</isNotNull>
+		<isNotNull prepend="and" property="orderId">
+		    order_id=#orderId#
+		</isNotNull>
+		<isNotNull prepend="and" property="isDeleted">
+		    is_cancelled=#isDeleted#
+		</isNotNull>
+	</sql>
+
+	<!-- 查询记录 -->
+	<select id="order_owner_like_select_list" resultMap="orderOwnerLikeResult" parameterClass="orderOwnerLikeQuery">
+	    select id, gmt_created, gmt_modified, order_owner, like_user_id, order_id, is_cancelled, message
+	    from ipin_order_owner_like
+	    <include refid="order_owner_like_sql_where_list" />
+	    order by id desc
+	    <isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>	    
+	    
+	</select>
+
+	<!-- 查询符合条件的记录数 -->
+	<select id="order_owner_like_count" parameterClass="orderOwnerLikeQuery" resultClass="java.lang.Integer">
+		select count(*) from ipin_order_owner_like
+		<include refid="order_owner_like_sql_where_list" />
+	</select>
+
+
+</sqlMap>

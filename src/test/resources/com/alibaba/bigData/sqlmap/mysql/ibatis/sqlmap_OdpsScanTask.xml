@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="OdpsScanTask">
+	<typeAlias alias="odpsScanTaskDO"
+		type="com.alibaba.bigData.dal.entity.OdpsScanTaskDO" />
+
+	<resultMap class="OdpsScanTaskDO" id="odpsScanTaskDOResult">
+		<result column="task_id" property="taskId" />
+		<result column="time_stamp_type" property="timeStampType" />
+		<result column="time_stamp_value" property="timeStampValue" />
+		<result column="git_path" property="gitPath" />
+		<result column="is_online" property="isOnline" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="file_type" property="fileType" />
+		<result column="project" property="project" />
+		<result column="names" property="names" />
+	</resultMap>
+
+	<sql id="odpsScanTaskColumns">
+		select
+		a.task_id,a.time_stamp_type,a.time_stamp_value,a.git_path,a.is_online,a.is_deleted,a.file_type,a.project,a.names
+	</sql>
+
+
+	<sql id="odpsScanTaskFrom">
+		from bigdata_job_odpsscan a
+	</sql>
+
+	<insert id="addOdpsScanTask" parameterClass="OdpsScanTaskDO">
+		insert into bigdata_job_odpsscan
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampType">
+				time_stamp_type
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampValue">
+				time_stamp_value
+			</isNotNull>
+			<isNotNull prepend="," property="gitPath">
+				git_path
+			</isNotNull>
+			<isNotNull prepend="," property="isOnline">
+				is_online
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				file_type
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				project
+			</isNotNull>
+			<isNotNull prepend="," property="names">
+				names
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampType">
+				#timeStampType#
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampValue">
+				#timeStampValue#
+			</isNotNull>
+			<isNotNull prepend="," property="isOnline">
+				#isOnline#
+			</isNotNull>
+			<isNotNull prepend="," property="gitPath">
+				#gitPath#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				#fileType#
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				#project#
+			</isNotNull>
+			<isNotNull prepend="," property="names">
+				#names#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryOdpsScanTaskById" resultMap="odpsScanTaskDOResult">
+		<include refid="odpsScanTaskColumns" />
+		<include refid="odpsScanTaskFrom" />
+		where a.task_id=#taskId#
+	</select>
+
+	<update id="updateOdpsScanTask" parameterClass="OdpsScanTaskDO">
+		update bigdata_job_odpsscan
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampType">
+				time_stamp_type=#timeStampType#
+			</isNotNull>
+			<isNotNull prepend="," property="timeStampValue">
+				time_stamp_value=#timeStampValue#
+			</isNotNull>
+			<isNotNull prepend="," property="gitPath">
+				git_path=#gitPath#
+			</isNotNull>
+			<isNotNull prepend="," property="isOnline">
+				is_online=#isOnline#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="fileType">
+				file_type=#fileType#
+			</isNotNull>
+			<isNotNull prepend="," property="project">
+				project=#project#
+			</isNotNull>
+			<isNotNull prepend="," property="names">
+				names=#names#
+			</isNotNull>
+			where task_id = #taskId#
+		</dynamic>
+	</update>
+
+	<update id="deleteOdpsScanTask" parameterClass="java.lang.Integer">
+		update bigData_job_base,bigdata_job_odpsscan,bigdata_odpsscan_relation
+		set
+		bigData_job_base.is_deleted = 1,bigdata_job_odpsscan.is_deleted = 1,bigdata_odpsscan_relation.status=1
+		where bigData_job_base.id = #taskId# and bigdata_job_odpsscan.task_id = #taskId# and bigdata_odpsscan_relation.task_id = #taskId#
+	</update>
+
+	<select id="checkProjectForOdpsScanTask" resultClass="java.lang.Integer">
+		select a.task_id from bigdata_job_odpsscan	a where a.project=#project# and is_deleted=0
+		<isNotNull prepend="and" property="taskId">
+			a.task_id != #taskId#
+		</isNotNull>
+		limit 1
+	</select>
+
+</sqlMap>

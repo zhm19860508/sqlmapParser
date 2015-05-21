@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="CmsCluster" >
+
+  <typeAlias alias="cmsClusterDO" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.CmsClusterDO" />
+
+  <resultMap id="cmsClusterDOResultMap" class="cmsClusterDO" >
+    <result property="id" column="ID" />
+    <result property="domain" column="DOMAIN" />
+    <result property="hosts" column="HOSTS" />
+    <result property="username" column="USERNAME" />
+    <result property="password" column="PASSWORD" />
+    <result property="publicKey" column="PUBLIC_KEY" />
+    <result property="privateKey" column="PRIVATE_KEY" />
+    <result property="gmtCreate" column="GMT_CREATE" />
+    <result property="gmtModified" column="GMT_MODIFIED" />
+    <result property="diskPath" column="DISK_PATH" />
+    <result property="esiEnable" column="ESI_ENABLE" />
+  </resultMap>
+
+  <sql id="cmsCluster_columns" >
+    a1.ID, a1.DOMAIN, a1.HOSTS, a1.USERNAME, a1.PASSWORD, a1.PUBLIC_KEY, a1.PRIVATE_KEY, 
+      a1.GMT_CREATE, a1.GMT_MODIFIED, a1.DISK_PATH, a1.ESI_ENABLE
+  </sql>
+
+  <sql id="cmsCluster_do_columns" >
+    a1.ID, a1.DOMAIN, a1.HOSTS, a1.USERNAME, a1.PASSWORD, a1.PUBLIC_KEY, a1.PRIVATE_KEY, 
+      a1.GMT_CREATE, a1.GMT_MODIFIED, a1.DISK_PATH, a1.ESI_ENABLE
+  </sql>
+
+  <sql id="queryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[  
+        ID = #id#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="domain" prepend="AND" >
+        <![CDATA[  
+        DOMAIN = #domain#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="hosts" prepend="AND" >
+        <![CDATA[  
+        HOSTS = #hosts#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="username" prepend="AND" >
+        <![CDATA[  
+        USERNAME = #username#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="password" prepend="AND" >
+        <![CDATA[  
+        PASSWORD = #password#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="publicKey" prepend="AND" >
+        <![CDATA[  
+        PUBLIC_KEY = #publicKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="privateKey" prepend="AND" >
+        <![CDATA[  
+        PRIVATE_KEY = #privateKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[  
+        GMT_CREATE = #gmtCreate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[  
+        GMT_MODIFIED = #gmtModified#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="diskPath" prepend="AND" >
+        <![CDATA[  
+        DISK_PATH = #diskPath#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="esiEnable" prepend="AND" >
+        <![CDATA[  
+        ESI_ENABLE = #esiEnable#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <sql id="doQueryParams" >
+    <dynamic prepend="WHERE" >
+      <isNotNull property="id" prepend="AND" >
+        <![CDATA[  
+        ID = #id#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="domain" prepend="AND" >
+        <![CDATA[  
+        DOMAIN = #domain#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="hosts" prepend="AND" >
+        <![CDATA[  
+        HOSTS = #hosts#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="username" prepend="AND" >
+        <![CDATA[  
+        USERNAME = #username#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="password" prepend="AND" >
+        <![CDATA[  
+        PASSWORD = #password#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="publicKey" prepend="AND" >
+        <![CDATA[  
+        PUBLIC_KEY = #publicKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="privateKey" prepend="AND" >
+        <![CDATA[  
+        PRIVATE_KEY = #privateKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="AND" >
+        <![CDATA[  
+        GMT_CREATE = #gmtCreate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="AND" >
+        <![CDATA[  
+        GMT_MODIFIED = #gmtModified#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="diskPath" prepend="AND" >
+        <![CDATA[  
+        DISK_PATH = #diskPath#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="esiEnable" prepend="AND" >
+        <![CDATA[  
+        ESI_ENABLE = #esiEnable#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+  </sql>
+
+  <insert id="insert" parameterClass="cmsClusterDO" >
+  	<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_CLUSTER.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+    <![CDATA[
+    INSERT INTO CMS_CLUSTER( ID, DOMAIN, HOSTS, USERNAME, PASSWORD, PUBLIC_KEY, PRIVATE_KEY, 
+      GMT_CREATE, GMT_MODIFIED, DISK_PATH, ESI_ENABLE)
+     VALUES ( #id#, #domain#, #hosts#, #username#, #password#, #publicKey#, #privateKey#, 
+      #gmtCreate#, #gmtModified#, #diskPath#, #esiEnable#)
+      ]]>
+    <selectKey keyProperty="id" resultClass="java.lang.Long" >
+      SELECT LAST_INSERT_ID() AS value
+    </selectKey>
+  </insert>
+
+  <update id="update" parameterClass="cmsClusterDO" >
+    UPDATE CMS_CLUSTER   
+    <dynamic prepend="SET" >
+      <!--
+      <isNotNull property="id" prepend="," >
+        <![CDATA[  
+        ID = #id#  
+        ]]>  
+      </isNotNull>
+      -->
+      <isNotNull property="domain" prepend="," >
+        <![CDATA[  
+        DOMAIN = #domain#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="hosts" prepend="," >
+        <![CDATA[  
+        HOSTS = #hosts#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="username" prepend="," >
+        <![CDATA[  
+        USERNAME = #username#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="password" prepend="," >
+        <![CDATA[  
+        PASSWORD = #password#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="publicKey" prepend="," >
+        <![CDATA[  
+        PUBLIC_KEY = #publicKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="privateKey" prepend="," >
+        <![CDATA[  
+        PRIVATE_KEY = #privateKey#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtCreate" prepend="," >
+        <![CDATA[  
+        GMT_CREATE = #gmtCreate#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="gmtModified" prepend="," >
+        <![CDATA[  
+        GMT_MODIFIED = #gmtModified#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="diskPath" prepend="," >
+        <![CDATA[  
+        DISK_PATH = #diskPath#  
+        ]]>  
+      </isNotNull>
+      <isNotNull property="esiEnable" prepend="," >
+        <![CDATA[  
+        ESI_ENABLE = #esiEnable#  
+        ]]>  
+      </isNotNull>
+    </dynamic>
+     WHERE ID = #id#  
+  </update>
+
+  <select id="findByPrimaryKey" parameterClass="java.lang.Long" resultMap="cmsClusterDOResultMap" >
+     SELECT 
+    <include refid="cmsCluster_do_columns" />
+    <![CDATA[  
+     FROM CMS_CLUSTER a1 WHERE ID = #id#
+    ]]>  
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterClass="java.lang.Long" >
+    <![CDATA[  
+     DELETE FROM CMS_CLUSTER WHERE ID = #id#
+    ]]>  
+  </delete>
+
+  <select id="countByDOExample" parameterClass="cmsClusterDO" resultClass="java.lang.Integer" >
+    SELECT COUNT(ID) AS num FROM CMS_CLUSTER 
+    <include refid="doQueryParams" />
+  </select>
+
+  <select id="findListByDO" resultMap="cmsClusterDOResultMap" parameterClass="cmsClusterDO" >
+     SELECT 
+    <include refid="cmsCluster_do_columns" />
+     FROM CMS_CLUSTER a1 
+    <include refid="doQueryParams" />
+  </select>
+</sqlMap>

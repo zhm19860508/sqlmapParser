@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxRecycle">
+    <typeAlias alias="BoxRecycle" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxRecycle"/>
+    <typeAlias alias="BaseBoxRecycle" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BaseBoxRecycle"/>
+    <typeAlias alias="BoxRecycleContent" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxRecycleContent"/>
+     
+     
+    <resultMap id="BaseBoxRecycle-Result" class="BaseBoxRecycle">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>       
+        <result property="rid" column="RESOURCE_ID" javaType="java.lang.Long"/>
+        <result property="resourceTitle" column="RESOURCE_TITLE" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" javaType="java.lang.String"/>
+       
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/> 
+        <result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String"/>       
+    </resultMap>
+    <resultMap class="BoxRecycle" id="BoxRecycle-Result" extends="BaseBoxRecycle-Result" >
+		 <result property="resourceAttr" column="RESOURCE_ATTR" javaType="java.lang.String"/>
+    </resultMap>
+    <resultMap class="BoxRecycleContent" id="BoxRecycleContent-Result" extends="BoxRecycle-Result" >
+		 <result property="content" column="CONTENT" javaType="java.lang.String"/>
+    </resultMap>
+    <insert id="MS_INSERT_BOXRECYCLE" parameterClass="BoxRecycle">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_RECYCLE.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_RECYCLE
+              (ID, GMT_CREATE , GMT_MODIFIED, RESOURCE_ID, RESOURCE_TITLE, RESOURCE_TYPE, RESOURCE_ATTR, USER_ID, THUMBNAIL)
+            values
+              (#id#, sysdate  , sysdate   ,#rid# , #resourceTitle#, #resourceType#, #resourceAttr#, #userId#,#thumbnail#)
+        ]]>
+    </insert>   
+    <delete id="MS_DELETE_BOXRECYCLE" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_RECYCLE where ID = #id#
+        ]]>
+	</delete>
+	<select id="MS_GET_BOXRECYCLE_BY_ID" parameterClass="long" resultMap="BoxRecycle-Result" resultClass="BoxRecycle">
+        <![CDATA[
+          SELECT 
+		  t.ID ,
+		  t.GMT_CREATE,
+ 		  t.GMT_MODIFIED,
+		  t.RESOURCE_ID ,
+		  t.RESOURCE_TITLE,
+		  t.RESOURCE_TYPE ,
+  		  t.RESOURCE_ATTR ,
+		  t.USER_ID  	,
+		  t.THUMBNAIL  		
+		  from DCMS_BOX_RECYCLE t
+		where t.ID = #id# 
+            ]]>
+    </select>
+    
+    <select id="MS_GET_BOXRECYCLE_COUNT" resultClass="java.lang.Integer">
+     <![CDATA[
+           SELECT count(*)
+		  FROM DCMS_BOX_RECYCLE t 		  
+		   where 1=1
+	    ]]>
+	   <isNotEmpty prepend="and" property="resourceTitle">
+            t.RESOURCE_TITLE like '%'||#resourceTitle#||'%'
+       </isNotEmpty>
+	   <isNotEmpty prepend="and" property="resourceType">
+            t.RESOURCE_TYPE = #resourceType#
+       </isNotEmpty>
+       <isNotEmpty prepend="and" property="userId">
+            t.USER_ID =#userId#
+       </isNotEmpty>
+    </select>
+    
+    <select id="MS_GET_BOXRECYCLE_BY_PAGE" resultMap="BaseBoxRecycle-Result" resultClass="BaseBoxRecycle">
+        <![CDATA[
+        SELECT * FROM 
+		(
+          SELECT 
+		  ROWNUM AS RN,
+		  t.ID ,
+		  t.GMT_CREATE,
+ 		  t.GMT_MODIFIED,
+		  t.RESOURCE_ID ,
+		  t.RESOURCE_TITLE,
+		  t.RESOURCE_TYPE ,
+	
+		  t.USER_ID  	,
+		  t.THUMBNAIL  	
+		  FROM 
+		  (
+		  
+		  	SELECT c.*  FROM DCMS_BOX_RECYCLE c  
+		  
+		  	 where 1=1 
+        
+         ]]>
+           <isNotEmpty prepend="and" property="resourceTitle">
+            c.RESOURCE_TITLE like '%'||#resourceTitle#||'%'
+	       </isNotEmpty>
+		   <isNotEmpty prepend="and" property="resourceType">
+	            c.RESOURCE_TYPE = #resourceType#
+	       </isNotEmpty>
+	       <isNotEmpty prepend="and" property="userId">
+	            c.USER_ID = #userId#
+	       </isNotEmpty>
+	    <dynamic prepend="order by ">
+			<isEqual property="orderType" compareValue="gmtCreateDesc">
+				c.GMT_CREATE DESC
+			</isEqual>
+			<isEqual property="orderType" compareValue="gmtCreateAsc">
+				c.GMT_CREATE ASC
+			</isEqual>
+			<isEmpty property="orderType"> c.GMT_MODIFIED DESC</isEmpty>
+		</dynamic>
+		       
+	    <![CDATA[
+			)
+			t WHERE  ROWNUM <= #offset# + #length#
+	)    
+	WHERE   RN > #offset# ]]>
+    </select>
+    
+	<insert id="MS_RESTORE_BOX_MODULE" parameterClass="BoxModule">
+        <![CDATA[
+            insert into DCMS_BOX_MODULE
+              (ID,NAME, GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  , TAG  ,  USER_ID, AUTO_FIT, WIDTH,HEIGHT,BOX_CATALOG, STATUS, SOURCE, FROM_ID, CHECK_INFO, CLASS_NAME,AUTO_GEN_PIC,TYPE,UED,FRONTEND,APPLY_DEVICE)
+            values
+              (#id#,#name#, #gmtCreate#  ,  #gmtModified#  , #thumbnail#  , #tag#, #userId#, #autoFit#, #width#,#height#,#catalogId#, #status#, #source#, #fromId#, #checkInfo#, #className#,#autoGenPic#,#type#,#ued#,#frontend#,#applyDevice#)
+
+        ]]>
+    </insert>
+     <insert id="MS_RESTORE_BOXCELL" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCell">      
+        <![CDATA[
+            insert into DCMS_BOX_CELL
+              (ID, name,CLASS_NAME,GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  , TAG  ,  USER_ID, WIDTH,HEIGHT,IS_ORIGIN,AUTO_FIT,ORIGIN_ID,BOX_CATALOG,AUTO_GEN_PIC)
+            values
+              (#id#, #name#,#className#,#gmtCreate#  , #gmtModified#  , #thumbnail#  , #tag#, #userId#,#width#,#height#,#isOrigin#,#autoFit#,#originId#,#boxCatalog#,#autoGenPic#)
+        ]]>
+    </insert>
+    
+     <insert id="MS_RESTORE_BOXTEMPLATE" parameterClass="BoxTemplate">
+        <![CDATA[
+            insert into DCMS_BOX_TEMPLATE
+              (ID,NAME,GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  , TAG  ,  USER_ID, SOURCE, RECOMMEND,BOX_CATALOG,AUTO_GEN_PIC ,GRID_TYPE,UED,FRONTEND,APPLY_DEVICE)
+            values
+              (#id#,#name#, #gmtCreate#  , #gmtModified#  , #thumbnail#  , #tag#, #userId#, #source#, #recommend#,#boxCatalog#,#autoGenPic#,#gridType#,#ued#,#frontend#,#applyDevice#)
+        ]]>
+    </insert>
+    
+    <select id="MS_GET_RECYCLECONTENT_BY_RID"  resultMap="BoxRecycleContent-Result" resultClass="BoxRecycleContent">
+        <![CDATA[
+           SELECT 
+		  t.ID ,
+		  t.GMT_CREATE,
+ 		  t.GMT_MODIFIED,
+		  t.RESOURCE_ID ,
+		  t.RESOURCE_TITLE,
+		  t.RESOURCE_TYPE ,
+		  t.RESOURCE_ATTR,
+  		  c.CONTENT ,
+		  t.USER_ID  	,
+		  t.THUMBNAIL  		
+		  from DCMS_BOX_RECYCLE t
+	       
+		  left join DCMS_BOX_CONTENT c on t.resource_id=c.resource_id 
+		 
+		where t.RESOURCE_ID = #rid# and   t.resource_type=#resourceType#  and   c.resource_type=#contentResourceType# 
+            ]]>
+    </select>
+</sqlMap>

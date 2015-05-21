@@ -1,0 +1,451 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Monitor">
+	<typeAlias alias="monitorDO" type="com.alibaba.bigData.dal.entity.MonitorDO" />
+	<typeAlias alias="monitorQuery" type="com.alibaba.bigData.dal.query.MonitorQuery" />
+	<resultMap class="monitorDO" id="monitorDOResult">
+		<result column="id" property="id" />
+		<result column="monitor_name" property="monitorName" />
+		<result column="task_id" property="taskId" />
+		<result column="monitor_type" property="monitorType" />
+		<result column="warn_level" property="warnLevel" />
+		<result column="warn_type" property="warnType" />
+		<result column="crontab_time" property="crontabTime" />
+		<result column="warn_user" property="warnUser" />
+		<result column="monitor_user" property="monitorUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="is_from_project" property="isFromProject" />
+	</resultMap>
+
+	<resultMap class="monitorDO" id="monitorDOResultHaveType">
+		<result column="id" property="id" />
+		<result column="monitor_name" property="monitorName" />
+		<result column="task_id" property="taskId" />
+		<result column="monitor_type" property="monitorType" />
+		<result column="warn_level" property="warnLevel" />
+		<result column="warn_type" property="warnType" />
+		<result column="crontab_time" property="crontabTime" />
+		<result column="warn_user" property="warnUser" />
+		<result column="monitor_user" property="monitorUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="is_from_project" property="isFromProject" />
+	</resultMap>
+
+	<sql id="monitorColumns">
+		select
+		a.id,a.monitor_name,a.task_id,a.monitor_type,a.warn_level,a.warn_type,a.crontab_time,a.warn_user,a.monitor_user,a.is_deleted,a.is_from_project
+	</sql>
+
+	<sql id="monitorFrom">
+		from bigData_monitor a
+	</sql>
+
+	<sql id="monitorJoin">
+        a.is_deleted = 0
+	</sql>
+
+	<sql id="monitorQuery">
+		where
+		<include refid="monitorJoin" />
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+	</sql>
+
+	<insert id="addMonitor" parameterClass="monitorDO">
+		insert into bigData_monitor
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="monitorName">
+				monitor_name
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type
+			</isNotNull>
+			<isNotNull prepend="," property="warnLevel">
+				warn_level
+			</isNotNull>
+			<isNotNull prepend="," property="warnType">
+				warn_type
+			</isNotNull>
+			<isNotNull prepend="," property="crontabTime">
+				crontab_time
+			</isNotNull>
+			<isNotNull prepend="," property="warnUser">
+				warn_user
+			</isNotNull>
+			<isNotNull prepend="," property="monitorUser">
+				monitor_user
+			</isNotNull>
+
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted
+			</isNotNull>
+			<isNotNull prepend="," property="isFromProject">
+				is_from_project
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorName">
+				#monitorName#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				#monitorType#
+			</isNotNull>
+			<isNotNull prepend="," property="warnLevel">
+				#warnLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="warnType">
+				#warnType#
+			</isNotNull>
+			<isNotNull prepend="," property="crontabTime">
+				#crontabTime#
+			</isNotNull>
+			<isNotNull prepend="," property="warnUser">
+				#warnUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorUser">
+				#monitorUser#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="isFromProject">
+				#isFromProject#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+	<select id="queryMonitorByMonitorId" resultMap="monitorDOResult">
+		<include refid="monitorColumns" />
+		<include refid="monitorFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryMonitorByTaskId" resultMap="monitorDOResult">
+		<include refid="monitorColumns" />
+		<include refid="monitorFrom" />
+		where
+		<include refid="monitorJoin" />
+		and  a.task_id=#taskId#
+	</select>
+
+
+	<update id="updateMonitor" parameterClass="monitorDO">
+		update bigData_monitor
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id=#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorName">
+				monitor_name=#monitorName#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type=#monitorType#
+			</isNotNull>
+			<isNotNull prepend="," property="warnLevel">
+				warn_level=#warnLevel#
+			</isNotNull>
+			<isNotNull prepend="," property="warnType">
+				warn_type=#warnType#
+			</isNotNull>
+			<isNotNull prepend="," property="crontabTime">
+				crontab_time=#crontabTime#
+			</isNotNull>
+			<isNotNull prepend="," property="warnUser">
+				warn_user=#warnUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorUser">
+				monitor_user=#monitorUser#
+			</isNotNull>
+			<isNotNull prepend="," property="isDeleted">
+				is_deleted=#isDeleted#
+			</isNotNull>
+			<isNotNull prepend="," property="isFromProject">
+				is_from_project=#isFromProject#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<select id="queryAllMonitor" resultMap="monitorDOResult">
+		<include refid="monitorColumns" />
+		<include refid="monitorFrom" />
+		where
+		<include refid="monitorJoin" />
+		and a.monitor_type='FIXTIME'
+	</select>
+
+
+	<select id="queryMontorByQuery" resultMap="monitorDOResultHaveType">
+		select
+		a.id,a.monitor_name,a.task_id,a.monitor_type,a.warn_level,a.warn_type,a.crontab_time,a.warn_user,a.monitor_user,a.is_deleted,a.is_from_project
+		FROM bigData_monitor a, bigData_job_base b
+		where a.task_id=b.id and
+		<include refid="monitorJoin" />
+		<isNotNull property="taskType" prepend="AND">
+			b.task_type = #taskType#
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryMontorWithoutTaskType" resultMap="monitorDOResultHaveType">
+		select
+		a.id,a.monitor_name,a.task_id,a.monitor_type,a.warn_level,a.warn_type,a.crontab_time,a.warn_user,a.monitor_user,a.is_deleted,a.is_from_project
+		FROM bigData_monitor a
+		where
+		<include refid="monitorJoin" />
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryMontorByQueryWithTaskType" resultMap="monitorDOResult">
+		<include refid="monitorColumns" />
+		FROM bigData_monitor a,  bigData_job_base b
+		where
+		<include refid="monitorJoin" />
+		and a.task_id = b.id AND b.task_type = #taskType#
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryCountByQueryWithTaskType" resultClass="java.lang.Integer">
+		select count(*)
+		FROM bigData_monitor a,  bigData_job_base b
+		where
+		<include refid="monitorJoin" />
+		and a.task_id = b.id AND b.task_type = #taskType#
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+	</select>
+
+	<select id="queryMontorByQueryWithProject" resultMap="monitorDOResult">
+		<include refid="monitorColumns" />
+		FROM bigData_monitor a
+		where
+		<include refid="monitorJoin" />
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+		order by a.id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryCountByQueryWithProject" resultClass="java.lang.Integer">
+		select count(*)
+		FROM bigData_monitor a
+		where
+		<include refid="monitorJoin" />
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+	</select>
+
+	<select id="queryCountByQuery" resultClass="java.lang.Integer">
+		select
+		count(*)
+		FROM bigData_monitor a, bigData_job_base b
+		where a.task_id=b.id and
+		<include refid="monitorJoin" />
+		<isNotNull property="taskType" prepend="AND">
+			b.task_type = #taskType#
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+	</select>
+
+	<select id="queryCountWithoutTaskType" resultClass="java.lang.Integer">
+		select
+		count(*)
+		FROM bigData_monitor a
+		where
+		<include refid="monitorJoin" />
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type =#monitorType#
+		</isNotNull>
+		<isNotNull property="warnLevel" prepend="AND">
+			a.warn_level = #warnLevel#
+		</isNotNull>
+		<isNotNull property="warnType" prepend="AND">
+			a.warn_type=#warnType#
+		</isNotNull>
+		<isNotNull property="monitorName" prepend="AND">
+			a.monitor_name like '$monitorName$%'
+		</isNotNull>
+		<isNotNull property="monitorUser" prepend="AND">
+			a.monitor_user=#monitorUser#
+		</isNotNull>
+		<isNotNull property="isFromProject" prepend="AND">
+			a.is_from_project=#isFromProject#
+		</isNotNull>
+	</select>
+
+
+	<update id="deleteMonitor" parameterClass="java.lang.Long">
+		update bigData_monitor
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+
+</sqlMap>

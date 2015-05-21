@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="category"
+		type="com.alibaba.china.ipinshared.dataobject.CategoryDO" />
+	<resultMap id="categoryResult" class="category">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="categoryName" column="category_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+	</resultMap>
+
+	<sql id="categoryColumns">
+		select id,category_name,is_deleted,gmt_created,gmt_modified,show_order
+	</sql>
+	<!-- 获取所有的类目 -->
+	<select id="get_all_categories" resultMap="categoryResult">
+		<include refid="categoryColumns" /> 
+		 from
+		ipin_category
+		where is_deleted = 0 order by show_order asc
+	</select>
+
+	<!-- 新增类目 -->
+	<insert id="add_new_category" parameterClass="category">
+		insert into
+		ipin_category(category_name,is_deleted,gmt_created,gmt_modified)
+		values(#categoryName#,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新类目 -->
+	<update id="update_category" parameterClass="category">
+		update ipin_category set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="categoryName" prepend=",">
+			category_name =
+			#categoryName#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<select id="get_category_by_id" resultMap="categoryResult"
+		parameterClass="java.lang.Long">
+		<include refid="categoryColumns" /> 
+		from ipin_category where id = #id# and
+		is_deleted =
+		0
+	</select>
+
+</sqlMap>

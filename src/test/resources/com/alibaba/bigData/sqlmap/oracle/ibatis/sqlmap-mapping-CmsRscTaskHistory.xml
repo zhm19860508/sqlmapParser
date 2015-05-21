@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsRscTaskHistory">
+
+	<resultMap class="CmsRscTaskHistory" id="CmsRscTaskHistory-result">
+		<result property="id" 			javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="ID" />
+		<result property="gmtCreate" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_CREATE" />
+		<result property="gmtModified" 	javaType="java.sql.Timestamp" 	jdbcType="TIMESTAMP"	column="GMT_MODIFIED" />
+		<result property="rscTaskId" 	javaType="java.lang.Long" 		jdbcType = "DECIMAL"	column="RSC_TASK_ID" />
+		<result property="isSuccess" 	javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="IS_SUCCESS" />
+		<result property="cause" 		javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="CAUSE" />
+		<result property="hostName" 	javaType="java.lang.String" 	jdbcType = "VARCHAR"	column="HOST_NAME" />
+	</resultMap>
+
+
+
+	<insert id="MS_INSERT_CMS_RSC_TASK_HISTORY" parameterClass="CmsRscTaskHistory">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT
+			SEQ_CMS_RSC_TASK_HISTORY.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_RSC_TASK_HISTORY
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  RSC_TASK_ID  , IS_SUCCESS , CAUSE, HOST_NAME )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #rscTaskId#  , #isSuccess# , #cause#, #hostName#)
+        ]]>
+	</insert>
+
+</sqlMap>

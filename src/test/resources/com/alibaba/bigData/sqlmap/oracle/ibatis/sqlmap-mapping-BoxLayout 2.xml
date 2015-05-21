@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxlayout">
+    
+    <resultMap id="BoxLayout-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxLayout">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="thumbnail" column="THUMBNAIL" javaType="java.lang.String"/>
+        <result property="content" column="CONTENT" javaType="java.lang.String"/>
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/>
+        <result property="width" column="WIDTH" javaType="java.lang.Long"/>
+        <result property="height" column="HEIGHT" javaType="java.lang.Long"/>
+        <result property="layoutType" column="LAYOUT_TYPE" javaType="java.lang.String"/>
+        <result property="columNum" column="COLUMN_NUM" javaType="java.lang.Long"/>
+        <result property="sizes" column="SIZES" javaType="java.lang.String"/>
+        <result property="name" column="NAME" javaType="java.lang.String"/>
+ 		<result property="gridType" column="GRID_TYPE" javaType="java.lang.String"/>
+    </resultMap>
+    
+    
+    <resultMap id="BoxContent-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="rid" column="RESOURCE_ID" javaType="java.lang.Long"/>
+        
+        <result property="content" column="CONTENT" javaType="java.lang.String"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <insert id="MS_INSERT_BOXLAYOUT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxLayout">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_LAYOUT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_LAYOUT
+              (ID, name,GMT_CREATE  , GMT_MODIFIED  , THUMBNAIL  ,    USER_ID, WIDTH,HEIGHT,LAYOUT_TYPE,COLUMN_NUM,SIZES,GRID_TYPE)
+            values
+              (#id#, #name#,sysdate  , sysdate  , #thumbnail#  ,  #userId#,#width#,#height#,#layoutType#,#columNum#,#sizes#,#gridType#)
+        ]]>
+    </insert>
+    <insert id="MS_INSERT_BOXLAYOUT_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CONTENT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CONTENT
+              (ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_TYPE  , RESOURCE_ID, CONTENT )
+            values
+              (#id#, sysdate  , sysdate  , 'layout' ,#rid# , #content#)
+        ]]>
+    </insert>
+    
+    
+    <update id="MS_UPDATE_BOXLAYOUT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxLayout">
+        <![CDATA[ UPDATE DCMS_BOX_LAYOUT 
+        	SET GMT_MODIFIED = sysdate,
+  				USER_ID  = #userId#,
+  				THUMBNAIL = #thumbnail#
+        ]]>
+        
+        <isNotEmpty  property="name" prepend=",">
+        	 NAME = #name#
+        </isNotEmpty>
+
+        <isNotNull property="width" prepend=",">
+            WIDTH = #width#
+        </isNotNull>
+        <isNotNull property="height" prepend=",">
+            HEIGHT = #height#
+        </isNotNull>
+        <isNotNull property="layoutType" prepend=",">
+            LAYOUT_TYPE = #layoutType#
+        </isNotNull>
+        <isNotNull property="gridType" prepend=",">
+            GRID_TYPE = #gridType#
+        </isNotNull>
+        <isNotNull property="sizes" prepend=",">
+            SIZES = #sizes#
+        </isNotNull>
+        
+        <![CDATA[ WHERE ID =  #id# ]]>
+    </update>
+    
+    <update id="MS_UPDATE_BOXLAYOUT_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxLayout">
+        <![CDATA[ UPDATE DCMS_BOX_CONTENT 
+        	SET GMT_MODIFIED = sysdate 
+        ]]>
+        <dynamic prepend="">
+            <isNotNull property="content" prepend=",">
+                CONTENT = #content#
+            </isNotNull>
+        </dynamic>
+        
+       <![CDATA[ WHERE resource_id =  #id# and resource_type='layout']]>
+    </update>
+    
+    <select id="MS_GET_BOXLAYOUT" resultMap="BoxLayout-Result"  parameterClass="java.util.HashMap">
+        <![CDATA[
+           SELECT distinct  t.ID AS ID,
+		  
+		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.NAME AS NAME ,
+		  t.HEIGHT AS HEIGHT ,
+  			t.WIDTH AS WIDTH ,
+		   t.COLUMN_NUM AS COLUMN_NUM ,
+
+		   t.LAYOUT_TYPE AS LAYOUT_TYPE ,
+			t.GRID_TYPE,
+		   t.SIZES AS SIZES ,
+
+		  t.ID AS  CONTENT,
+		  	  t.GMT_CREATE AS GMT_CREATE ,
+			  	  t.GMT_MODIFIED AS GMT_MODIFIED 
+		  
+		  FROM DCMS_BOX_LAYOUT t     where 1=1
+		  		  
+	    ]]>
+	       <isNotEmpty prepend="and" property="layoutTypes">
+		      LAYOUT_TYPE  in
+			<iterate property="layoutTypes" open="(" close=")"
+				conjunction=",">
+				#layoutTypes[]#
+			</iterate>
+        </isNotEmpty>
+        <isNotNull property="layoutType" prepend="and">
+            LAYOUT_TYPE = #layoutType#
+        </isNotNull>
+        <isNotNull property="gridType" prepend="and">
+            GRID_TYPE = #gridType#
+        </isNotNull>
+        <isNotEmpty prepend="and" property="keyword">
+		      <![CDATA[	           
+		      NAME like '%'||#keyword#||'%'
+          ]]>
+            </isNotEmpty>
+          <isNotEmpty prepend="and" property="ids">
+		      id  in
+			<iterate property="ids" open="(" close=")"
+				conjunction=",">
+				#ids[]#
+			</iterate>
+        </isNotEmpty>
+      
+	     <![CDATA[
+	     	order by t.width desc
+	      ]]>
+
+    </select>
+    
+    
+    
+    
+    <select id="MS_GET_BOXLAYOUT_BY_ID" parameterClass="long" resultMap="BoxLayout-Result" resultClass="BoxLayout">
+        <![CDATA[
+          SELECT 
+		  t.ID AS ID,
+		  		  t.NAME AS NAME ,
+
+ 		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+ 		  c.CONTENT AS  CONTENT,
+		  t.GMT_CREATE AS GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED, 
+		  t.HEIGHT AS HEIGHT ,
+  		  t.WIDTH AS WIDTH ,
+  		  t.GRID_TYPE,
+ 		  t.COLUMN_NUM AS COLUMN_NUM ,
+		  t.LAYOUT_TYPE AS LAYOUT_TYPE ,
+		  t.SIZES AS SIZES 
+		  FROM DCMS_BOX_LAYOUT t 
+		  join DCMS_BOX_CONTENT c on t.id=c.resource_id 
+		  and c.resource_type='layout'
+		where t.ID = #id# 
+            ]]>
+    </select>
+    <select id="MS_GET_BOXLAYOUT_BY_TYPE" parameterClass="Map" resultMap="BoxLayout-Result" resultClass="BoxLayout">
+        <![CDATA[
+          SELECT 
+		  t.ID AS ID,
+		  t.NAME AS NAME,
+ 		  t.THUMBNAIL AS THUMBNAIL,
+		  t.USER_ID AS USER_ID,
+		  t.GMT_CREATE AS GMT_CREATE ,
+		  t.GMT_MODIFIED AS GMT_MODIFIED, 
+		  t.HEIGHT AS HEIGHT ,
+  		  t.WIDTH AS WIDTH ,
+ 		  t.COLUMN_NUM AS COLUMN_NUM ,
+		  t.LAYOUT_TYPE AS LAYOUT_TYPE ,
+		  t.SIZES AS SIZES ,
+		  t.GRID_TYPE,
+		  t.ID AS  CONTENT
+		  FROM DCMS_BOX_LAYOUT t  
+		  where  1=1
+            ]]>
+        <isNotEmpty prepend="AND" property="gridType">
+	           <![CDATA[  t.GRID_TYPE = #gridType# ]]>
+	    </isNotEmpty>      
+ 		<isNotEmpty prepend="AND" property="layoutType">
+	           <![CDATA[  t.LAYOUT_TYPE = #layoutType# ]]>
+	    </isNotEmpty>  
+	     <![CDATA[
+	     	order by t.width desc
+	      ]]>
+	      
+    </select>
+    <delete id="MS_DELETE_BOXLAYOUT" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_LAYOUT where ID = #id#
+        ]]>
+    </delete>
+    
+    <delete id="MS_DELETE_BOXLAYOUT_CONTENT" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_CONTENT where ID = #id# AND RESOURCE_TYPE='layout'
+        ]]>
+    </delete>
+    
+</sqlMap>

@@ -1,0 +1,139 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="cms_CmsTemplateParam">        
+        
+    <resultMap class="CmsTemplateParam" id="CmsTemplateParam-result" >
+    	<result property="id"					javaType="java.lang.Long"		column="ID" />
+        <result property="gmtCreate"			javaType="java.sql.Timestamp"	column="GMT_CREATE" />
+        <result property="gmtModified"			javaType="java.sql.Timestamp"	column="GMT_MODIFIED" />       
+        <result property="templateId"			javaType="java.lang.Long"		column="TEMPLATE_ID" />        
+        <result property="paramCatalogId"		javaType="java.lang.Long"		column="PARAM_CATALOG_ID" />
+        <result property="templateCatalogId"	javaType="java.lang.Long"		column="TEMPLATE_CATALOG_ID" />
+        <result property="appKey"				javaType="java.lang.String"		column="APP_KEY" />
+        <result property="value"				javaType="java.lang.String"		column="VALUE" />
+        <result property="description"			javaType="java.lang.String"		column="DESCRIPTION" />
+        <result property="status"			javaType="java.lang.String"		column="STATUS" />
+    </resultMap>
+    
+ 	<resultMap id="CmsTemplateParam-withTName-result" class="CmsTemplateParam" extends="CmsTemplateParam-result" >
+        <result property="templateName"       javaType="java.lang.String"     column="TEMPLATE_NAME" />
+    </resultMap>
+    
+    <select id="MS_SELECT_CMSTEMPLATE_PARAM_BY_ID" parameterClass="java.lang.Long" resultMap="CmsTemplateParam-result" >
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE_PARAM WHERE ID = #id# 
+
+        ]]>
+    </select>
+
+	<update id="MS_UPDATE_CMSTEMPLATE_PARAM" parameterClass="CmsTemplateParam">
+        <![CDATA[
+            update
+                    CMS_TEMPLATE_PARAM
+            set
+                    GMT_MODIFIED = sysdate , 
+                    PARAM_CATALOG_ID = #paramCatalogId# , 
+                    TEMPLATE_CATALOG_ID = #templateCatalogId# , 
+                    TEMPLATE_ID = #templateId# , 
+                    VALUE = #value# , 
+                    DESCRIPTION = #description#
+        ]]>
+		<dynamic prepend="">
+			<isNotEmpty property="status" prepend=",">
+				STATUS =#status#
+			</isNotEmpty>
+		</dynamic>
+        <![CDATA[     
+		  where  
+                ID = #id#
+        ]]>
+	</update>
+	
+
+	<insert id="MS_INSERT_CMSTEMPLATE_PARAM" parameterClass="CmsTemplateParam">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_TEMPLATE_PARAM.NEXTVAL AS id FROM DUAL
+        </selectKey>
+		<![CDATA[
+            insert into CMS_TEMPLATE_PARAM
+              (ID , GMT_CREATE  , GMT_MODIFIED  ,  TEMPLATE_ID  , PARAM_CATALOG_ID  , TEMPLATE_CATALOG_ID  , APP_KEY  , VALUE, DESCRIPTION,STATUS )
+            values
+              (#id#,SYSDATE  , SYSDATE  ,  #templateId#  , #paramCatalogId#  , #templateCatalogId#  , #appKey#  , #value#, #description#,#status#)
+        ]]>
+	</insert>
+
+
+    <delete id="MS_DELATE_CMSTEMPLATE_PARAM" parameterClass="java.lang.Long"  >
+        <![CDATA[
+            delete from CMS_TEMPLATE_PARAM where ID = #id# 
+        ]]>
+    </delete>
+    
+    <select id="MS_SELECT_CMSTEMPLATE_PARAM_BY_APP_KEY" parameterClass="java.lang.String" resultMap="CmsTemplateParam-result" >
+        <![CDATA[
+            SELECT * FROM CMS_TEMPLATE_PARAM WHERE APP_KEY = #appKey# 
+        ]]>
+    </select>
+    
+    
+    <select id="MS_SEARCH_TEMPLATE_PARAM" parameterClass="java.util.Map" resultMap="CmsTemplateParam-withTName-result">
+        <![CDATA[
+		    SELECT  *
+	        FROM (
+	                SELECT r.*,ROWNUM rnum FROM (
+	                	select p.*,t.name TEMPLATE_NAME from CMS_TEMPLATE_PARAM p,CMS_TEMPLATE t where p.TEMPLATE_ID = t.id
+	     ]]>
+	    <dynamic>
+			<isGreaterThan prepend="AND" property="templateCatalogId" compareValue="0">
+				p.TEMPLATE_CATALOG_ID = #templateCatalogId#
+			</isGreaterThan>
+			<isGreaterThan prepend="AND" property="templateId" compareValue="0">
+				p.TEMPLATE_ID = #templateId#
+			</isGreaterThan>
+			<isGreaterThan prepend="AND" property="paramCatalogId" compareValue="0">
+				p.PARAM_CATALOG_ID = #paramCatalogId#
+			</isGreaterThan>
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE '%'||#appKey#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="content">
+				p.VALUE LIKE '%'||#content#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="status">
+				p.STATUS = #status#
+			</isNotEmpty>
+		 </dynamic>
+		  <![CDATA[
+				 order by p.GMT_MODIFIED desc
+		            )r WHERE ROWNUM <= #offset# + #length#
+	            )WHERE rnum >#offset#
+		  ]]>
+    </select>
+    
+
+    <select id="MS_SEARCH_TEMPLATE_PARAM_COUNT" parameterClass="java.util.Map" resultClass="java.lang.Long">
+         <![CDATA[
+	                	select count(*) from CMS_TEMPLATE_PARAM p
+	     ]]>
+	    <dynamic prepend="where">
+			<isGreaterThan prepend="AND" property="templateCatalogId" compareValue="0">
+				p.TEMPLATE_CATALOG_ID = #templateCatalogId#
+			</isGreaterThan>
+			<isGreaterThan prepend="AND" property="templateId" compareValue="0">
+				p.TEMPLATE_ID = #templateId#
+			</isGreaterThan>
+			<isGreaterThan prepend="AND" property="paramCatalogId" compareValue="0">
+				p.PARAM_CATALOG_ID = #paramCatalogId#
+			</isGreaterThan>
+			<isNotEmpty prepend="AND" property="appKey">
+				p.APP_KEY LIKE '%'||#appKey#||'%'
+			</isNotEmpty>
+			<isNotEmpty prepend="AND" property="status">
+				p.STATUS = #status#
+			</isNotEmpty>
+		 </dynamic>
+    </select>
+    
+</sqlMap>

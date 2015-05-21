@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxdraftBm">
+
+	<resultMap id="BoxDraftBm-Result" class="BoxDraftBm">
+		<result property="id" column="ID" javaType="java.lang.Long" />
+		<result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date"
+			jdbcType="TIMESTAMP" />
+		<result property="draftId" column="DRAFT_ID" javaType="java.lang.Long" />
+		<result property="adboardId" column="ADBOARD_ID" javaType="java.lang.Long" />
+		<result property="imgUrl" column="IMG_URL" javaType="java.lang.String" />
+		<result property="flashUrl" column="FLASH_URL" javaType="java.lang.String" />
+	</resultMap>
+
+	<insert id="MS_INSERT_BOXDRAFT_BM" parameterClass="BoxDraftBm">
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_DCMS_BOX_DRAFT_BM.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_DRAFT_BM
+              (ID, GMT_CREATE  , GMT_MODIFIED  , DRAFT_ID  , ADBOARD_ID  , IMG_URL  , FLASH_URL)
+            values
+              (#id#, sysdate  , sysdate  , #draftId#  , #adboardId#,  #imgUrl#, #flashUrl#)
+        ]]>
+	</insert>
+
+	<select id="MS_GET_BOXDRAFT_BM_BY_DRAFT_ID" parameterClass="java.lang.Long" resultMap="BoxDraftBm-Result"
+		resultClass="BoxDraftBm">
+        <![CDATA[
+	      	SELECT ID, GMT_CREATE  , GMT_MODIFIED  , DRAFT_ID  , ADBOARD_ID  , IMG_URL  , FLASH_URL
+	      	FROM (SELECT ID, GMT_CREATE  , GMT_MODIFIED  , DRAFT_ID  , ADBOARD_ID  , IMG_URL  , FLASH_URL 
+	      			FROM DCMS_BOX_DRAFT_BM where DRAFT_ID = #draftId# order by id desc)
+	      	WHERE rownum=1
+	      ]]>
+	</select>
+
+	<delete id="MS_DELETE_BOXDRAFT_BM_BY_DRAFT_ID" parameterClass="java.lang.Long">
+        <![CDATA[
+            DELETE from DCMS_BOX_DRAFT_BM where DRAFT_ID = #draftId#
+        ]]>
+	</delete>
+</sqlMap>

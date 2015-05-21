@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsdatasource">
+    <typeAlias alias="datasource" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsDataSource"/>
+     <!--
+      - ===============================================
+      - HW_DATA_SOURCE表映射到Datasource类
+      - ===============================================
+     -->
+    <resultMap id="dsResult" class="datasource">
+        <result property="id" column="ID"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="name" column="NAME"/>
+        <result property="cnName" column="CN_NAME"/>
+        <result property="schemaMain.id" column="DS_SCHEMA_ID"/>
+        <result property="previewUrl" column="PREVIEW_URL"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="modifyTime" column="MODIFY_TIME"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="configUrl" column="CONFIG_URL"/>
+        <result property="registerConfig" column="REGISTER_CONFIG"/>
+    </resultMap>
+    <!--
+      - ===============================================
+      - 根据id查询
+      - ===============================================
+     -->
+    <select id="getDatasourceById" resultMap="dsResult" parameterClass="int"><![CDATA[
+        select  *
+        from
+                DS_DATA_SOURCE
+        where
+                ID = #datasourceId#
+    ]]></select>
+
+  <select id="queryDatasource" resultMap="dsResult" parameterClass="java.util.Map" >
+      select    *
+      from DS_DATA_SOURCE
+    <dynamic prepend="where" >
+      <isNotNull prepend="and" property="id" >
+        ID = #id#
+      </isNotNull>
+        <isNotNull prepend="and" property="ids" >
+         id in (
+      <iterate property="ids" conjunction=",">
+			#ids[]#
+		</iterate>
+		)
+		</isNotNull>
+      <isNotEmpty prepend="and" property="name" >
+        NAME like  '%'||#name#||'%'
+      </isNotEmpty>
+      <!-- 根据名称精确查询 -->
+      <isNotEmpty prepend="and" property="exactName" >
+        NAME =  #exactName#
+      </isNotEmpty>
+      <isNotEmpty prepend="and" property="cnName" >
+        CN_NAME like  '%'||#cnName#||'%'
+      </isNotEmpty>
+      <!-- 根据名称精确查询 -->
+      <isNotEmpty prepend="and" property="exactCnName" >
+        CN_NAME =  #exactCnName#
+      </isNotEmpty>
+      <isNotNull prepend="and" property="userId" >
+        USER_ID = #userId#
+      </isNotNull>
+    </dynamic>
+        ORDER by MODIFY_TIME DESC
+  </select>
+
+
+    <!--
+      - ===============================================
+      - 获取所有
+      - ===============================================
+     -->
+    <select id="getAllDatasource" resultMap="dsResult" ><![CDATA[
+        select
+                *
+        from
+                DS_DATA_SOURCE
+                
+        ORDER by MODIFY_TIME DESC
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 插入
+      - ===============================================
+     -->
+    <insert id="insertDatasource" parameterClass="datasource">
+		<selectKey resultClass="int" keyProperty="id" >SELECT SEQ_DS_DATA_SOURCE.NEXTVAL AS id FROM DUAL</selectKey>
+                insert into DS_DATA_SOURCE (
+                ID,
+                USER_ID,
+                NAME,
+                CN_NAME,
+                DS_SCHEMA_ID,
+                PREVIEW_URL,
+                CREATE_TIME,
+                MODIFY_TIME,
+                DESCRIPTION,
+                CONFIG_URL,
+                REGISTER_CONFIG
+        ) values (
+                #id#,
+                #userId#,
+                #name#,
+                #cnName#,
+                #schemaMain.id#,
+                #previewUrl#,
+                SYSDATE,
+                SYSDATE,
+                #description#,
+                #configUrl#,
+                #registerConfig#        
+        )
+    </insert>
+    <!--
+      - ===============================================
+      - 修改
+      - ===============================================
+     -->
+    <update id="updateDatasource" parameterClass="datasource"><![CDATA[
+        update
+                DS_DATA_SOURCE
+        set
+                NAME = #name#,
+                CN_NAME = #cnName#,
+                USER_ID = #userId#,
+                DS_SCHEMA_ID = #schemaMain.id#,
+                PREVIEW_URL = #previewUrl#,
+                MODIFY_TIME=SYSDATE,
+                DESCRIPTION=#description#,              
+                CONFIG_URL=#configUrl#
+        where
+                ID = #id#
+    ]]></update>
+    
+    <update id="updateDsRegisterConfig" parameterClass="datasource"><![CDATA[
+        update
+                DS_DATA_SOURCE
+        set
+                REGISTER_CONFIG = #registerConfig#
+        where
+                ID = #id#
+    ]]></update>
+    <!--
+      - ===============================================
+      - 删除
+      - ===============================================
+     -->
+    <delete id="deleteDatasource" parameterClass="int"><![CDATA[
+        delete from
+                DS_DATA_SOURCE
+         where
+                ID = #id#
+    ]]></delete>
+    <!--
+      - ===============================================
+      - 更新数据源关联的schema
+      - ===============================================
+     -->
+    <update id="updateDsSchema" parameterClass="java.util.Map"><![CDATA[
+        update
+                DS_DATA_SOURCE
+        set
+                USER_ID = #userId#,
+                DS_SCHEMA_ID = #dsSchemaId#,
+                MODIFY_TIME=SYSDATE              
+        where
+                ID = #datasourceId#
+    ]]></update>
+    <!--
+      - ===============================================
+      - 根据schema名称查询是否存在数据源关联
+      - ===============================================
+     -->
+    <select id="queryDatasourceNumBySchema" resultClass="int" parameterClass="int" >
+      select  count(0)
+      from DS_DATA_SOURCE
+      where DS_SCHEMA_ID = #schemaId#
+  </select>
+    <!--
+      - ===============================================
+      - 根据schema名称查询是否存在数据源关联
+      - ===============================================
+     -->
+    <select id="queryDatasourceNumByName" resultClass="int" parameterClass="datasource" >
+      select  count(0)
+      from DS_DATA_SOURCE
+      where NAME = #name#
+  </select>
+</sqlMap>

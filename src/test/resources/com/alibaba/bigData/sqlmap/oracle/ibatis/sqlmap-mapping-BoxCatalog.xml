@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxcatalog">
+    
+    <resultMap id="BoxCatalog-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCatalog">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="userId" column="USER_ID" javaType="java.lang.String"/>
+        <result property="parentId" column="PARENT_ID" javaType="java.lang.Long"/>
+        <result property="name" column="NAME" javaType="java.lang.String"/>
+        <result property="lev" column="LEV" javaType="java.lang.Long"/>
+        <result property="catType" column="CAT_TYPE" javaType="java.lang.String"/>
+        <result property="remarks" column="REMARKS" javaType="java.lang.String"/>
+    </resultMap>
+    
+    
+    <insert id="MS_INSERT_BOXCATALOG" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCatalog">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CATALOG.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CATALOG
+              (ID, name,REMARKS,GMT_CREATE  , GMT_MODIFIED  , LEV  , CAT_TYPE  ,  USER_ID,PARENT_ID)
+            values
+              (#id#, #name#,#remarks#,sysdate  , sysdate  , #lev#  , #catType#, #userId#,#parentId#)
+        ]]>
+    </insert>
+    
+    <select id="MS_GET_BOXCATALOG" resultMap="BoxCatalog-Result">
+        <![CDATA[
+           SELECT *
+		   FROM DCMS_BOX_CATALOG t 
+		   where 1=1
+	    ]]>
+        <isNotEmpty prepend="and" property="parentId">
+            t.PARENT_ID = #parentId#
+        </isNotEmpty>
+        
+    </select>
+    
+    
+    <select id="MS_GET_CATALOG_BY_ID" parameterClass="long" resultMap="BoxCatalog-Result">
+        <![CDATA[
+           SELECT *
+		   FROM DCMS_BOX_CATALOG t 
+		   where ID=#id#
+	    ]]>
+        
+        
+    </select>
+    
+    <delete id="MS_DELETE_BOXCATALOG" parameterClass="long">
+        <![CDATA[
+            DELETE from DCMS_BOX_CATALOG where ID = #id#
+        ]]>
+    </delete>
+    
+	<update id="MS_UPDATE_BOXCATALOG_FIELD" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxCatalog">
+        <![CDATA[ UPDATE DCMS_BOX_CATALOG SET GMT_MODIFIED = sysdate ]]>
+		<dynamic>
+			<isNotNull property="name">,NAME = #name#</isNotNull>
+			<isNotNull property="parentId">,PARENT_ID = #parentId#</isNotNull>
+			<isNotNull property="lev">,LEV = #lev#</isNotNull>
+			<isNotNull property="remarks">,REMARKS = "remarks"</isNotNull>
+		</dynamic>
+        <![CDATA[  WHERE ID = #id# ]]>
+	</update>    
+
+    <select id="MS_GET_BOXCATALOG_BY_TYPE" resultMap="BoxCatalog-Result" parameterClass="map">
+        <![CDATA[
+           SELECT * FROM DCMS_BOX_CATALOG 
+	    ]]>
+	    <dynamic prepend="where">
+	        <isNotEmpty prepend="and" property="parentId">
+	            PARENT_ID = #parentId#
+	        </isNotEmpty>
+	        <isNotEmpty prepend="and" property="catType">
+	            CAT_TYPE = #catType#
+	        </isNotEmpty>	
+	        <isNotEmpty prepend="and" property="level">
+	            lev = #level#
+	        </isNotEmpty>	   	        	    
+	    </dynamic>
+		<![CDATA[  order by lev asc ]]>
+        
+    </select>    
+
+    <select id="MS_GET_BOXCATALOG_BY_ROOT_CATALOG" parameterClass="long" resultClass="long"> 
+        SELECT ID FROM DCMS_BOX_CATALOG  CONNECT BY NOCYCLE PRIOR ID = PARENT_ID START WITH ID = #id#
+    </select>
+    
+    
+    <select id="MS_GET_BOXCATALOG_TREE" resultMap="BoxCatalog-Result" parameterClass="map">
+        <![CDATA[
+           SELECT *
+  FROM DCMS_BOX_CATALOG BC  WHERE BC.CAT_TYPE = #type#
+ START WITH (BC.PARENT_ID IS NULL OR BC.PARENT_ID =0)
+CONNECT BY PRIOR BC.ID = BC.PARENT_ID 
+	    ]]>
+	     
+        
+    </select>  
+     <select id="MS_GET_BOXCATALOG_PARENT_TREE" resultMap="BoxCatalog-Result" parameterClass="map">
+        <![CDATA[
+      		SELECT * FROM DCMS_BOX_CATALOG C START WITH C.ID = #id# CONNECT BY PRIOR C.PARENT_ID = C.ID
+	    ]]> 
+    </select>      
+    <select id="MS_GET_BOXCATALOG_CHILDREN_TREE" resultMap="BoxCatalog-Result" parameterClass="map">
+        <![CDATA[
+      		SELECT * FROM DCMS_BOX_CATALOG C START WITH C.ID = #id# CONNECT BY PRIOR C.id = C.PARENT_ID
+	    ]]> 
+    </select> 
+    
+    <select id="MS_GET_BOXCATALOG_IDTREE_BYNAME" resultClass="long" parameterClass="map">
+        <![CDATA[
+            SELECT id
+            FROM DCMS_BOX_CATALOG BC  WHERE BC.CAT_TYPE = #type#
+            START WITH name like '%' || #name# || '%'  
+            CONNECT BY PRIOR BC.ID = BC.PARENT_ID
+	    ]]>        
+    </select>      
+   
+</sqlMap>

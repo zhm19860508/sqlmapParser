@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="svnBase">
+	<typeAlias alias="svnBase"
+		type="com.alibaba.bigData.dal.entity.svnBaseDO" />
+
+	<resultMap class="svnBase" id="svnBaseResult">
+		<result column="id" property="id" />
+		<result column="svn" property="svn" />
+		<result column="line" property="line" />
+		<result column="status" property="status" />
+
+	</resultMap>
+
+	<sql id="allColumns">
+		select
+		a.id,a.svn,a.line,status
+	</sql>
+
+	<sql id="From">
+		from bigData_hiveScan_svn_base a
+	</sql>
+
+	<sql id="effstatus">
+        a.status = 1
+	</sql>
+
+
+
+
+	<select id="getLikeSvn" resultMap="svnBaseResult" >
+		<include refid="allColumns" />
+		<include refid="From" />
+		 where
+       <include refid="effstatus" />
+	</select>
+
+
+
+
+</sqlMap>

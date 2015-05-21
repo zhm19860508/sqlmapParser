@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.boxcontent">
+    
+    
+    
+    <resultMap id="BoxContent-Result" class="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <result property="id" column="ID" javaType="java.lang.Long"/>
+        <result property="rid" column="RESOURCE_ID" javaType="java.lang.Long"/>
+        <result property="content" column="CONTENT" javaType="java.lang.String"/>
+        <result property="resourceType" column="RESOURCE_TYPE" javaType="java.lang.String"/>
+        <result property="gmtCreate" column="GMT_CREATE" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+        <result property="gmtModified" column="GMT_MODIFIED" javaType="java.util.Date" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    
+    <insert id="MS_INSERT_BOXCONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CONTENT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CONTENT
+              (ID, GMT_CREATE , GMT_MODIFIED, RESOURCE_TYPE, RESOURCE_ID, CONTENT )
+            values
+              (#id#, sysdate  , sysdate  , #resourceType# ,#rid# , #content#)
+        ]]>
+    </insert>
+        
+    <insert id="MS_INSERT_BOXTEMPLATE_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_DCMS_BOX_CONTENT.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into DCMS_BOX_CONTENT
+              (ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_TYPE  , RESOURCE_ID, CONTENT )
+            values
+              (#id#, sysdate  , sysdate  , 'T' ,#rid# , #content#)
+        ]]>
+    </insert>
+   <select id="MS_GET_CONTENT_BY_RESOURCEID_AND_TYPE" resultClass="java.lang.String"  parameterClass="java.util.Map">
+            SELECT  CONTENT
+            FROM DCMS_BOX_CONTENT
+            where RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#type#
+    </select>
+    <select id="MS_GET_CONTENTS_BY_RESOURCEID_AND_TYPE"  resultMap="BoxContent-Result"  parameterClass="java.util.Map">
+           <![CDATA[   SELECT  ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_TYPE  , RESOURCE_ID, CONTENT
+            FROM DCMS_BOX_CONTENT
+            where  RESOURCE_TYPE=#type#  ]]>
+             <isNotEmpty prepend="and" property="resourceIds">
+			 	    RESOURCE_ID in
+		        	<iterate property="resourceIds" open="(" close=")" conjunction=",">
+		            	#resourceIds[]#
+		         	</iterate>
+			 </isNotEmpty>
+    </select>
+    
+    
+   <select id="MS_SELECT_CONTENT_BY_RESOURCEID_AND_TYPE" resultMap="BoxContent-Result"  resultClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent"  parameterClass="java.util.Map">
+            SELECT
+            ID, GMT_CREATE  , GMT_MODIFIED  , RESOURCE_TYPE  , RESOURCE_ID, CONTENT
+            FROM DCMS_BOX_CONTENT
+            where RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#type#
+    </select>    
+ 
+    <update id="MS_UPDATE_BOX_CONTENT_TYPE">
+        <![CDATA[ 
+        	UPDATE DCMS_BOX_CONTENT SET GMT_MODIFIED = sysdate 
+        ]]>
+        <dynamic prepend="">
+            <isNotEmpty property="resourceId" prepend=",">
+                RESOURCE_ID = #resourceId#
+            </isNotEmpty>
+            <isNotEmpty property="resourceType" prepend=",">
+                RESOURCE_TYPE = #resourceType#
+            </isNotEmpty>
+        </dynamic>        
+        <![CDATA[ WHERE ID =  #id#]]>
+    </update>     
+    
+    <update id="MS_UPDATE_BOX_CONTENT" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <![CDATA[ 
+        UPDATE DCMS_BOX_CONTENT SET GMT_MODIFIED = sysdate
+        ]]>
+        <isNotNull property="rid" prepend=",">
+            RESOURCE_ID = #rid#
+        </isNotNull>
+        <isNotNull property="resourceType" prepend=",">
+            RESOURCE_TYPE = #resourceType#
+        </isNotNull>        
+        <isNotNull property="content" prepend=",">
+            CONTENT = #content#
+        </isNotNull>
+        <![CDATA[ WHERE ID =  #id# ]]>
+    </update>
+    <update id="MS_UPDATE_BOX_CONTENT_BY_RID_RTYPE" parameterClass="com.alibaba.china.cmshollywood.dcms.dal.dataobject.BoxContent">
+        <![CDATA[ 
+        UPDATE DCMS_BOX_CONTENT SET GMT_MODIFIED = sysdate
+        ]]>
+        <isNotNull property="content" prepend=",">
+            CONTENT = #content#
+        </isNotNull>
+        <![CDATA[ WHERE RESOURCE_ID = #rid# and RESOURCE_TYPE = #resourceType# ]]>
+    </update>
+    <delete id="MS_DELETE_BOX_CONTENT_TYPE">
+    	 <![CDATA[ 
+    	 	DELETE FROM DCMS_BOX_CONTENT where RESOURCE_ID = #resourceId# and RESOURCE_TYPE = #resourceType#
+    	  ]]>
+    </delete>
+    
+</sqlMap>

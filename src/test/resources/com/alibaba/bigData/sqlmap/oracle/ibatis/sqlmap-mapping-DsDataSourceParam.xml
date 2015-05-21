@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="gb2312" ?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<sqlMap namespace="dcms.dsdatasourceparam">
+    <typeAlias alias="datasourceParam" type="com.alibaba.china.cmshollywood.dcms.dal.dataobject.DsDataSourceParam"/>
+    <!--
+      - ===============================================
+      - 将 data_source_param 表映射到 DatasourceParam 类
+      - ===============================================
+     -->
+    <resultMap id="dspResult" class="datasourceParam">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="dataFormat" column="DATA_FORMAT"/>
+        <result property="required" column="REQUIRED"/>
+        <result property="dataSource.id" column="DATA_SOURCE_ID"/>
+        <result property="editType" column="EDIT_TYPE"/>
+        <result property="dataLength" column="DATA_LENGTH"/>
+        <result property="cnName" column="CN_NAME"/>
+        <result property="selectValue" column="SELECT_VALUE"/>
+        <result property="defaultValue" column="DEFAULT_VALUE"/>
+        <result property="intfShowFlag" column="INTF_SHOW_FLAG"/>
+        <result property="description" column="DESCRIPTION"/>
+        <result property="orderNum" column="ORDER_NUM" javaType="java.lang.Double" />
+    </resultMap>
+
+
+
+
+    <!--
+      - ===============================================
+      - 通过 datasourceId 获取 DatasourceParam 信息
+      - ===============================================
+     -->
+    <select id="getDatasourceParamByDatasourceId" resultMap="dspResult" parameterClass="int"><![CDATA[
+ select *
+        from
+                DS_DATA_SOURCE_PARAM
+        where
+                DATA_SOURCE_ID = #dataSource.id#
+        order by ORDER_NUM DESC, NAME
+    ]]></select>
+
+    <!--
+      - ===============================================
+      - 创建一个 DatasourceParam 对象
+      - ===============================================
+     -->
+  <insert id="insertDatasourceParam" parameterClass="datasourceParam" >
+    <selectKey resultClass="int" keyProperty="id"  >
+      SELECT SEQ_DS_DATA_SOURCE_PARAM.NEXTVAL  id FROM DUAL
+    </selectKey>
+                insert into DS_DATA_SOURCE_PARAM (
+                ID,
+                NAME,
+                DATA_FORMAT,
+                REQUIRED,
+                DATA_SOURCE_ID,
+                EDIT_TYPE,
+                DATA_LENGTH,
+                CN_NAME,
+                SELECT_VALUE,
+                DEFAULT_VALUE,
+                INTF_SHOW_FLAG,
+                ORDER_NUM,
+                DESCRIPTION
+        ) values (
+                #id#,
+                #name#,
+                #dataFormat#,
+                #required#,
+                #dataSource.id#,
+                #editType#,
+                #dataLength#,
+                #cnName#,
+                #selectValue#,
+                #defaultValue#,
+                #intfShowFlag#,
+                #orderNum#,
+                #description#
+        )
+  </insert>
+
+    <!--
+      - ===============================================
+      - 将数据源id下的参数都删除
+      - ===============================================
+     -->
+    <delete id="deleteDatasourceParamByDsId" parameterClass="int"><![CDATA[
+        delete from
+                DS_DATA_SOURCE_PARAM
+         where
+                DATA_SOURCE_ID = #dataSource.id#
+    ]]></delete>
+</sqlMap>

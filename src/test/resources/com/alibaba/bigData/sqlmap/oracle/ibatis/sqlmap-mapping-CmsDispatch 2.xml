@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="cms_CmsDispatch">        
+
+    <resultMap class="CmsDispatch" id="CmsDispatch-result" >
+        <result property="gmtCreate"		javaType="java.sql.Timestamp"		column="GMT_CREATE" />
+        <result property="gmtModified"		javaType="java.sql.Timestamp"		column="GMT_MODIFIED" />
+        <result property="gmtPublish"		javaType="java.sql.Timestamp"		column="GMT_PUBLISH" />        
+        <result property="id"				javaType="java.lang.Long"			column="ID"	/>
+        <result	property="resourceType"		javaType="java.lang.String"			column="RESOURCE_TYPE" />
+        <result property="resourceId"		javaType="java.lang.Long"			column="RESOURCE_ID"	/>        
+        <result property="cause"			javaType="java.lang.String"			column="CAUSE" />
+        <result property="status"			javaType="java.lang.String"			column="STATUS" />
+        <result property="isRelease"		javaType="java.lang.String"			column="IS_RELEASE" />
+        <result property="params"	    	javaType="java.lang.String"			column="PARAMS" />
+    </resultMap>        
+
+	<update id="MS_UPD_CMSDISPATCH_STATUS" parameterClass="java.util.List">
+	    <![CDATA[
+	 	update CMS_DISPATCH set status = 'r' where id in (
+	     ]]> 
+         <iterate conjunction=",">
+		    #[]#
+		 </iterate> 		 
+ 		 <![CDATA[
+ 		 	)
+ 		 ]]> 		  
+	</update>
+
+    <insert id="MS_INSERT_CMSDISPATCH" parameterClass="CmsDispatch" >
+        <selectKey resultClass="java.lang.Long" keyProperty="id">
+            SELECT SEQ_CMS_DISPATCH.NEXTVAL AS id FROM DUAL
+        </selectKey>
+        <![CDATA[
+            insert into CMS_DISPATCH
+              (GMT_CREATE  , GMT_MODIFIED  , ID  , RESOURCE_TYPE  , RESOURCE_ID , IS_RELEASE, PARAMS, STATUS)
+            values
+              (sysdate  , sysdate  , #id#  , #resourceType#  , #resourceId#, #isRelease#, #params#, #status#)
+        ]]>
+    </insert>
+    
+    <select id="MS_SEL_CMSDISPATCH" resultMap="CmsDispatch-result">
+ 		 <![CDATA[
+ 			select ID , GMT_CREATE,  GMT_MODIFIED,  RESOURCE_TYPE, RESOURCE_ID, GMT_PUBLISH, CAUSE, STATUS , IS_RELEASE , PARAMS  
+ 			from CMS_DISPATCH where nvl(status,'w') <> 'r' order by id asc
+ 		 ]]>    	
+    </select>       
+ 
+ 	<delete id="MS_DEL_CMSDISPATCH" parameterClass="java.util.List">
+ 		 <![CDATA[
+ 			delete from CMS_DISPATCH where id in (
+ 		 ]]>
+         <iterate conjunction=",">
+		    #[]#
+		 </iterate> 		 
+ 		 <![CDATA[
+ 		 	)
+ 		 ]]> 	
+ 	</delete>
+ 	
+    <insert id="MS_INSERT_CMSDISPATCH_LOG" parameterClass="CmsDispatch" >
+        <![CDATA[
+            insert into CMS_DISPATCH_LOG
+              (GMT_CREATE, GMT_MODIFIED, ID  , RESOURCE_TYPE  , RESOURCE_ID, GMT_PUBLISH,  CAUSE, STATUS, IS_RELEASE, PARAMS)
+            values
+              (#gmtCreate# , #gmtModified#  , #id#  , #resourceType#  , #resourceId#, sysdate,  #cause#, #status#, #isRelease#, #params#)
+        ]]>
+    </insert> 	
+    
+    <select id="MS_GET_CMSDISPATCH" resultMap="CmsDispatch-result" parameterClass="long">
+ 		 <![CDATA[
+ 			select ID , GMT_CREATE,  GMT_MODIFIED,  RESOURCE_TYPE, RESOURCE_ID, GMT_PUBLISH, CAUSE, STATUS , IS_RELEASE , PARAMS  
+ 			from CMS_DISPATCH where id = #id#
+ 		 ]]>    	
+    </select>     
+    
+    <select id="MS_GET_CMSDISPATCH_LOCK" parameterClass="long">
+ 		 <![CDATA[
+ 			select id from cms_domain where id=1 for update
+ 		 ]]>    	
+    </select>       
+    
+</sqlMap>

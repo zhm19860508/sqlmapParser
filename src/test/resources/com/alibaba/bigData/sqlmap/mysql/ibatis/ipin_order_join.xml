@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="orderJoin"
+		type="com.alibaba.china.ipinshared.dataobject.OrderJoinDO" />
+	<typeAlias alias="orderJoinQuery"
+		type="com.alibaba.china.ipinshared.query.OrderJoinQuery" />
+	<resultMap id="orderJoinResult" class="orderJoin">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="orderId" column="order_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="joinerUserId" column="joiner_user_id"
+			jdbcType="int" javaType="java.lang.Long" />
+		<result property="joinerLoginName" column="joiner_login_name"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="buyCount" column="buy_count" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="isHidden" column="is_hidden" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="remark" column="remark" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="joinerName" column="joiner_name" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="joinerTel" column="joiner_tel" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="receiverInfoId" column="receiver_info_id"
+			jdbcType="int" javaType="java.lang.Long" />
+		<result property="isPaid" column="is_paid" jdbcType="int"
+			javaType="int" />
+		<result property="isGot" column="is_got" jdbcType="int"
+			javaType="int" />
+	</resultMap>
+	<sql id="orderJoinColumns">
+		select
+		id,order_id,joiner_user_id,joiner_login_name,buy_count,is_hidden,remark,is_deleted,gmt_created,gmt_modified,joiner_name,joiner_tel,receiver_info_id,is_paid,is_got
+	</sql>
+
+	<sql id="orderJoinQuery">
+		where
+		is_deleted = #isDeleted#
+		<isNotNull property="joinerUserId" prepend="AND">
+			joiner_user_id =
+			#joinerUserId#
+		</isNotNull>
+		<isNotNull property="orderId" prepend="AND">
+			order_id = #orderId#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend="AND">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+	</sql>
+
+	<!-- 获取所有的参团记录 -->
+	<select id="get_orderJoinList_by_query" resultMap="orderJoinResult"
+		parameterClass="orderJoinQuery">
+		<include refid="orderJoinColumns" />
+		from ipin_order_join
+		<include refid="orderJoinQuery" />
+		order by gmt_created desc
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+
+
+	<select id="get_orderJoin_by_id" resultMap="orderJoinResult"
+		parameterClass="java.lang.Long">
+		<include refid="orderJoinColumns" />
+		from ipin_order_join
+		where id = #id# and is_deleted
+		= 0
+	</select>
+
+	<select id="get_count_by_query" resultClass="java.lang.Integer"
+		parameterClass="orderJoinQuery">
+		select count(*) from ipin_order_join
+		<include refid="orderJoinQuery" />
+
+	</select>
+
+
+	<!-- 新增orderjoin -->
+	<insert id="add_new_orderJoin" parameterClass="orderJoin">
+		insert into
+		ipin_order_join(order_id,joiner_user_id,joiner_login_name,buy_count,is_hidden,remark,is_deleted,gmt_created,gmt_modified,joiner_name,joiner_tel,receiver_info_id,is_paid,is_got)
+		values(#orderId#,#joinerUserId#,#joinerLoginName#,#buyCount#,#isHidden#,#remark#,0,now(),now(),#joinerName#,#joinerTel#,#receiverInfoId#,0,0)
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 更新orderJoin -->
+	<update id="update_orderJoin" parameterClass="orderJoin">
+		update ipin_order_join set gmt_modified = now() ,remark =#remark#
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="buyCount" prepend=",">
+			buy_count =
+			#buyCount#
+		</isNotNull>
+		<isNotNull property="isHidden" prepend=",">
+			is_hidden =
+			#isHidden#
+		</isNotNull>
+
+		<isNotNull property="joinerName" prepend=",">
+			joiner_name =
+			#joinerName#
+		</isNotNull>
+		<isNotNull property="joinerTel" prepend=",">
+			joiner_tel =
+			#joinerTel#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend=",">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		<isNotNull property="isPaid" prepend=",">
+			is_paid =
+			#isPaid#
+		</isNotNull>
+		<isNotNull property="isGot" prepend=",">
+			is_got=
+			#isGot#
+		</isNotNull>
+		where id = #id#
+	</update>
+
+	<!--团长更新参团记录用 -->
+	<update id="update_orderJoin_for_owner" parameterClass="orderJoin">
+		update ipin_order_join set gmt_modified = now()
+		<isNotNull property="remark" prepend=",">
+			remark =
+			#remark#
+		</isNotNull>
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="buyCount" prepend=",">
+			buy_count =
+			#buyCount#
+		</isNotNull>
+		<isNotNull property="isHidden" prepend=",">
+			is_hidden =
+			#isHidden#
+		</isNotNull>
+
+		<isNotNull property="joinerName" prepend=",">
+			joiner_name =
+			#joinerName#
+		</isNotNull>
+		<isNotNull property="joinerTel" prepend=",">
+			joiner_tel =
+			#joinerTel#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend=",">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		<isNotNull property="isPaid" prepend=",">
+			is_paid =
+			#isPaid#
+		</isNotNull>
+		<isNotNull property="isGot" prepend=",">
+			is_got=
+			#isGot#
+		</isNotNull>
+		where id = #id#
+	</update>
+	<!-- 重新参团orderJoin -->
+	<update id="update_orderJoin_again" parameterClass="orderJoin">
+		update ipin_order_join set gmt_modified = now(),remark =#remark#
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="buyCount" prepend=",">
+			buy_count =
+			#buyCount#
+		</isNotNull>
+		<isNotNull property="isHidden" prepend=",">
+			is_hidden =
+			#isHidden#
+		</isNotNull>
+		
+		<isNotNull property="joinerName" prepend=",">
+			joiner_name =
+			#joinerName#
+		</isNotNull>
+		<isNotNull property="joinerTel" prepend=",">
+			joiner_tel =
+			#joinerTel#
+		</isNotNull>
+		<isNotNull property="receiverInfoId" prepend=",">
+			receiver_info_id =
+			#receiverInfoId#
+		</isNotNull>
+		<isNotNull property="gmtCreated" prepend=",">
+			gmt_created =
+			#gmtCreated#
+		</isNotNull>
+		where id = #id#
+	</update>
+	<!-- 获取所有的参团记录的ww -->
+	<select id="get_orderJoinWW_by_query" resultClass="java.lang.String"
+		parameterClass="orderJoinQuery">
+		select joiner_login_name from ipin_order_join
+		<include refid="orderJoinQuery" />
+
+	</select>
+
+	<!-- 获取所有的参团用户 -->
+	<select id="get_orderJoinUser_by_query" resultClass="java.lang.Long"
+		parameterClass="orderJoinQuery">
+		select joiner_user_id from ipin_order_join
+		<include refid="orderJoinQuery" />
+		<isNotNull property="size">
+			limit #start#,#size#
+		</isNotNull>
+	</select>
+
+
+</sqlMap>

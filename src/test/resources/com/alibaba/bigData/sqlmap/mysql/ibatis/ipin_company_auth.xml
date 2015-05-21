@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="gb2312" ?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"
+    "../htdocs/sql-map-2.dtd">
+
+<sqlMap namespace="ipin">
+	<typeAlias alias="companyAuth"
+		type="com.alibaba.china.ipinshared.dataobject.CompanyAuthDO" />
+	<resultMap id="companyAuthResult" class="companyAuth">
+		<result property="id" column="id" jdbcType="int" javaType="java.lang.Long" />
+		<result property="isDeleted" column="is_deleted" jdbcType="int"
+			javaType="int" />
+		<result property="gmtCreated" column="gmt_created" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="gmtModified" column="gmt_modified" jdbcType="DATETIME"
+			javaType="java.sql.Timestamp" />
+		<result property="companyId" column="company_id" jdbcType="int"
+			javaType="java.lang.Long" />
+		<result property="userEmail" column="user_email" jdbcType="varchar"
+			javaType="java.lang.String" />
+		<result property="emailPostfix" column="email_postfix"
+			jdbcType="varchar" javaType="java.lang.String" />
+		<result property="authStatus" column="auth_status" jdbcType="int"
+			javaType="int" />
+	</resultMap>
+
+	<sql id="companyAuthColumns">
+		select id,is_deleted,gmt_created,gmt_modified,company_id,user_email,email_postfix,auth_status
+	</sql>
+	<!-- 获取公司的认证状态 -->
+	<select id="get_company_status_by_email_postfix" resultMap="companyAuthResult">
+		<include refid="companyAuthColumns" /> 
+		from ipin_company_auth where is_deleted = 0 and email_postfix
+		= #emailPostfix#
+	</select>
+
+	<!-- 获取所有已经通过验证的公司 -->
+	<select id="get_authed_companies" resultMap="companyAuthResult">
+		<include refid="companyAuthColumns" /> 
+		 from
+		ipin_company_auth where is_deleted = 0 and auth_status = 1 order by id
+		asc
+	</select>
+
+	<!-- 新增公司认证记录 -->
+	<insert id="add_company_auth_record" parameterClass="companyAuth">
+		insert into
+		ipin_company_auth(company_id,user_email,email_postfix,auth_status,is_deleted,gmt_created,gmt_modified)
+		values (#companyId#,#userEmail#,#emailPostfix#,0,0,now(),now())
+		<selectKey resultClass="Long" keyProperty="id">
+			select
+			last_insert_id() as id
+		</selectKey>
+	</insert>
+
+	<!-- 修改公司认证记录 -->
+	<update id="update_company_auth_record" parameterClass="companyAuth">
+		update ipin_company_auth set gmt_modified = now()
+		<isNotNull property="isDeleted" prepend=",">
+			is_deleted =
+			#isDeleted#
+		</isNotNull>
+		<isNotNull property="authStatus" prepend=",">
+			auth_status =
+			#authStatus#
+		</isNotNull>
+		where email_postfix = #emailPostfix#
+	</update>
+
+</sqlMap>

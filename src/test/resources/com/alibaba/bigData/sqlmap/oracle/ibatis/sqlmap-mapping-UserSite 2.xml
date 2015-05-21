@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.site">
+	<resultMap id="UserSite-result" class="UserSite">
+		<result property="id"            javaType="java.lang.Long"       column="ID" />
+		<result property="userId"        javaType="java.lang.String"     column="USER_ID" />
+		<result property="siteId"     javaType="java.lang.Long"       column="SITE_ID" />
+		<result property="endDate"       javaType="java.sql.Timestamp"   column="END_DATE" />
+		<result property="gmtCreate"     javaType="java.sql.Timestamp"	 column="GMT_CREATE" />
+        <result property="gmtModified"   javaType="java.sql.Timestamp"	 column="GMT_MODIFIED" />
+	</resultMap>
+
+
+	<select id="MS_SELECT_BY_USER_AND_DATE" resultClass="UserSite" parameterClass="java.util.Map"
+		resultMap="UserSite-result">
+        <![CDATA[
+        SELECT
+               ID,
+               GMT_MODIFIED,
+               GMT_CREATE,
+               USER_ID,
+               SITE_ID,
+               END_DATE
+        FROM
+        	   CMS_USER_SITE
+
+        WHERE
+               USER_ID = #userId#
+        ]]>
+		<isNotEmpty prepend="AND" property="endDate">
+		 <![CDATA[ 	   #endDate# <= END_DATE ]]>
+        </isNotEmpty>
+	</select>
+
+</sqlMap>

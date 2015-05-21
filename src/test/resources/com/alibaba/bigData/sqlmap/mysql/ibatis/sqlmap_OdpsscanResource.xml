@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+
+<sqlMap namespace="OdpsscanResourceDAO">
+
+	<typeAlias alias="odpsscanResourceQuery"
+		type="com.alibaba.bigData.dal.query.OdpsscanResourceQuery" />
+
+	<typeAlias alias="odpsscanResourceDO"
+		type="com.alibaba.bigData.dal.entity.OdpsscanResourceDO" />
+
+	<resultMap id="odpsscanResourceResultAll" class="odpsscanResourceDO">
+		<result property="resourceId" column="resource_id" javaType="Integer"
+			jdbcType="int" />
+		<result property="resourceName" column="resource_name" />
+		<result property="content" column="content" />
+		<result property="detail" column="detail" />
+		<result property="detail" column="detail" />
+		<result property="authorId" column="author_id" />
+		<result property="status" column="status" javaType="Integer"
+			jdbcType="int" />
+		<result property="createdAt" column="created_at" />
+		<result property="updatedAt" column="updated_at" />
+		<result property="param" column="param" />
+	</resultMap>
+
+	<insert id="insert" parameterClass="odpsscanResourceDO" >
+      insert into `bigdata_odpsscan_resource` set
+		<dynamic prepend=" ">
+			<isNotEmpty prepend="," property="resourceName">
+				`created_at`=now(),`updated_at`=now(),`resource_name`=#resourceName#</isNotEmpty>
+			<isNotEmpty prepend="," property="content"> `content`=#content#</isNotEmpty>
+			<isNotEmpty prepend="," property="detail"> `detail`=#detail#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="authorId"> `author_id`=#authorId#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="status"> `status`=#status#
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="param"> `param`=#param#
+			</isNotEmpty>
+		</dynamic>
+       <selectKey resultClass="Integer" keyProperty="resourceId">
+			SELECT LAST_INSERT_ID()
+       </selectKey>
+	</insert>
+
+	<select id="selectResources" parameterClass="odpsscanResourceQuery"
+		resultMap="odpsscanResourceResultAll">
+		select
+		resource_id,resource_name,content,detail,author_id,status,created_at,updated_at,param
+		 from `bigdata_odpsscan_resource`
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="resourceName">`resource_name` like '%$resourceName$%'</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">`status` =#status#</isNotEmpty>
+		</dynamic>
+		order by `created_at` desc
+		<isNotEmpty prepend=" " property="size">
+			limit #start#,#size#
+		</isNotEmpty>
+	</select>
+
+	<select id="selectResourcesCount" parameterClass="odpsscanResourceQuery"
+		resultClass="Integer">
+		select count(0)
+		from `bigdata_odpsscan_resource`
+		<dynamic prepend="where">
+			<isNotEmpty prepend="and" property="resourceName">`resource_name` like CONCAT(#resourceName#, '%')</isNotEmpty>
+			<isNotEmpty prepend="and" property="status">`status` =#status#</isNotEmpty>
+		</dynamic>
+	</select>
+
+	<select id="getResource" parameterClass="java.lang.Integer" resultMap="odpsscanResourceResultAll">
+		select	resource_id,resource_name,content,detail,author_id,status,created_at,updated_at,param
+		from `bigdata_odpsscan_resource`
+		where resource_id = #resourceId#
+	</select>
+
+	<update id="delResource" parameterClass="java.lang.Integer">
+      update `bigdata_odpsscan_resource` set
+		`status`=1, `updated_at`=now()
+		where `resource_id` = #resource_id#
+	</update>
+</sqlMap>

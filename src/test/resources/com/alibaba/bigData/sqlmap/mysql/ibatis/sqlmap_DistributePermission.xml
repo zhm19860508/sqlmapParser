@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="DistributePermission">
+	<typeAlias alias="distributePermissionDO"
+		type="com.alibaba.bigData.dal.entity.DistributePermissionDO" />
+
+
+	<resultMap class="distributePermissionDO" id="DistributePermissionDOResult">
+		<result column="id" property="Id" />
+		<result column="user_name" property="userName" />
+		<result column="table_name" property="tableName" />
+		<result column="is_permission" property="isPermission" />
+	</resultMap>
+
+	<sql id="distributePermissionColumns">
+		select
+		*
+	</sql>
+
+	<sql id="distributePermissionFrom">
+		from bigData_distribute_permission a
+	</sql>
+
+	<select id="queryPermissionTable" resultMap="DistributePermissionDOResult">
+		<include refid="distributePermissionColumns" />
+		<include refid="distributePermissionFrom" />
+		where a.user_name =#userName# and a.table_name=#tableName#
+	</select>
+
+	<insert id="addPermissionTable" parameterClass="distributePermissionDO">
+		insert into bigData_distribute_permission
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="Id">
+				id
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				user_name
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name
+			</isNotNull>
+			<isNotNull prepend="," property="isPermission">
+				is_permission
+			</isNotNull>
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="Id">
+				#Id#
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				#userName#
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				#tableName#
+			</isNotNull>
+			<isNotNull prepend="," property="isPermission">
+				#isPermission#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<update id="updatePermissionTable" parameterClass="distributePermissionDO">
+		update bigData_distribute_permission
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="Id">
+				id
+			</isNotNull>
+			<isNotNull prepend="," property="userName">
+				user_name
+			</isNotNull>
+			<isNotNull prepend="," property="tableName">
+				table_name
+			</isNotNull>
+			<isNotNull prepend="," property="isPermission">
+				is_permission
+			</isNotNull>
+			where user_name = #userName# and table_name = #tableName#
+		</dynamic>
+	</update>
+</sqlMap>

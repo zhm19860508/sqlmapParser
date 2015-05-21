@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+	"http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="dcms.resourcecatalog">
+	<resultMap id="ResourceCatalog-result" class="ResourceCatalog">
+		<result property="id" javaType="java.lang.Long" column="ID" />
+		<result property="catalogId" javaType="java.lang.Long" column="CATALOG_ID" />
+		<result property="resourceId" javaType="java.lang.Long" column="RESOURCE_ID" />
+		<result property="resourceType" javaType="java.lang.String" column="RESOURCE_TYPE" />
+		<result property="gmtCreate" javaType="java.sql.Timestamp"
+			column="GMT_CREATE" />
+		<result property="gmtModified" javaType="java.sql.Timestamp"
+			column="GMT_MODIFIED" />
+	</resultMap>
+	<update id="updateResourceCatalog" parameterClass="java.util.Map">
+		UPDATE CMS_RESOURCE_CATALOG_V2 SET  CATALOG_ID= #otherCatalogId#
+		 WHERE CATALOG_ID=#catalogId#
+	</update>
+   <insert id="MS_ADD_RESOURCE_CATEGORY" parameterClass="ResourceCatalog">		
+		<selectKey resultClass="java.lang.Long" keyProperty="id">
+			SELECT SEQ_CMS_RESOURCE_CATALOG.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		<![CDATA[
+			INSERT INTO CMS_RESOURCE_CATALOG_V2
+				(GMT_CREATE , GMT_MODIFIED , ID , RESOURCE_ID , CATALOG_ID , RESOURCE_TYPE)
+			values
+				(SYSDATE , SYSDATE , #id# , #resourceId# , #catalogId# , #resourceType#)
+		]]>
+	</insert>
+	<select id="getResourceCatalog" parameterClass="java.lang.Long"
+		resultMap="ResourceCatalog-result">
+		SELECT * FROM CMS_RESOURCE_CATALOG_V2 WHERE CATALOG_ID=#catalogId#
+    </select>
+    <update id="deleteResourceCatalog" parameterClass="java.util.Map">
+		DELETE FROM  CMS_RESOURCE_CATALOG_V2 
+		 WHERE RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#resourceType#
+	</update>
+    <select id="queryResourceCatalog" parameterClass="java.util.Map" resultClass="java.lang.Long">
+		SELECT CATALOG_ID FROM  CMS_RESOURCE_CATALOG_V2 WHERE RESOURCE_ID=#resourceId# and RESOURCE_TYPE=#resourceType#
+	</select>	
+	<select id="selectCatalogsByTemplateCode" parameterClass="java.util.Map" resultMap="ResourceCatalog-result">
+		<![CDATA[
+		select * from cms_resource_catalog_v2 t where t.resource_type='template' and t.resource_id=(select id from cms_template r where r.code=#templateCode#)
+		]]>
+	</select>
+</sqlMap>

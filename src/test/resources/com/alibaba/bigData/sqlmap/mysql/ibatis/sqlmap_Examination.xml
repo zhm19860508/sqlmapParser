@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="Examination">
+    <typeAlias alias="examinationDO"
+               type="com.alibaba.bigData.dal.entity.ExaminationDO" />
+
+    <resultMap class="ExaminationDO" id="examinationDOResult">
+        <result column="id" property="id" />
+        <result column="assigned_staff_numbers" property="assignedStaffNumbers" />
+        <result column="copy_for_staff_numbers" property="copyForStaffNumbers" />
+        <result column="completed_time" property="completedTime" />
+        <result column="examination_focus" property="examinationFocus" />
+        <result column="svn_path" property="svnPath" />
+        <result column="rpm_version" property="rpmVersion" />
+        <result column="examination_type" property="examinationType" />
+    </resultMap>
+
+    <insert id="addExamination" parameterClass="examinationDO">
+        INSERT INTO bigData_examination_doc
+          (assigned_staff_numbers,copy_for_staff_numbers,completed_time,examination_focus,svn_path,rpm_version,examination_type)
+        VALUES
+          (#assignedStaffNumbers#,#copyForStaffNumbers#,#completedTime#,#examinationFocus#,#svnPath#,#rpmVersion#,#examinationType#)
+        <selectKey resultClass="java.lang.Integer" keyProperty="id" >
+            SELECT @@IDENTITY AS ID
+        </selectKey>
+    </insert>
+
+    <select id="queryExaminationById" resultMap="examinationDOResult">
+        select
+          a.id,a.assigned_staff_numbers,a.copy_for_staff_numbers,a.completed_time,a.examination_focus,a.svn_path,a.examination_type, a.rpm_version
+        from
+          bigData_examination_doc a
+        where a.id=#id#
+    </select>
+
+    <update id="updateExamination" parameterClass="examinationDO">
+        update bigData_examination_doc
+        <dynamic prepend="set">
+            <isNotNull prepend="," property="assignedStaffNumbers">
+                assigned_staff_numbers=#assignedStaffNumbers#
+            </isNotNull>
+			<isNotNull prepend="," property="copyForStaffNumbers">
+                copy_for_staff_numbers=#copyForStaffNumbers#
+            </isNotNull>
+            <isNotNull prepend="," property="completedTime">
+                completed_time=#completedTime#
+            </isNotNull>
+            <isNotNull prepend="," property="examinationFocus">
+                examination_focus=#examinationFocus#
+            </isNotNull>
+            <isNotNull prepend="," property="svnPath">
+                svn_path=#svnPath#
+            </isNotNull>
+            <isNotNull prepend="," property="rpmVersion">
+                rpm_version=#rpmVersion#
+            </isNotNull>
+            <isNotNull prepend="," property="examinationType">
+                examination_type=#examinationType#
+            </isNotNull>
+            where id = #id#
+        </dynamic>
+    </update>
+</sqlMap>

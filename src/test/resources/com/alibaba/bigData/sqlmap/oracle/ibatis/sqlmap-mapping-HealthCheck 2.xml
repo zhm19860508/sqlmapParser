@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding="gb2312"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+
+<sqlMap namespace="healthCheck">       
+	<!-- 
+    <select id="DYNAMIC_QUERY_INT" resultClass="int" parameterClass="string">
+		<![CDATA[   $sql$   ]]>
+    </select>   
+ 	-->
+ 	
+    <select id="MYSQL_QUERY_INT" resultClass="int" parameterClass="string">
+		<![CDATA[  select 1   ]]>
+    </select>
+    
+    <select id="ORA_QUERY_INT" resultClass="int" parameterClass="string">
+		<![CDATA[   select 1 from dual  ]]>
+    </select>    
+        
+</sqlMap>

@@ -1,0 +1,1403 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="RunResult">
+
+	<typeAlias alias="taskResultDO" type="com.alibaba.bigData.dal.entity.TaskResultDO" />
+	<typeAlias alias="taskResultNoLogDO" type="com.alibaba.bigData.dal.entity.TaskResultNoLogDO" />
+	<typeAlias alias="projectResultDO" type="com.alibaba.bigData.dal.entity.ProjectResultDO" />
+	<typeAlias alias="taskCompareResultNoLogDO" type="com.alibaba.bigData.dal.entity.TaskCompareResultNoLogDO" />
+	<typeAlias alias="resultQuery" type="com.alibaba.bigData.dal.query.ResultQuery" />
+	<typeAlias alias="baseTaskQuery" type="com.alibaba.bigData.dal.query.BaseTaskQuery" />
+	<typeAlias alias="taskDailyReportDO" type="com.alibaba.bigData.dal.entity.TaskDailyReportDO" />
+	<typeAlias alias="ResultBO" type="com.alibaba.bigData.dal.model.ResultBO" />
+	<typeAlias alias="taskSummary" type="com.alibaba.bigData.dal.entity.TaskSummary" />
+
+	<resultMap class="TaskSummary" id="oldTaskList">
+		<result column="id" property="id" />
+		<result column="project_id" property="projectId" />
+		<result column="task_name" property="taskName" />
+		<result column="task_type" property="taskType" />
+		<result column="user_name" property="userName" />
+	</resultMap>
+
+	<resultMap class="TaskResultDO" id="taskResultDOResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_log" property="runLog" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="monitor_type" property="monitorType" />
+	</resultMap>
+
+
+	<resultMap class="TaskResultNoLogDO" id="taskResultNoLogDOResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="project_id" property="projectId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="monitor_type" property="monitorType" />
+	</resultMap>
+	<resultMap class="ResultBO" id="taskResultNoLoopDOResult">
+		<result column="task_id" property="taskId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="group_name" property="groupName" />
+		<result column="group_id" property="groupId" />
+	</resultMap>
+
+	<resultMap class="TaskResultNoLogDO" id="taskResultNoLogNoPrjectIdDOResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+	</resultMap>
+
+	<resultMap class="projectResultDO" id="ProjectMonitorResultDO">
+		<result column="num" property="count" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="run_user" property="runUser" />
+	</resultMap>
+
+	<resultMap class="TaskResultNoLogDO" id="taskResultWithTableName">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="project_id" property="projectId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="test_table" property="tableName" />
+	</resultMap>
+
+	<resultMap class="TaskResultNoLogDO" id="taskCompareResultWithTableName">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="project_id" property="projectId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="source_tbl" property="sourceTbl" />
+		<result column="target_tbl" property="targetTbl" />
+	</resultMap>
+
+	<resultMap class="TaskDailyReportDO" id="taskDailyReport">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="task_name" property="taskName" />
+		<result column="run_status" property="runStatus" />
+		<result column="run_time" property="runTime" />
+		<result column="start_time" property="startTime" />
+		<result column="run_user" property="runUser" />
+		<result column="is_deleted" property="isDeleted" />
+		<result column="partition" property="partition" />
+		<result column="ruleIds" property="ruleIds" />
+		<result column="flags" property="flags" />
+	</resultMap>
+
+	<resultMap class="TaskDailyReportDO" id="taskDailyReportBase">
+		<result column="run_id" property="runId" />
+		<result column="task_id" property="taskId" />
+		<result column="run_status" property="runStatus" />
+		<result column="task_name" property="taskName" />
+		<result column="task_type" property="taskType" />
+		<result column="run_time" property="runTime" />
+		<result column="start_time" property="startTime" />
+		<result column="run_user" property="runUser" />
+	</resultMap>
+
+	<resultMap class="TaskResultDO" id="lastRunResult">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_status" property="runStatus" />
+		<result column="run_user" property="runUser" />
+	</resultMap>
+
+	<resultMap class="TaskDailyReportDO" id="taskDailyReportDetail">
+		<result column="source_pt" property="sourcePt" />
+		<result column="rule_id" property="ruleId" />
+		<result column="flag" property="flag" />
+	</resultMap>
+
+	<resultMap class="TaskResultDO" id="taskResultSimple">
+		<result column="id" property="id" />
+		<result column="task_id" property="taskId" />
+		<result column="run_status" property="runStatus" />
+		<result column="start_time" property="startTime" />
+		<result column="end_time" property="endTime" />
+		<result column="run_user" property="runUser" />
+	</resultMap>
+
+	<sql id="taskResultColumns">
+		select a.id,a.task_id,a.run_log,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,a.monitor_type
+	</sql>
+	<sql id="taskResultNoLogNoPrjectIdColumns">
+		select a.id,a.task_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted
+	</sql>
+	<sql id="taskResultNoLogColumns">
+		select a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,a.monitor_type
+	</sql>
+	<sql id="taskResultWithTableColumns">
+		select a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,c.test_table
+	</sql>
+	<sql id="taskCompareResultWithTableColumns">
+		select a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,c.source_tbl,c.target_tbl
+	</sql>
+
+	<sql id="taskResultFrom">
+		from bigData_run_result_base a
+	</sql>
+	<sql id="taskAndResultFrom">
+		from bigData_run_result_base a,bigData_job_base b
+	</sql>
+
+	<sql id="resultJoin">
+		a.task_id = b.id
+	</sql>
+
+ <sql id="resultWithStepQuery">
+		where a.task_id=b.id and a.id=c.runID and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+		<![CDATA[
+			a.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name = #taskName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="e2mTaskStep" prepend="AND">
+            c.type='$e2mTaskStep$'
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="resultWithStepQueryByFuzzyMatch">
+		where a.task_id=b.id and a.id=c.runID and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+		<![CDATA[
+			a.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name like '$taskName$%'
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="e2mTaskStep" prepend="AND">
+            c.type like '$e2mTaskStep$%'
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="resultWithTableNameCompareJoinQuery">
+		where d.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+		<![CDATA[
+			d.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+		<![CDATA[
+			d.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			d.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			d.task_name = #taskName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			d.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   d.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 d.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 d.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (c.source_tbl = #tableName# or c.target_tbl = #tableName#)
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            d.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<sql id="resultWithTableNameJoinQuery">
+		where d.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+		<![CDATA[
+			d.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+		<![CDATA[
+			d.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			d.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			d.task_name = #taskName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			d.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   d.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 d.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 d.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            c.test_table like '$tableName$%'
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            d.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<insert id="addTaskBaseResult" parameterClass="TaskResultDO">
+		insert into bigData_run_result_base
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				task_id
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				run_log
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				run_status
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				start_time
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				run_user
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				task_type
+			</isNotNull>
+
+			)
+		</dynamic>
+		values
+		<dynamic prepend="(">
+			<isNotNull prepend="," property="taskId">
+				#taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				#runLog#
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				#runStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				#startTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				#endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				#runUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				#monitorType#
+			</isNotNull>
+			<isNotNull prepend="," property="taskType">
+				#taskType#
+			</isNotNull>
+			)
+		</dynamic>
+		<selectKey resultClass="long" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="queryTaskBaseResultByRunId" resultMap="taskResultDOResult">
+		<include refid="taskResultColumns" />
+		<include refid="taskResultFrom" />
+		where a.id=#id#
+	</select>
+
+	<!-- 不包含log字段，该sql主要用于task级联查询result不需要执行log的场景 -->
+	<select id="queryTaskResultSimpleByRunId" resultMap="taskResultSimple">
+		select a.id,a.task_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted
+		<include refid="taskResultFrom" />
+		where a.id=#id#
+	</select>
+
+	<select id="queryTaskBaseResultByTaskId" resultMap="taskResultDOResult">
+		<include refid="taskResultColumns" />
+		<include refid="taskResultFrom" />
+		where a.task_id=#id#
+		and a.run_status="DEPLOYING"
+	</select>
+
+	<select id="queryTaskResultNoLogByRunId" resultMap="taskResultDOResult">
+		select a.id,a.task_id,'' as run_log,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,a.monitor_type
+		from bigdata_run_result_base a where a.id=#id#
+	</select>
+
+
+	<select id="queryTaskBaseResultNoLogByRunId" resultMap="taskResultNoLogDOResult">
+		<include refid="taskResultNoLogColumns" />
+		<include refid="taskAndResultFrom" />
+		where a.id=#id# and a.task_id = b.id
+	</select>
+
+	<select id="queryE2MResultListWithStep" resultMap="taskResultNoLogNoPrjectIdDOResult">
+		select a.id,a.task_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted
+		from bigData_run_result_base a , bigData_job_base b, bigData_e2m_run_type  c
+		<include refid="resultWithStepQuery" />
+		order by start_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryE2MResultListWithStepByFuzzyMatch" resultMap="taskResultNoLogNoPrjectIdDOResult">
+		select a.id,a.task_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted
+		from bigData_run_result_base a , bigData_job_base b, bigData_e2m_run_type  c
+		<include refid="resultWithStepQueryByFuzzyMatch" />
+		order by start_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryE2MResultCountWithStep" resultClass="java.lang.Integer">
+		select count(*)
+		from bigData_run_result_base a , bigData_job_base b, bigData_e2m_run_type  c
+		<include refid="resultWithStepQuery" />
+	</select>
+
+	<select id="queryE2MResultCountWithStepByFuzzyMatch" resultClass="java.lang.Integer">
+		select count(*)
+		from bigData_run_result_base a , bigData_job_base b, bigData_e2m_run_type  c
+		<include refid="resultWithStepQueryByFuzzyMatch" />
+	</select>
+
+	<select id="queryResultListWithTableName" resultMap="taskResultWithTableName">
+		select d.id,d.task_id,d.project_id,d.run_status,d.start_time,d.end_time,d.run_user,d.is_deleted,c.test_table from
+			(select a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,b.task_type,b.user_name,b.task_name
+				from bigData_run_result_base a join bigData_job_base b on(a.task_id=b.id) ) d left join (select test_table,run_id from bigData_run_result_distibute group by test_table, run_id )c
+		on (d.id=c.run_id)
+
+		<include refid="resultWithTableNameJoinQuery" />
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryCompareResultWithTableName" resultMap="taskCompareResultWithTableName">
+		select d.id,d.task_id,d.project_id,d.run_status,d.start_time,d.end_time,d.run_user,d.is_deleted,c.source_tbl,c.target_tbl from
+		(select  a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,b.task_type,b.user_name,b.task_name
+		     from bigData_run_result_base a join bigData_job_base b on(a.task_id=b.id) )d left join (select source_tbl,target_tbl,run_id from bigData_run_result_compare group by target_tbl,source_tbl ,run_id) c
+		on (d.id=c.run_id)
+		<include refid="resultWithTableNameCompareJoinQuery" />
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryResultCountWithTableName" resultClass="java.lang.Integer">
+		select count(*) from
+			(select a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,b.task_type,b.user_name,b.task_name
+				from bigData_run_result_base a join bigData_job_base b on(a.task_id=b.id) ) d left join (select test_table,run_id from bigData_run_result_distibute group by test_table, run_id )c
+		on (d.id=c.run_id)
+
+		<include refid="resultWithTableNameJoinQuery" />
+	</select>
+
+	<select id="queryCompareResultCountWithTableName" resultClass="java.lang.Integer">
+
+		select count(*) from
+		(select  a.id,a.task_id,b.project_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,b.task_type,b.user_name,b.task_name
+		     from bigData_run_result_base a join bigData_job_base b on(a.task_id=b.id) )d left join (select source_tbl,target_tbl,run_id from bigData_run_result_compare group by target_tbl,source_tbl ,run_id) c
+		on (d.id=c.run_id)
+		<include refid="resultWithTableNameCompareJoinQuery" />
+	</select>
+
+	<select id="queryOldTasksCountByQuery" parameterClass="resultQuery" resultClass="java.lang.Integer">
+		select count(1)
+		from bigdata_job_base a
+		where
+		user_name=#userName#
+		<isNotNull prepend="and" property="taskName">
+			task_name = #taskName#
+		</isNotNull>
+		and is_deleted = 0
+		and task_type in ("COMPARE", "DISTRIBUTE")
+	</select>
+
+	<select id="queryOldTasksPageByQuery" parameterClass="resultQuery" resultMap="oldTaskList">
+		select a.project_id, a.id, a.task_name, a.user_name, a.task_type
+		from bigdata_job_base a
+		where
+		user_name=#userName#
+		<isNotNull prepend="and" property="taskName">
+			task_name = #taskName#
+		</isNotNull>
+		and is_deleted = 0
+		and task_type in ("COMPARE", "DISTRIBUTE")
+		order by id desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<update id="modifyTaskStatus" parameterClass="java.util.HashMap" >
+		update bigdata_run_result_base
+		set run_status = #status#, comment=#comments#
+		where id=#id#
+	</update>
+
+	<select id="getComments" parameterClass="java.lang.Integer" resultClass="java.lang.String">
+		select comment
+		from bigdata_run_result_base
+		where id=#id#
+	</select>
+
+	<update id="moveTask" parameterClass="java.util.HashMap">
+		update bigdata_job_base
+		set project_id = #projectId#
+		where id = #taskId#
+	</update>
+
+	<insert id="copyTaskBase" parameterClass="java.util.HashMap" >
+		insert into bigdata_job_base
+		select
+		null as id,
+		concat(a.task_name, "_bak"),
+		a.task_description,
+		a.task_type,
+		a.run_type,
+		a.machine_ip,
+		a.user_name,
+		a.deploy_script,
+		a.kill_script,
+		a.is_deleted,
+		a.group_id,
+		a.channel_id,
+		a.gmt_create,
+		a.gmt_modify,
+		a.project_id,
+		a.monitor_id,
+		null,
+		a.source_tbl,
+		a.target_tbl,
+		a.version
+		from bigdata_job_base a where id=#taskId#
+		<selectKey resultClass="java.lang.Integer" keyProperty="id">
+		<![CDATA[
+			SELECT LAST_INSERT_ID() AS ID
+		]]>
+		</selectKey>
+	</insert>
+
+	<insert id="copyTaskCompare" parameterClass="java.util.HashMap">
+		insert into bigdata_job_compare
+		select
+		#LeastTaskId#,
+		source_tbl,
+		target_tbl,
+		rule_ids,
+		source_pt,
+		target_pt,
+		source_column,
+		target_column,
+		threshold,
+		source_cluster,
+		target_cluster,
+		compare_type,
+		fulltext_sourceColumn,
+		fulltext_targetColumn,
+		has_fulltext,
+		is_deleted,
+		source_key,
+		target_key,
+		sourceSortCols,
+		targetSortCols,
+		targetSortSplit,
+		sourceSortSplit,
+		sourceQuery,
+		targetQuery,
+		runProject,
+		sourceMeasure,
+		targetMeasure
+		from bigdata_job_compare
+		where task_id = #taskId#
+	</insert>
+
+	<insert id="copyTaskDistribute" parameterClass="java.util.HashMap">
+		insert into bigdata_job_distribute
+		select
+		#LeastTaskId#,
+		table_name,
+		partition,
+		expect,
+		rule_ids,
+		test_column,
+		rule_param,
+		is_deleted,
+		env,
+		packageName,
+		private_rule_ids,
+		run_project,
+		distribute_task_type,
+		partition_col
+		from bigdata_job_distribute
+		where task_id = #taskId#
+	</insert>
+
+	<update id="updateRunResult" parameterClass="TaskResultDO">
+		update bigData_run_result_base
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id = #taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runLog">
+				run_log = #runLog#
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				run_status = #runStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				start_time = #startTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				run_user = #runUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type = #monitorType#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="updateRunResultNolog" parameterClass="TaskResultNoLogDO">
+		update bigData_run_result_base
+		<dynamic prepend="set">
+			<isNotNull prepend="," property="taskId">
+				task_id = #taskId#
+			</isNotNull>
+			<isNotNull prepend="," property="runStatus">
+				run_status = #runStatus#
+			</isNotNull>
+			<isNotNull prepend="," property="startTime">
+				start_time = #startTime#
+			</isNotNull>
+			<isNotNull prepend="," property="endTime">
+				end_time = #endTime#
+			</isNotNull>
+			<isNotNull prepend="," property="runUser">
+				run_user = #runUser#
+			</isNotNull>
+			<isNotNull prepend="," property="monitorType">
+				monitor_type = #monitorType#
+			</isNotNull>
+			where id = #id#
+		</dynamic>
+	</update>
+
+	<update id="deleteRunResult" parameterClass="java.lang.Integer">
+		update bigData_run_result_base
+		set
+		is_deleted = 1
+		where id = #id#
+	</update>
+
+	<sql id="resultQuery">
+		where
+		<include refid="resultJoin"/>
+		and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+
+		<![CDATA[
+			a.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+
+		<![CDATA[
+			a.monitor_type=#monitorType#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name = #taskName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (b.source_tbl = #tableName# or b.target_tbl = #tableName#)
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="resultQueryNoRunUser">
+		where
+		<include refid="resultJoin"/>
+		and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+
+		<![CDATA[
+			a.monitor_type=#monitorType#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name = #taskName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="startId" prepend="AND">
+		<![CDATA[
+			a.id > #startId#
+		]]>
+		</isNotNull>
+		<isNotNull property="endId" prepend="AND">
+		<![CDATA[
+			a.id <= #endId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (b.source_tbl = #tableName# or b.target_tbl = #tableName#)
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="resultQueryByFuzzyMatch">
+		where
+		<include refid="resultJoin"/>
+		and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+
+		<![CDATA[
+			a.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+
+		<![CDATA[
+			a.monitor_type=#monitorType#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name like '$taskName$%'
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (b.source_tbl = #tableName# or b.target_tbl = #tableName# )
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+	<sql id="resultQueryNoRunUserFuzzyMatch">
+		where
+		<include refid="resultJoin"/>
+		and a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+
+		<![CDATA[
+			a.monitor_type=#monitorType#
+		]]>
+		</isNotNull>
+		<isNotNull property="userName" prepend="AND">
+		<![CDATA[
+			b.user_name=#userName#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskName" prepend="AND">
+		<![CDATA[
+			b.task_name like '$taskName$%'
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			 b.group_id = #groupId#
+		]]>
+		</isNotNull>
+		<isNotNull property="startId" prepend="AND">
+		<![CDATA[
+			a.id > #startId#
+		]]>
+		</isNotNull>
+		<isNotNull property="endId" prepend="AND">
+		<![CDATA[
+			a.id <= #endId#
+		]]>
+		</isNotNull>
+		<isNotNull property="tableName" prepend="AND">
+            (b.source_tbl = #tableName# or b.target_tbl = #tableName# )
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+	<sql id="resultSingleQuery">
+		where a.is_deleted =0
+		<isNotNull property="runStatus" prepend="AND">
+		<![CDATA[
+			a.run_status=#runStatus#
+		]]>
+		</isNotNull>
+		<isNotNull property="runUser" prepend="AND">
+		<![CDATA[
+			a.run_user=#runUser#
+		]]>
+		</isNotNull>
+		<isNotNull property="monitorType" prepend="AND">
+
+		<![CDATA[
+			a.monitor_type=#monitorType#
+		]]>
+		</isNotNull>
+		<isNotNull property="startTime" prepend="AND" >
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND" >
+		<![CDATA[
+			 a.start_time <= #endTime#
+		]]>
+		</isNotNull>
+		<isNotEmpty property="runStatusList" prepend="AND" >
+            a.run_status in
+			<iterate  property="runStatusList" open="(" close=")" conjunction=",">
+            #runStatusList[]#
+			</iterate>
+		</isNotEmpty>
+	</sql>
+
+
+
+
+
+	<select id="queryTaskResultByQuery" resultMap="taskResultDOResult" parameterClass="resultQuery">
+		<include refid="taskResultColumns" />
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQuery" />
+		order by a.start_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryExceptionTask" resultMap="taskResultDOResult">
+		SELECT * from bigdata_run_result_base where run_log='Direct buffer memory' and is_deleted=0
+		and start_time>'2014-04-24 21:00:00'
+	</select>
+
+
+
+	<select id="queryResultForDailyReport" resultMap="taskDailyReport" parameterClass="baseTaskQuery">
+		select a.id,a.task_id,b.target_tbl as task_name,a.run_status,timediff(a.end_time,a.start_time) as run_time,a.start_time,a.run_user,a.is_deleted,
+		b.source_pt as partition,
+		group_concat(cast(rule_id as char(8))) as ruleIds,group_concat(cast(b.flag as char(8))) as flags
+		from bigData_run_result_base a,bigData_run_result_compare b where a.id=b.run_id and project_id=#projectId# and a.is_deleted =0
+		and a.run_status in ("SUCCESS","FAIL")
+			<isNotNull property="startDate" prepend="AND">
+			<![CDATA[
+				start_time>=#startDate#
+			]]>
+			</isNotNull>
+			<isNotNull property="stopDate" prepend="AND">
+			<![CDATA[
+				end_time<=#stopDate#
+			]]>
+			</isNotNull>
+		group by a.id
+		order by a.task_id,a.id desc
+	</select>
+
+	<select id="queryTaskResultNoLogByQuery" resultMap="taskResultNoLogDOResult" parameterClass="resultQuery">
+		<include refid="taskResultNoLogColumns" />
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQuery" />
+		order by a.start_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+	
+	<select id="queryTaskResultNoRunUserByTaskType" resultMap="taskResultNoLogDOResult"  parameterClass="resultQuery">
+	<!-- 此处0 as project_id为了兼容resultMap，无其它作用。 -->
+	    select a.id,0 as project_id, a.task_id,a.run_status,a.start_time,a.end_time,a.run_user,a.is_deleted,a.monitor_type
+        from bigData_run_result_base a 
+        where a.is_deleted =0 AND a.task_type = #taskType# 
+        order by a.start_time desc 
+        <isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryTaskResultNoRunUserByQuery" resultMap="taskResultNoLogDOResult" parameterClass="resultQuery">
+		<include refid="taskResultNoLogColumns" />
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQueryNoRunUser" />
+		order by a.id desc
+	</select>
+
+	<select id="queryTaskResultNoRunUserByQueryFuzzyMatch" resultMap="taskResultNoLogDOResult" parameterClass="resultQuery">
+		<include refid="taskResultNoLogColumns" />
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQueryNoRunUserFuzzyMatch" />
+		order by a.id desc
+	</select>
+
+	<select id="queryRunResultMaxId" resultClass="java.lang.Integer" >
+		select max(id) from bigdata_run_result_base
+	</select>
+
+	<select id="queryTaskResultNoLogByQueryByFuzzyMatch" resultMap="taskResultNoLogDOResult" parameterClass="resultQuery">
+		<include refid="taskResultNoLogColumns" />
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQueryByFuzzyMatch" />
+		order by a.start_time desc
+		<isNotNull property="size">
+		<![CDATA[
+			limit #start#,#size#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryTaskResultNoLoopByQuery" resultMap="taskResultNoLoopDOResult" parameterClass="resultQuery">
+		select a.task_id, a.run_status, a.start_time, a.end_time, b.group_id, c.group_name
+		from bigData_run_result_base a , bigData_job_base b, bigData_group c
+		where a.task_id=b.id and b.group_id=c.id
+		and a.is_deleted=0
+		<isNotNull property="startTime" prepend="AND">
+		<![CDATA[
+			a.start_time>=#startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+		<![CDATA[
+			a.start_time<=#endTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="taskType" prepend="AND">
+		<![CDATA[
+			b.task_type=#taskType#
+		]]>
+		</isNotNull>
+		<isNotNull property="groupId" prepend="AND" >
+		<![CDATA[
+			b.group_id = #groupId#
+		]]>
+		</isNotNull>
+	</select>
+
+	<select id="queryTaskResultCountByQuery" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQuery" />
+	</select>
+	
+	<select id="queryTaskResultCountByTaskType" resultClass="java.lang.Integer">
+		select count(*) 
+		from bigData_run_result_base  
+		where is_deleted =0 AND task_type = #taskType#
+	</select>
+
+	<select id="queryTaskResultCountByQueryByFuzzyMatch" resultClass="java.lang.Integer">
+		select count(*)
+		<include refid="taskAndResultFrom" />
+		<include refid="resultQueryByFuzzyMatch" />
+	</select>
+
+	<select id="queryTaskResultCount" resultClass="java.lang.Integer">
+		select count(*) from bigdata_run_result_base a
+		<include refid="resultSingleQuery" />
+	</select>
+
+	<select id="queryLastRunnerForMonitor" resultMap="taskResultDOResult">
+		select *
+		<include refid="taskResultFrom" />
+		where
+		<isNotNull property="taskId">
+			a.task_id=#taskId#
+		</isNotNull>
+
+		<isNotNull property="monitorType" prepend="AND">
+			a.monitor_type=#monitorType#
+		</isNotNull>
+		and  a.is_deleted=0
+		order by id desc
+		limit 1
+	</select>
+
+	<select id="queryExFacadeResult" resultMap="taskResultDOResult">
+		select *
+		<include refid="taskResultFrom" />
+		where
+		a.task_id=#taskId# and a.is_deleted=0
+		and a.start_time>=#startTime# limit 1
+	</select>
+
+	<select id="queryLastRunner" resultMap="taskResultDOResult">
+		select *
+		<include refid="taskResultFrom" />
+		where
+		a.task_id=#taskId# and a.monitor_type is null and a.is_deleted=0
+		order by id desc
+		limit 1
+	</select>
+
+	<select id="queryLastRunId" resultClass="java.lang.String">
+		select last_run_id
+		from bigdata_job_base
+		where id=#taskId# and is_deleted=0;
+	</select>
+
+	<select id="queryLastRunIdWithMonitor" resultClass="java.lang.String">
+		select last_run_id
+		from bigdata_job_base
+		where id=#taskId# and is_deleted=0 and monitor_id is not null
+	</select>
+
+	<select id="queryRunResultNum" resultClass="java.lang.Integer">
+		select count(*) as runResult_num
+		from bigdata_job_base a, bigdata_run_result_base b
+		where a.id=b.task_id
+		and a.is_deleted=0
+		and a.project_id=#taskId#
+		and b.monitor_type is not null
+		and a.monitor_id is not null
+	</select>
+
+	<select id="queryFailNum" resultClass="java.lang.Integer">
+		select count(*) as fail_num
+		from bigdata_job_base a, bigdata_run_result_base b
+		where a.id=b.task_id
+		and a.is_deleted=0
+		and a.project_id=#taskId#
+		and b.run_status="FAIL"
+		and b.monitor_type is not null
+		and a.monitor_id is not null
+	</select>
+
+	<select id="queryLastRunStatus" resultClass="java.lang.String">
+		select run_status
+		from bigdata_run_result_base
+		where id=#lastRunId#
+	</select>
+
+	<select id="queryLastRunStatusWithMonitor" resultClass="java.lang.String">
+		select run_status
+		from bigdata_run_result_base
+		where id=#lastRunId# and monitor_type is not null
+	</select>
+
+	<select id="queryTaskType" resultClass="java.lang.String">
+		select task_type
+		from bigdata_job_base
+		where id=#taskId#
+	</select>
+
+	<select id="queryMonitorTaskBaseResultNoLogByTaskId" resultMap="taskResultNoLogNoPrjectIdDOResult">
+		<include refid="taskResultColumns" />
+		<include refid="taskResultFrom" />
+		where a.task_id=#taskId#
+		<isNotNull property="startTime" prepend="AND">
+		<![CDATA[
+			   a.start_time >= #startTime#
+		]]>
+		</isNotNull>
+		<isNotNull property="endTime" prepend="AND">
+		<![CDATA[
+			 a.end_time <= #endTime#
+		]]>
+		</isNotNull>
+		and a.monitor_type is not null and a.is_deleted=0 ORDER BY a.start_time ASC
+	</select>
+
+	<select id="queryMonitorTaskBaseResultNoLogByProjectId" resultMap="ProjectMonitorResultDO">
+
+			select count(1) as num, b.run_status, substr(b.start_time,1,10) as start_time, b.run_user
+			from bigdata_job_base a,bigdata_run_result_base b
+			where a.id=b.task_id
+			and a.project_id=#taskId#
+			and b.monitor_type is not null
+ 			<isNotNull property="startTime" prepend="AND">
+			<![CDATA[
+				   b.start_time >= #startTime#
+			]]>
+			</isNotNull>
+			<isNotNull property="endTime" prepend="AND">
+			<![CDATA[
+				 b.end_time <= #endTime#
+			]]>
+			</isNotNull>
+			and (b.run_status='SUCCESS' or b.run_status='FAIL')
+			and a.is_deleted=0
+			group by substr(b.start_time,1,10),b.run_status
+			ORDER BY b.start_time ASC
+	</select>
+
+	<select id="queryAllExecutiveRes" resultMap="taskResultNoLogNoPrjectIdDOResult">
+		<include refid="taskResultNoLogNoPrjectIdColumns" />
+		<include refid="taskResultFrom" />
+		where
+		a.task_id=#taskID# and a.is_deleted=0
+		order by start_time desc;
+	</select>
+
+	<select id="queryRunResByProId" resultMap="taskResultNoLogNoPrjectIdDOResult">
+		 SELECT c.id,c.task_id,c.run_status,c.start_time,c.end_time,c.run_user,c.is_deleted  FROM
+			(SELECT b.project_id,b.id task_id,b.task_name,b.task_description,b.task_type,b.run_type,b.user_name,b.channel_id,b.group_id,b.machine_ip,b.deploy_script,b.kill_script,a.run_status,b.gmt_create,b.gmt_modify,a.start_time,a.end_time,a.run_user,a.id,a.is_deleted FROM
+			(SELECT * FROM bigData_job_base WHERE is_deleted =0 and project_id=#projectId#) b left join
+			(SELECT is_deleted,id,task_id,run_user,start_time,end_time,run_status FROM bigData_run_result_base
+			WHERE is_deleted =0 ) a on a.task_id =b.id
+		 )c order by task_id,id desc
+	</select>
+
+	<select id="queryTaskDailyReportBase" resultMap="taskDailyReportBase">
+	<![CDATA[
+		SELECT a.id run_id, run_status, task_id, task_name,run_user,task_type,start_time,TIMEDIFF(a.end_time,a.start_time) AS run_time FROM
+			(SELECT * FROM bigData_run_result_base
+				WHERE is_deleted =0 AND run_status IN ("SUCCESS","FAIL")
+				AND start_time>=#startTime#
+				AND end_time<=#endTime#
+				ORDER BY start_time DESC) a
+				JOIN (SELECT * FROM bigData_job_base WHERE project_id=#projectId#) b
+				ON a.task_id = b.id
+	]]>
+	</select>
+
+	<select id="queryTaskDailyReportDetail" resultMap="taskDailyReportDetail">
+	<![CDATA[
+		SELECT source_pt,rule_id,flag FROM bigData_run_result_compare WHERE run_id = #runId#
+	]]>
+	</select>
+
+	<select id="queryTaskExResBase" resultMap="lastRunResult">
+	<![CDATA[
+		SELECT id, task_id,  run_status, run_user FROM bigData_run_result_base WHERE task_id = #taskId# ORDER BY start_time DESC LIMIT 1
+	]]>
+	</select>
+
+	<select id="queryLastRunList" resultMap="lastRunResult">
+		select
+            aa.id,task_id, run_user, run_status
+        from
+            (select
+                max(id) id, task_id
+            from
+                bigData_run_result_base
+            where
+                monitor_type is null and is_deleted = 0
+		<isNotEmpty prepend="AND" >
+                    task_id in ($taskStr$)
+		</isNotEmpty>
+            group by task_id
+            order by task_id desc) aa
+                left join
+            (select
+                id, run_status, run_user
+            from
+                bigData_run_result_base) bb ON aa.id = bb.id
+	</select>
+
+    <update id="setLastRunIdByTaskId">
+    	update bigdata_job_base a set a.last_run_id = (select a.id from
+		bigData_run_result_base a where a.task_id=#taskId# and a.is_deleted=0 order by a.id desc LIMIT 1)
+		where a.id= #taskId#
+    </update>
+
+    <select id="selectRunStatus" parameterClass="Long" resultClass="String">
+    	select `run_status` from `bigdata_run_result_base` where `id`=#runId#
+    </select>
+
+     <select id="selectRunLog" parameterClass="Long" resultClass="String">
+    	select `run_log` from `bigdata_run_result_base` where `id`=#runId#
+    </select>
+</sqlMap>
